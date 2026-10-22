@@ -11,10 +11,10 @@ Templates use {usl}, {start}, {end}, {base_start} and {base_end}.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import date, timedelta
+from datetime import date
 
 from becuz.adapters import Warehouse
-from becuz.metrics import BASELINE_WEEKS
+from becuz.metrics import BASELINE_WEEKS, week
 
 WEEK = "BETWEEN DATE '{start}' AND DATE '{end}'"
 BASE = "BETWEEN DATE '{base_start}' AND DATE '{base_end}'"
@@ -140,12 +140,9 @@ class Measurement:
 
 
 def render(template: str, usl: str, start: date, end: date) -> str:
-    # Only real dates reach the SQL text, so model output can't inject into it.
-    if not (isinstance(start, date) and isinstance(end, date) and start <= end):
-        raise ValueError(f"bad period: {start!r} to {end!r}")
-    base_start = start - timedelta(weeks=BASELINE_WEEKS)
+    base_start, base_end = week(start, end)
     return template.format(usl=usl, start=start.isoformat(), end=end.isoformat(),
-                           base_start=base_start.isoformat(), base_end=(start - timedelta(days=1)).isoformat())
+                           base_start=base_start.isoformat(), base_end=base_end.isoformat())
 
 
 def measure(wh: Warehouse, cause_id: str, start: date, end: date) -> Measurement:

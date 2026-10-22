@@ -24,6 +24,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 Source = Literal["pos_files", "bank_files", "books_files", "context_files"]
 Component = Literal["net_sales", "cogs", "wastage", "opex", "leakage"]  # metrics.py names without "_ngn"
 TOLERANCE_NGN = 1.0
+MIN_EFFECT_NGN = 1000.0  # smaller effects are noise, so a cause below this can't be supported
 
 
 class Model(BaseModel):
@@ -112,6 +113,8 @@ class Cause(Model):
             raise ValueError(f"{self.cause_id}: impact must point at an evidence row with a value")
         if abs(source.value_ngn - self.impact_ngn) > TOLERANCE_NGN:
             raise ValueError(f"{self.cause_id}: impact {self.impact_ngn} differs from its evidence {source.value_ngn}")
+        if abs(self.impact_ngn) < MIN_EFFECT_NGN:
+            raise ValueError(f"{self.cause_id}: effect {self.impact_ngn} is below {MIN_EFFECT_NGN}, too small to support")
         if not any(e.row_ids for e in self.evidence):
             raise ValueError(f"{self.cause_id}: a supported cause needs record IDs")
         return self
