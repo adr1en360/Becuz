@@ -13,6 +13,13 @@ DML = re.compile(
 SHOW_CREATE = re.compile(
     r"^show\s+create\s+(?:table|view|database|index)\b", re.IGNORECASE
 )
+# Spark functions that call arbitrary Java or have side effects inside a SELECT.
+SIDE_EFFECT = re.compile(r"\b(reflect|java_method|assert_true|raise_error)\s*\(", re.IGNORECASE)
+# Hive script transform: SELECT TRANSFORM(...) USING 'command' runs a process.
+# strip_literals has already blanked the command to '' (JOIN ... USING (col) is unaffected).
+SCRIPT = re.compile(r"\busing\s*(''|\"\"|``)", re.IGNORECASE)
+# Marks a literal the scanner cannot read safely; is_read_only rejects text containing it.
+UNSAFE = "\x00"
 
 
 def strip_literals(sql: str) -> str:
@@ -26,8 +33,13 @@ def strip_literals(sql: str) -> str:
         if char in ("'", '"', "`"):
             out.append(char * 2)
             i += 1
+            closed = False
             while i < size:
                 if sql[i] == "\\":
+                    # Only string literals take backslash escapes; elsewhere the engine
+                    # may end the token here, so fail closed.
+                    if char != "'":
+                        out.append(UNSAFE)
                     i += 2
                     continue
                 if sql[i] == char:
@@ -35,8 +47,11 @@ def strip_literals(sql: str) -> str:
                         i += 2
                         continue
                     i += 1
+                    closed = True
                     break
                 i += 1
+            if not closed:
+                out.append(UNSAFE)
         elif char == "-" and nxt == "-":
             out.append(" ")
             i += 2
@@ -64,7 +79,7 @@ def is_read_only(sql: str) -> bool:
     if not text:
         return False
     probe = strip_literals(text).strip()
-    if not probe:
+    if not probe or UNSAFE in probe:
         return False
     if ";" in probe.rstrip(";"):
         return False
@@ -74,7 +89,7 @@ def is_read_only(sql: str) -> bool:
     if re.search(r"\binto\b", probe, re.IGNORECASE):
         return False
     scan = SHOW_CREATE.sub("show ", probe, count=1) if SHOW_CREATE.match(probe) else probe
-    if DML.search(scan):
+    if DML.search(scan) or SIDE_EFFECT.search(scan) or SCRIPT.search(scan):
         return False
     if re.match(r"^explain\b", probe, re.IGNORECASE) and not re.match(
         r"^explain\s+(select|with|analyze)\b", probe, re.IGNORECASE

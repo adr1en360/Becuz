@@ -51,6 +51,29 @@ class GuardTests(unittest.TestCase):
             "SHOW CREATE TABLE orders; DROP TABLE orders",
             "EXPLAIN DELETE FROM orders",
             "INSERT INTO orders VALUES (1)",
+            # Spark backtick and double-quote tokens do not use backslash escapes.
+            "SELECT `x\\` FROM t; DROP TABLE t; -- `",
+            'SELECT "x\\" FROM t; DROP TABLE t; -- "',
+            "SELECT 'unterminated; DROP TABLE t",
+            # Spark functions that call arbitrary Java or have side effects.
+            "SELECT reflect('java.lang.Runtime', 'getRuntime')",
+            "SELECT java_method('java.lang.System', 'exit', 0)",
+            "SELECT assert_true(1 = 0)",
+            "SELECT raise_error('stop')",
+            # Spark and Hive statements that write, load or run code.
+            "SELECT TRANSFORM(a) USING 'cat' AS (b) FROM t",
+            "SELECT TRANSFORM (a, b) USING \"python s.py\" FROM t",
+            "INSERT OVERWRITE DIRECTORY '/tmp/x' SELECT 1",
+            "ADD JAR '/tmp/x.jar'",
+            "ADD FILE '/tmp/x.py'",
+            "CACHE TABLE t",
+            "UNCACHE TABLE t",
+            "REFRESH TABLE t",
+            "LOAD DATA INPATH '/tmp/x' INTO TABLE t",
+            "MSCK REPAIR TABLE t",
+            "ANALYZE TABLE t COMPUTE STATISTICS",
+            "SET spark.sql.ansi.enabled=true",
+            "RESET",
         )
         for sql in cases:
             with self.subTest(sql=sql):
