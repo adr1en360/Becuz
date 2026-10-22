@@ -8,7 +8,9 @@ from pathlib import Path
 from .providers import redact
 
 
-def write(path: Path, entry: dict) -> bool:
+def write(path: Path | None, entry: dict) -> bool:
+    if path is None:
+        return False
     try:
         path.parent.mkdir(parents=True, exist_ok=True)
         record = {

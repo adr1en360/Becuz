@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import os
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+# Values that switch a log or memory path off.
+OFF = {"none", "null", "off", "false"}
 
 
 def _load_env(path: Path) -> None:
@@ -33,10 +36,22 @@ def _runtime_token() -> str:
 
 def _path(name: str, default: Path) -> Path | None:
     raw = os.getenv(name, "").strip()
-    if raw.lower() == "none":
+    if raw.lower() in OFF:
         return None
     path = Path(raw).expanduser() if raw else default
     return path if path.is_absolute() else ROOT / path
+
+
+def _int(name: str, default: int) -> int:
+    raw = os.getenv(name, "").strip()
+    if not raw:
+        return default
+    try:
+        return int(raw)
+    except ValueError:
+        # A typo in .env must not stop a judge from starting the app.
+        print(f"config: {name}={raw!r} is not a number; using {default}", file=sys.stderr)
+        return default
 
 
 def _flag(name: str, default: str = "0") -> bool:
@@ -82,8 +97,8 @@ def load() -> Config:
         trace_path=_path("TRACE_PATH", ROOT / "logs" / "trace.jsonl"),
         memory_path=_path("MEMORY_PATH", ROOT / "logs" / "memory.json"),
         sample_mode=_flag("SAMPLE_MODE"),
-        max_steps=int(os.getenv("MAX_STEPS") or 6),
+        max_steps=_int("MAX_STEPS", 6),
         agent_policy=os.getenv("AGENT_POLICY", "").strip(),
         server_host=os.getenv("SERVER_HOST", "127.0.0.1").strip(),
-        server_port=int(os.getenv("SERVER_PORT") or 8000),
+        server_port=_int("SERVER_PORT", 8000),
     )

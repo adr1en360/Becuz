@@ -63,7 +63,10 @@ def verify(ledger_path: Path, receipt_path: Path | None = None) -> int:
 
 def main() -> int:
     config = load()
-    count = verify(Path(config.ledger_path))
+    if config.ledger_path is None:
+        print("ledger disabled (LEDGER_PATH=none)")
+        return 0
+    count = verify(config.ledger_path)
     print(f"verified {count} receipt(s)")
     return 0
 

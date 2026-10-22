@@ -6,6 +6,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
+from base import ledger
 from base.config import ROOT, load
 
 
@@ -25,6 +26,42 @@ class ConfigPathTests(unittest.TestCase):
         self.assertEqual(config.trace_path, ROOT / "evidence/test-trace.jsonl")
         self.assertEqual(config.memory_path, ROOT / "evidence/test-memory.json")
         self.assertTrue(config.ledger_path.is_absolute())
+
+    def test_none_disables_a_path(self) -> None:
+        values = {"LEDGER_PATH": "none", "TRACE_PATH": "None", "MEMORY_PATH": "NONE"}
+        with patch.dict(os.environ, values, clear=False):
+            config = load()
+        self.assertIsNone(config.ledger_path)
+        self.assertIsNone(config.trace_path)
+        self.assertIsNone(config.memory_path)
+
+    def test_blank_numbers_use_defaults(self) -> None:
+        # A judge who copies .env.example and clears every value must still start.
+        with patch.dict(os.environ, {"MAX_STEPS": "", "SERVER_PORT": ""}, clear=False):
+            config = load()
+        self.assertEqual(config.max_steps, 6)
+        self.assertEqual(config.server_port, 8000)
+
+    def test_bad_numbers_use_defaults(self) -> None:
+        with patch.dict(os.environ, {"MAX_STEPS": "abc", "SERVER_PORT": "80x"}, clear=False):
+            with contextlib.redirect_stderr(None):
+                config = load()
+        self.assertEqual(config.max_steps, 6)
+        self.assertEqual(config.server_port, 8000)
+
+    def test_off_words_disable_a_path(self) -> None:
+        for word in ("null", "off", "false", "OFF"):
+            with self.subTest(word=word):
+                with patch.dict(os.environ, {"LEDGER_PATH": word}, clear=False):
+                    self.assertIsNone(load().ledger_path)
+
+
+class LedgerTests(unittest.TestCase):
+    def test_disabled_path_writes_nothing(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            with contextlib.chdir(tmp):
+                self.assertFalse(ledger.write(None, {"kind": "x"}))
+                self.assertEqual(os.listdir(tmp), [])
 
 
 if __name__ == "__main__":

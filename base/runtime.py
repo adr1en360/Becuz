@@ -9,8 +9,7 @@ from .registry import build_registry
 
 
 def build_memory(config: Config) -> Memory:
-    path = str(config.memory_path).strip()
-    if not path or path.lower() == "none":
+    if config.memory_path is None:
         return NullMemory()
     return JsonMemory(config.memory_path)
 
