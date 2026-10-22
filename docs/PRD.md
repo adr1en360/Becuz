@@ -2,7 +2,6 @@
 
 **Track:** Open Agent Hackathon 2026, Track 2: *The Agent That Can Explain Why*
 **Team:** Adrien (agent and data), tmb (UI)
-**Status:** draft. Items marked **to agree** are open.
 
 ---
 
@@ -137,7 +136,7 @@ The test for each sponsor: if we removed it, would the agent still work? It must
 
 | Sponsor | Role in Becuz |
 |---|---|
-| **Zetaris** | The data layer and the only path to the data. It runs every metric, evidence and critic query across the four sources, including the transfers-vs-bank join. |
+| **Zetaris** | The data layer, and it does real work in the agent. A **USL model** (Unified Semantic Layer) declares the shop's tables and keys once. Zetaris then computes `daily_pnl`, the profit breakdown, from the four sources, and the USL definition feeds the World Model. **Data-quality rules** run inside Zetaris. For example, a transfer sale with no matching bank credit returns the failing record IDs, which become receipts, and the critic re-runs the rules. Every metric, evidence and critic query goes through Zetaris. |
 | **Meterless Nightshift** | The app's only model provider (`127.0.0.1:8088/v1`). Every model call goes through it and gets a signed receipt in the ledger. The NVIDIA key lives in Nightshift's Providers tab, not in this project. |
 | **Meterless engines** | All four, each powering a working feature with a passing conformance test. Placement is in the table below and in `docs/diagrams/architecture.html`. |
 | **NVIDIA Nemotron** | Lighter steps run on the fast lane (Nemotron 3.5 Lightning). The critic runs on the deep lane (Nemotron 3.5 Super). Every model event logs the model that actually handled the request, so the trace shows where Nemotron did the work. We are competing for the NVIDIA Nemotron award. The routing mode is **to confirm** (§11). |
@@ -177,6 +176,7 @@ Night mode (overnight multi-attempt runs) is future work. Meterless has not publ
 
 All of these are enforced in code, not in prompts:
 
+- The agent connects to Zetaris as a **non-admin user**, so Zetaris itself blocks writes. Only the setup scripts use an admin key, to register sources, the USL and the data-quality rules.
 - Read-only SQL guard (`base/tools.py:is_read_only`) on every statement, plus an allowlist of sources and tables.
 - Templates aggregate in SQL, because Zetaris returns at most 100 rows per call.
 - A step budget (40) and a retry cap (2) for the graph.
@@ -228,10 +228,3 @@ Results are reported as measured, including any misses.
   - Solar icons: Bold for active, Outline for inactive
   - no Ciscela font
   - works at phone width
-
----
-
-## 11. Open questions
-
-1. **Nightshift routing:** do the `meterless/fast` and `meterless/deep` modes map to the Lightning and Super lanes? To confirm with a live probe.
-2. **Pass marks** in §9: to confirm.

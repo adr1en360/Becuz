@@ -87,26 +87,12 @@ uv run python server.py
 | Route | Returns |
 | --- | --- |
 | `GET /` | A browser page with a request box |
-| `GET /health` | The sample-mode flag, and whether Zetaris and Nightshift are configured |
+| `GET /health` | Whether Zetaris and Nightshift are configured |
 | `POST /ask` | `{"request": "..."}` in, the agent result and trace out |
 
 ```powershell
 curl.exe -X POST http://127.0.0.1:8000/ask -H "Content-Type: application/json" -d '{\"request\": \"SELECT 1 AS one\"}'
 ```
-
-## Sample mode
-
-Sample mode runs with an empty `.env`, no network, and Zetaris and Nightshift
-stopped.
-
-```powershell
-$env:SAMPLE_MODE="1"
-uv run python smoke.py
-uv run python run.py "SELECT 1 AS one"
-```
-
-`SAMPLE_MODE` accepts `1`, `true`, `yes` or `on`. Today it returns fixed rows
-and fixed answers, and the ledger marks those events `via=sample`.
 
 ## Configuration
 
@@ -120,7 +106,6 @@ and fixed answers, and the ledger marks those events `via=sample`.
 | `METERLESS_BASE_URL` | `http://127.0.0.1:8088/v1` | Nightshift endpoint |
 | `METERLESS_MODEL` | `meterless/auto` | Model or routing mode sent to Nightshift |
 | `METERLESS_RUNTIME_TOKEN` | read from the Nightshift token file | Override for the Nightshift token |
-| `SAMPLE_MODE` | `0` | Run without Zetaris or Nightshift |
 | `LEDGER_PATH` | `logs/ledger.jsonl` | Event ledger; `none` turns it off |
 | `TRACE_PATH` | `logs/trace.jsonl` | Agent step trace; `none` turns it off |
 | `MEMORY_PATH` | `logs/memory.json` | Local memory; `none` turns it off |
@@ -154,7 +139,7 @@ The app creates `logs/` on first write.
 error. Each line records:
 
 - `kind`: `model`, `query`, `blocked`, `error` or `model_receipt`
-- `via`: `nightshift`, `zetaris` or `sample`
+- `via`: `nightshift` or `zetaris`
 - `model`: the model that handled the request
 - `request_id`: the Nightshift request ID
 - `signed`: true when the Nightshift receipt carries a proof
@@ -187,8 +172,3 @@ The tests run offline and need no credentials.
 ```powershell
 uv run python -m unittest discover -s tests -p "test_*.py" -v
 ```
-
-## Limitations
-
-- Nightshift is the only model provider. If it is down, live model calls fail.
-- Sample mode returns fixed rows and answers.
