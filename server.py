@@ -17,7 +17,7 @@ HTML = """<!doctype html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Open Agent</title>
+  <title>Becuz</title>
   <style>
     :root {
       color-scheme: light;
@@ -107,7 +107,7 @@ HTML = """<!doctype html>
 </head>
 <body>
   <main>
-    <h1>Open Agent</h1>
+    <h1>Becuz</h1>
     <p>Scaffold UI. Replace this page when the idea is ready.</p>
     <section class="card">
       <label for="q">Request</label>
@@ -180,7 +180,6 @@ class Handler(BaseHTTPRequestHandler):
                     "providers": {
                         "zetaris": config.has_zetaris,
                         "nightshift": config.has_nightshift,
-                        "nvidia": config.has_nvidia,
                     },
                 },
             )
@@ -259,7 +258,7 @@ class AppServer(ThreadingHTTPServer):
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Open Agent scaffold server")
+    parser = argparse.ArgumentParser(description="Becuz server")
     parser.add_argument("--host")
     parser.add_argument("--port", type=int)
     args = parser.parse_args()
@@ -270,7 +269,7 @@ def main() -> int:
     port = args.port or config.server_port
     server = AppServer((host, port), agent)
 
-    print(f"Open Agent on http://{host}:{port}")
+    print(f"Becuz on http://{host}:{port}")
     if config.sample_mode:
         print("Sample mode is on: no provider calls.")
     try:

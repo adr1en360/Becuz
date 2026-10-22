@@ -15,7 +15,6 @@ class FakeAgent:
         sample_mode=True,
         has_zetaris=False,
         has_nightshift=False,
-        has_nvidia=False,
     )
 
     def __init__(self, fail: bool = False, unserializable: bool = False):

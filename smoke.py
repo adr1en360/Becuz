@@ -15,7 +15,7 @@ def main() -> int:
     checks: list[tuple[str, bool, str]] = []
 
     config_ok = config.sample_mode or (
-        config.has_zetaris and (config.has_nightshift or config.has_nvidia)
+        config.has_zetaris and config.has_nightshift
     )
     checks.append(("config", config_ok, _config_detail(config)))
 
@@ -60,7 +60,6 @@ def _config_detail(config) -> str:
     parts = [
         "zetaris=" + ("ok" if config.has_zetaris else "missing"),
         "nightshift=" + ("ok" if config.has_nightshift else "missing"),
-        "nvidia=" + ("ok" if config.has_nvidia else "missing"),
     ]
     if config.sample_mode:
         parts.append("sample=on")
