@@ -32,6 +32,8 @@ class CauseSpec:
     effect_sql: str
     records_sql: str
     falsified_if: str  # what the data would show if this cause were not real
+    table: str  # main USL table the evidence reads
+    action: str  # what the owner can do this week
 
 
 CATALOGUE = {spec.cause_id: spec for spec in (
@@ -53,6 +55,8 @@ JOIN (SELECT product_id, AVG(unit_cost_ngn) AS base_cost FROM {{usl}}.supplier_i
 WHERE i.invoice_date {WEEK} AND i.unit_cost_ngn > b.base_cost
 ORDER BY i.invoice_id LIMIT {RECORD_LIMIT}""",
         falsified_if="unit costs on this week's invoices match the baseline weeks",
+        table="supplier_invoices",
+        action="Compare prices from other suppliers for the affected product and review its shelf price.",
     ),
     CauseSpec(
         "promo_overrun", "A discount kept running after the promo ended", "net_sales", "internal", "actionable",
@@ -66,6 +70,8 @@ JOIN {{usl}}.sales s ON s.sale_id = l.sale_id JOIN {{usl}}.promos p ON p.promo_i
 WHERE CAST(s.sold_at AS DATE) {WEEK} AND CAST(s.sold_at AS DATE) > p.end_date
 ORDER BY l.line_id LIMIT {RECORD_LIMIT}""",
         falsified_if="no promo discount was given after the promo's end date",
+        table="sale_lines",
+        action="Switch off the expired promo at the till and check which staff applied it.",
     ),
     CauseSpec(
         "wastage_spike", "More stock expired or was damaged than usual", "wastage", "internal", "actionable",
@@ -78,6 +84,8 @@ FROM {{usl}}.stock_movements WHERE type IN ('expired', 'damaged')""",
 WHERE type IN ('expired', 'damaged') AND CAST(moved_at AS DATE) {WEEK}
 ORDER BY movement_id LIMIT {RECORD_LIMIT}""",
         falsified_if="this week's expired and damaged stock is no higher than a usual week",
+        table="stock_movements",
+        action="Order perishables in smaller batches and check storage for the affected items.",
     ),
     CauseSpec(
         "transfer_leakage", "Transfers recorded at the till never reached the bank", "leakage", "internal", "actionable",
@@ -88,6 +96,8 @@ WHERE bank_txn_id IS NULL AND CAST(sold_at AS DATE) {WEEK}""",
 WHERE bank_txn_id IS NULL AND CAST(sold_at AS DATE) {WEEK}
 ORDER BY sale_id LIMIT {RECORD_LIMIT}""",
         falsified_if="every transfer sale this week has a matching bank credit",
+        table="transfer_check",
+        action="Check these transfers against the bank app with the staff who recorded them.",
     ),
     CauseSpec(
         "pos_charge_rise", "The POS terminal charged a higher fee", "opex", "external", "actionable",
@@ -103,6 +113,8 @@ FROM {{usl}}.bank_statement""",
 WHERE channel = 'charge' AND CAST(posted_at AS DATE) {WEEK}
 ORDER BY txn_id LIMIT {RECORD_LIMIT}""",
         falsified_if="the charge rate this week matches the baseline rate",
+        table="bank_statement",
+        action="Ask the POS provider to explain the fee change.",
     ),
     CauseSpec(
         "sales_volume_drop", "Fewer items sold than in a usual week", "net_sales", "external", "temporary",
@@ -126,6 +138,8 @@ LEFT JOIN (SELECT l.product_id, SUM(l.qty) AS qty FROM {{usl}}.sale_lines l JOIN
 WHERE COALESCE(f.qty, 0) < COALESCE(b.qty, 0) / {BASELINE_WEEKS}
 ORDER BY p.product_id LIMIT {RECORD_LIMIT}""",
         falsified_if="this week's units sold are at or above a usual week",
+        table="sale_lines",
+        action="Check stock levels and opening hours for the products that sold less.",
     ),
 )}
 
@@ -151,4 +165,5 @@ def measure(wh: Warehouse, cause_id: str, start: date, end: date) -> Measurement
     records_sql = render(spec.records_sql, wh.usl, start, end)
     effect = wh.query(effect_sql)[0]["effect_ngn"]
     rows = [str(r["record_id"]) for r in wh.query(records_sql)]
-    return Measurement(cause_id, None if effect is None else float(effect), rows, effect_sql, records_sql)
+    # + 0.0 turns -0.0 into 0.0 so a zero effect never prints as "-0".
+    return Measurement(cause_id, None if effect is None else float(effect) + 0.0, rows, effect_sql, records_sql)
