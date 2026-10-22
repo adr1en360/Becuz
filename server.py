@@ -266,7 +266,7 @@ def main() -> int:
     config = load()
     agent = build_agent(config)
     host = args.host or config.server_host
-    port = args.port or config.server_port
+    port = config.server_port if args.port is None else args.port
     server = AppServer((host, port), agent)
 
     print(f"Becuz on http://{host}:{port}")

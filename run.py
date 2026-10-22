@@ -9,7 +9,7 @@ from base.runtime import build_agent
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Open Agent scaffold")
+    parser = argparse.ArgumentParser(description="Becuz")
     parser.add_argument("request", nargs="*")
     parser.add_argument("--sql")
     parser.add_argument("--full", action="store_true", help="print the full query response")
