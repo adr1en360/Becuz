@@ -1,1 +1,74 @@
 @import "tailwindcss";
+
+@theme {
+  --color-ink: #14213d;
+  --color-paper: #f7f5ef;
+  --color-field: #fcfbf8;
+  --color-accent: #c2410c;
+  --color-muted: #4a5468;
+  --color-rule: rgb(20 33 61 / 0.16);
+  --color-rule-strong: rgb(20 33 61 / 0.34);
+  --color-disabled: #e4e0d4;
+  --color-disabled-text: #5f6678;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(20 33 61 / 0.3) transparent;
+  }
+
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-feature-settings: "cv11", "ss03";
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-paper);
+  }
+
+  textarea,
+  input {
+    caret-color: var(--color-accent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+}
+
+/* The report outline draws its ruled lines in once, like a ledger being ruled. */
+.ledger-row::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: var(--color-rule-strong);
+  transform-origin: left;
+  animation: rule-in 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
+
+@keyframes rule-in {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ledger-row::before {
+    animation: none;
+  }
+}
+
+/* Tabular figures only where numbers line up; in running text they widen hyphens. */
+.num {
+  font-variant-numeric: tabular-nums;
+}
