@@ -65,6 +65,10 @@ class LocalWarehouseTests(unittest.TestCase):
         with self.assertRaises(ValueError):  # not a 7-day week
             profit_tree(self.wh, FINAL[0], date(2026, 10, 14))
 
+    def test_a_week_without_data_fails_instead_of_reading_zero(self) -> None:
+        with self.assertRaises(ValueError):
+            profit_tree(self.wh, date(2027, 1, 4), date(2027, 1, 10))
+
     def test_unknown_scenario_fails_clearly(self) -> None:
         with self.assertRaises(QueryError):
             LocalWarehouse("s99")

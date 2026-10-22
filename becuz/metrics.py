@@ -32,6 +32,8 @@ def week(start: date, end: date) -> tuple[date, date]:
 def period_totals(wh: Warehouse, start: date, end: date, weeks: int) -> dict:
     sql = PERIOD_TOTALS.format(usl=wh.usl, start=start.isoformat(), end=end.isoformat(), weeks=int(weeks))
     row = wh.query(sql)[0]
+    if row["profit_ngn"] is None:  # no shop data at all, which must not read as zero profit
+        raise ValueError(f"no shop data between {start} and {end}")
     return {c: float(row[c] or 0) for c in COMPONENTS}
 
 

@@ -44,7 +44,7 @@ class Headline(Model):
     current_ngn: float
     baseline_ngn: float
     change_ngn: float = Field(description="current_ngn - baseline_ngn")
-    change_pct: float
+    change_pct: float | None = Field(description="None when the baseline profit is zero")
     direction: Literal["down", "up", "flat"]
 
 

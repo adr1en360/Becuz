@@ -38,7 +38,7 @@ CATALOGUE = {spec.cause_id: spec for spec in (
     CauseSpec(
         "supplier_cost_rise", "A supplier raised the unit cost of a product", "cogs", "external", "actionable",
         ("books_files", "pos_files"),
-        effect_sql=f"""SELECT ROUND(-SUM(q.qty * (c.final_cost - c.base_cost)), 2) AS effect_ngn
+        effect_sql=f"""SELECT ROUND(-COALESCE(SUM(q.qty * (c.final_cost - c.base_cost)), 0), 2) AS effect_ngn
 FROM (SELECT product_id,
              AVG(CASE WHEN invoice_date {WEEK} THEN unit_cost_ngn END) AS final_cost,
              AVG(CASE WHEN invoice_date {BASE} THEN unit_cost_ngn END) AS base_cost
@@ -133,7 +133,7 @@ ORDER BY p.product_id LIMIT {RECORD_LIMIT}""",
 @dataclass(frozen=True)
 class Measurement:
     cause_id: str
-    effect_ngn: float
+    effect_ngn: float | None  # None when the data can't measure the cause: not tested, not zero
     row_ids: list[str]
     effect_sql: str
     records_sql: str
@@ -151,4 +151,4 @@ def measure(wh: Warehouse, cause_id: str, start: date, end: date) -> Measurement
     records_sql = render(spec.records_sql, wh.usl, start, end)
     effect = wh.query(effect_sql)[0]["effect_ngn"]
     rows = [str(r["record_id"]) for r in wh.query(records_sql)]
-    return Measurement(cause_id, float(effect or 0), rows, effect_sql, records_sql)
+    return Measurement(cause_id, None if effect is None else float(effect), rows, effect_sql, records_sql)
