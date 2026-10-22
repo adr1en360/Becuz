@@ -29,7 +29,7 @@ class UslTests(unittest.TestCase):
             cls.db.execute(f"CREATE SCHEMA {source}")
             for table in tables:
                 path = (S01 / f"{table}.csv").as_posix()
-                cls.db.execute(f"CREATE VIEW {source}.{table} AS SELECT * FROM read_csv_auto('{path}')")
+                cls.db.execute(f"CREATE TABLE {source}.{table} AS SELECT * FROM read_csv_auto('{path}')")
 
     @classmethod
     def tearDownClass(cls) -> None:

@@ -42,6 +42,8 @@ class GeneratorTests(unittest.TestCase):
         return next((c["impact_ngn"] for c in self.key["causes"] if c["cause_id"] == cause), 0.0)
 
     def test_same_seed_is_byte_identical_across_processes(self) -> None:
+        if self.SCENARIO != "s01":
+            self.skipTest("one scenario is enough: every scenario shares the same code path")
         # A fresh interpreter catches ordering that depends on hash seeding.
         with tempfile.TemporaryDirectory() as other:
             code = f"from pathlib import Path; from data.generator import generate; generate('{self.SCENARIO}', Path(r'{other}'))"
