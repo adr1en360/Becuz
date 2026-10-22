@@ -16,11 +16,15 @@ BASELINE = ("2026-09-14", "2026-10-11")
 
 
 class GeneratorTests(unittest.TestCase):
+    """Checks one scenario; subclasses below repeat every check for the other scenarios."""
+
+    SCENARIO = "s01"
+
     @classmethod
     def setUpClass(cls) -> None:
         cls.tmp = tempfile.TemporaryDirectory()
-        cls.out = Path(cls.tmp.name) / "s01"
-        cls.key = generate("s01", cls.out)
+        cls.out = Path(cls.tmp.name) / cls.SCENARIO
+        cls.key = generate(cls.SCENARIO, cls.out)
         cls.db = duckdb.connect()
         for csv in cls.out.glob("*.csv"):
             cls.db.execute(f"CREATE VIEW {csv.stem} AS SELECT * FROM read_csv_auto('{csv.as_posix()}', all_varchar=true)")
@@ -34,12 +38,13 @@ class GeneratorTests(unittest.TestCase):
         return float(self.db.execute(sql).fetchone()[0] or 0)
 
     def impact(self, cause: str) -> float:
-        return next(c["impact_ngn"] for c in self.key["causes"] if c["cause_id"] == cause)
+        # A cause that was not planted must measure as zero.
+        return next((c["impact_ngn"] for c in self.key["causes"] if c["cause_id"] == cause), 0.0)
 
     def test_same_seed_is_byte_identical_across_processes(self) -> None:
         # A fresh interpreter catches ordering that depends on hash seeding.
         with tempfile.TemporaryDirectory() as other:
-            code = f"from pathlib import Path; from data.generator import generate; generate('s01', Path(r'{other}'))"
+            code = f"from pathlib import Path; from data.generator import generate; generate('{self.SCENARIO}', Path(r'{other}'))"
             subprocess.run([sys.executable, "-c", code], check=True, cwd=ROOT.parent.parent)
             for path in self.out.iterdir():
                 self.assertEqual(path.read_bytes(), (Path(other) / path.name).read_bytes(), path.name)
@@ -77,9 +82,10 @@ class GeneratorTests(unittest.TestCase):
             WHERE s.payment_method = 'transfer' AND b.txn_id IS NULL ORDER BY s.sale_id""").fetchall()
         self.assertEqual([sale for sale, _ in unmatched], self.key["leaked_sale_ids"])
         self.assertAlmostEqual(-sum(net for _, net in unmatched), self.impact("transfer_leakage"), delta=1)
-        staff = self.db.execute(f"""SELECT DISTINCT staff_id FROM sales
-            WHERE sale_id IN ({','.join(repr(s) for s in self.key['leaked_sale_ids'])})""").fetchall()
-        self.assertEqual(staff, [("ST01",)])
+        if self.key["leaked_sale_ids"]:
+            staff = self.db.execute(f"""SELECT DISTINCT staff_id FROM sales
+                WHERE sale_id IN ({','.join(repr(s) for s in self.key['leaked_sale_ids'])})""").fetchall()
+            self.assertEqual(staff, [("ST01",)])
 
     def test_pos_charges_are_flat(self) -> None:
         rates = self.db.execute("""
@@ -87,13 +93,40 @@ class GeneratorTests(unittest.TestCase):
                        / SUM(CASE WHEN channel = 'pos_settlement' THEN CAST(amount_ngn AS DOUBLE) END), 4)
             FROM bank_statement WHERE ref LIKE 'POS-%' GROUP BY ref""").fetchall()
         self.assertEqual({rate for (rate,) in rates}, {0.005})
-        self.assertEqual(self.key["red_herrings"], ["pos_charge_rise"])
+        self.assertIn("pos_charge_rise", self.key["red_herrings"])
 
     def test_causes_are_ranked_by_impact(self) -> None:
         impacts = [c["impact_ngn"] for c in self.key["causes"]]
         self.assertEqual(impacts, sorted(impacts))
         self.assertTrue(all(i < 0 for i in impacts))
         self.assertTrue(json.loads((self.out / "answer_key.json").read_text())["synthetic"])
+
+
+class S02Tests(GeneratorTests):
+    SCENARIO = "s02"
+
+
+class S03Tests(GeneratorTests):
+    SCENARIO = "s03"
+
+
+class S04Tests(GeneratorTests):
+    SCENARIO = "s04"
+
+    def test_sales_did_not_fall(self) -> None:
+        # The planted red herring: "sales fell" must be false in this week.
+        total = "SELECT SUM(CAST(net_ngn AS DOUBLE)) FROM sales WHERE CAST(sold_at AS DATE) BETWEEN"
+        final = self.scalar(f"{total} '{FINAL[0]}' AND '{FINAL[1]}'")
+        base = self.scalar(f"{total} '{BASELINE[0]}' AND '{BASELINE[1]}'") / 4
+        self.assertGreaterEqual(final, base)
+        self.assertIn("sales_volume_drop", self.key["red_herrings"])
+
+
+class S05Tests(GeneratorTests):
+    SCENARIO = "s05"
+
+    def test_nothing_is_planted(self) -> None:
+        self.assertEqual(self.key["causes"], [])
 
 
 if __name__ == "__main__":

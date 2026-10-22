@@ -1,0 +1,29 @@
+{
+  "scenario": "s03",
+  "synthetic": true,
+  "final_week": {
+    "start": "2026-10-12",
+    "end": "2026-10-18"
+  },
+  "baseline_weeks": {
+    "start": "2026-09-14",
+    "end": "2026-10-11"
+  },
+  "causes": [
+    {
+      "cause_id": "wastage_spike",
+      "impact_ngn": -39832.0,
+      "rank": 1
+    },
+    {
+      "cause_id": "promo_overrun",
+      "impact_ngn": -18900.0,
+      "rank": 2
+    }
+  ],
+  "red_herrings": [
+    "pos_charge_rise"
+  ],
+  "leaked_sale_ids": [],
+  "tolerance_pct": 10
+}
