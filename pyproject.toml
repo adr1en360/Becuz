@@ -4,5 +4,7 @@ version = "0.1.0"
 description = "Becuz: an agent that explains why a small shop's profit moved, with a receipt for every claim."
 requires-python = ">=3.12"
 dependencies = [
+    "duckdb==1.5.6",
     "langgraph>=1.2.16",
+    "sqlglot==30.21.0",
 ]
