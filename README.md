@@ -7,7 +7,7 @@ Nightshift is the primary AI provider. A direct NVIDIA call is the fallback. The
 
 ## Agent connection
 
-Cursor, OpenCode, and Codex read `AGENTS.md`. Claude Code reads `CLAUDE.md`,
+OpenCode and Codex read `AGENTS.md`. Claude Code reads `CLAUDE.md`,
 which imports `AGENTS.md`. Zetaris connection details, the preflight, and the
 starter prompt are in `ZETARIS-CONNECTION.md`. Live values belong in `.env`.
 

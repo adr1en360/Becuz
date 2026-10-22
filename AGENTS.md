@@ -1,7 +1,7 @@
 # Agent instructions — Becuz
 
-This folder is the agent repository. Cursor, OpenCode, Codex, and other agents
-that read `AGENTS.md` start here. Claude Code reads `CLAUDE.md`, which imports
+This folder is the agent repository. OpenCode, Codex, and other agents that
+read `AGENTS.md` start here. Claude Code reads `CLAUDE.md`, which imports
 this file.
 
 ## Read first

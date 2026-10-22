@@ -141,7 +141,6 @@ The test for each sponsor: if we removed it, would the agent still work? It must
 | **Meterless Nightshift** | The primary model provider (`127.0.0.1:8088/v1`). Every model call is routed through it and gets a signed receipt in the ledger. Calling NVIDIA directly is a fallback only. |
 | **Meterless engines** | Scout Intent, H-MEM, World Model and Markovian. **Placement to agree** (see §11). |
 | **NVIDIA Nemotron** | Lighter steps run on the fast lane (Nemotron 3.5 Lightning). The critic runs on the deep lane (Nemotron 3.5 Super). The routing mode is **to confirm** (§11). |
-| **Cursor** | The development environment. Usage notes are kept for the submission. |
 
 ---
 

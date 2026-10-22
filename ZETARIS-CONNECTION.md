@@ -1,6 +1,6 @@
 # Zetaris connection guide — Becuz
 
-How Cursor, OpenCode, Codex, and Claude Code connect to the Zetaris AWS
+How Claude Code, OpenCode, and Codex connect to the Zetaris AWS
 instance from this agent repository.
 
 This file contains **no credentials**. The live values are in `.env`, which is
@@ -9,7 +9,7 @@ commit.
 
 ## Quick start
 
-1. Open `Becuz/` as the workspace in Cursor, Claude Code, or OpenCode/Codex.
+1. Open `Becuz/` as the workspace in Claude Code or OpenCode/Codex.
 2. The agent reads `AGENTS.md` (Claude Code reads `CLAUDE.md`, which imports
    `AGENTS.md`).
 3. The agent reads this file and uses the values in `.env`.
@@ -188,7 +188,7 @@ API base ending in `/api/v1.0`). This repository uses direct REST.
 
 ## Starter prompt
 
-Copy this into Cursor, Claude Code, or OpenCode/Codex:
+Copy this into Claude Code or OpenCode/Codex:
 
 ```text
 Read AGENTS.md and ZETARIS-CONNECTION.md and follow them.
@@ -209,14 +209,6 @@ Start read-only. Do not create, drop, grant, or write anything without my
 explicit go-ahead.
 ```
 
-## Cursor
-
-1. Open `Becuz/` as the Cursor workspace.
-2. Allow the terminal to run the commands in `AGENTS.md`.
-3. Paste the starter prompt.
-4. Cursor reads `AGENTS.md`; no extension or MCP server is needed for the REST
-   route. The existing `.cursorrules` also points to these rules.
-
 ## Claude Code
 
 1. Open `Becuz/` in Claude Code.
@@ -234,7 +226,6 @@ explicit go-ahead.
 - Getting-started repository: <https://github.com/zetaris/getting-started>
 - Connection index: <https://github.com/zetaris/getting-started/blob/main/docs/connections/README.md>
 - Client setup (REST and JDBC): <https://github.com/zetaris/getting-started/blob/main/docs/connections/client-setup.md>
-- Cursor: <https://github.com/zetaris/getting-started/blob/main/docs/connections/cursor-connection.md>
 - Codex: <https://github.com/zetaris/getting-started/blob/main/docs/connections/codex-connection.md>
 - Claude Code: <https://github.com/zetaris/getting-started/blob/main/docs/connections/claude-code-connection.md>
 - Preflight script: <https://github.com/zetaris/getting-started/blob/main/scripts/preflight.py>
