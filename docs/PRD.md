@@ -139,7 +139,7 @@ The test for each sponsor: if we removed it, would the agent still work? It must
 |---|---|
 | **Zetaris** | The data layer and the only path to the data. It runs every metric, evidence and critic query across the four sources, including the transfers-vs-bank join. |
 | **Meterless Nightshift** | The app's only model provider (`127.0.0.1:8088/v1`). Every model call goes through it and gets a signed receipt in the ledger. The NVIDIA key lives in Nightshift's Providers tab, not in this project. |
-| **Meterless engines** | All four, each powering a working feature with a passing conformance test. Placement is in the table below and in `docs/diagrams/engine-placement-proposed.html`. |
+| **Meterless engines** | All four, each powering a working feature with a passing conformance test. Placement is in the table below and in `docs/diagrams/architecture.html`. |
 | **NVIDIA Nemotron** | Lighter steps run on the fast lane (Nemotron 3.5 Lightning). The critic runs on the deep lane (Nemotron 3.5 Super). Every model event logs the model that actually handled the request, so the trace shows where Nemotron did the work. We are competing for the NVIDIA Nemotron award. The routing mode is **to confirm** (§11). |
 
 ### Meterless engine placement (agreed)
@@ -213,6 +213,7 @@ Results are reported as measured, including any misses.
 ## 10. UI brief (tmb)
 
 - A Next.js app in `web/`. It reads only the Investigation JSON from `POST /run`, or a **real saved output** from `output_examples/`. No mock data.
+- **UI library:** [OpenUI by Thesys](https://github.com/thesysdev/openui), a generative UI library. Its components render the Investigation JSON, so tmb doesn't need to hand-build each component.
 - **Screens:**
   - the question
   - the decomposition tree
