@@ -1,0 +1,599 @@
+{
+  "$defs": {
+    "Cause": {
+      "additionalProperties": false,
+      "properties": {
+        "cause_id": {
+          "title": "Cause Id",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "open",
+            "supported",
+            "rejected"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "impact_ngn": {
+          "description": "Effect on profit this week; negative is a loss",
+          "title": "Impact Ngn",
+          "type": "number"
+        },
+        "share_of_drop_pct": {
+          "title": "Share Of Drop Pct",
+          "type": "number"
+        },
+        "rank": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Set for supported causes, 1 = largest",
+          "title": "Rank"
+        },
+        "origin": {
+          "enum": [
+            "internal",
+            "external"
+          ],
+          "title": "Origin",
+          "type": "string"
+        },
+        "nature": {
+          "enum": [
+            "actionable",
+            "temporary"
+          ],
+          "title": "Nature",
+          "type": "string"
+        },
+        "confidence": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/Evidence"
+          },
+          "title": "Evidence",
+          "type": "array"
+        },
+        "falsified_by": {
+          "description": "Tests that could have disproved this cause, and what each found",
+          "items": {
+            "type": "string"
+          },
+          "title": "Falsified By",
+          "type": "array"
+        },
+        "counterfactual_ngn": {
+          "description": "This week's profit if this cause had not happened",
+          "title": "Counterfactual Ngn",
+          "type": "number"
+        },
+        "depends_on_sources": {
+          "description": "Zetaris sources the claim relies on, e.g. pos_files, bank_files",
+          "items": {
+            "type": "string"
+          },
+          "title": "Depends On Sources",
+          "type": "array"
+        },
+        "retries": {
+          "default": 0,
+          "title": "Retries",
+          "type": "integer"
+        },
+        "recommendation": {
+          "default": "",
+          "title": "Recommendation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "cause_id",
+        "title",
+        "status",
+        "impact_ngn",
+        "share_of_drop_pct",
+        "origin",
+        "nature",
+        "confidence",
+        "evidence",
+        "falsified_by",
+        "counterfactual_ngn",
+        "depends_on_sources"
+      ],
+      "title": "Cause",
+      "type": "object"
+    },
+    "Check": {
+      "additionalProperties": false,
+      "description": "The Checker's independent re-run of an evidence query.",
+      "properties": {
+        "match": {
+          "title": "Match",
+          "type": "boolean"
+        },
+        "rerun_value_ngn": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rerun Value Ngn"
+        },
+        "note": {
+          "default": "",
+          "title": "Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "match"
+      ],
+      "title": "Check",
+      "type": "object"
+    },
+    "Convergence": {
+      "additionalProperties": false,
+      "properties": {
+        "explained_ngn": {
+          "title": "Explained Ngn",
+          "type": "number"
+        },
+        "explained_pct": {
+          "title": "Explained Pct",
+          "type": "number"
+        },
+        "unexplained_ngn": {
+          "title": "Unexplained Ngn",
+          "type": "number"
+        }
+      },
+      "required": [
+        "explained_ngn",
+        "explained_pct",
+        "unexplained_ngn"
+      ],
+      "title": "Convergence",
+      "type": "object"
+    },
+    "Evidence": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_id": {
+          "title": "Evidence Id",
+          "type": "string"
+        },
+        "source": {
+          "description": "USL table the query read, e.g. becuz.supplier_invoices",
+          "title": "Source",
+          "type": "string"
+        },
+        "sql": {
+          "title": "Sql",
+          "type": "string"
+        },
+        "row_ids": {
+          "description": "Record IDs behind the number; a claim without them is rejected",
+          "items": {
+            "type": "string"
+          },
+          "title": "Row Ids",
+          "type": "array"
+        },
+        "value_ngn": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value Ngn"
+        },
+        "summary": {
+          "title": "Summary",
+          "type": "string"
+        },
+        "check": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Check"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "evidence_id",
+        "source",
+        "sql",
+        "row_ids",
+        "summary"
+      ],
+      "title": "Evidence",
+      "type": "object"
+    },
+    "Frame": {
+      "additionalProperties": false,
+      "properties": {
+        "question": {
+          "title": "Question",
+          "type": "string"
+        },
+        "metric": {
+          "const": "profit",
+          "default": "profit",
+          "title": "Metric",
+          "type": "string"
+        },
+        "period_start": {
+          "format": "date",
+          "title": "Period Start",
+          "type": "string"
+        },
+        "period_end": {
+          "format": "date",
+          "title": "Period End",
+          "type": "string"
+        },
+        "baseline_start": {
+          "format": "date",
+          "title": "Baseline Start",
+          "type": "string"
+        },
+        "baseline_end": {
+          "format": "date",
+          "title": "Baseline End",
+          "type": "string"
+        }
+      },
+      "required": [
+        "question",
+        "period_start",
+        "period_end",
+        "baseline_start",
+        "baseline_end"
+      ],
+      "title": "Frame",
+      "type": "object"
+    },
+    "Headline": {
+      "additionalProperties": false,
+      "properties": {
+        "current_ngn": {
+          "title": "Current Ngn",
+          "type": "number"
+        },
+        "baseline_ngn": {
+          "title": "Baseline Ngn",
+          "type": "number"
+        },
+        "change_ngn": {
+          "title": "Change Ngn",
+          "type": "number"
+        },
+        "change_pct": {
+          "title": "Change Pct",
+          "type": "number"
+        }
+      },
+      "required": [
+        "current_ngn",
+        "baseline_ngn",
+        "change_ngn",
+        "change_pct"
+      ],
+      "title": "Headline",
+      "type": "object"
+    },
+    "OwnerQuestion": {
+      "additionalProperties": false,
+      "properties": {
+        "cause_id": {
+          "title": "Cause Id",
+          "type": "string"
+        },
+        "question": {
+          "title": "Question",
+          "type": "string"
+        }
+      },
+      "required": [
+        "cause_id",
+        "question"
+      ],
+      "title": "OwnerQuestion",
+      "type": "object"
+    },
+    "RuledOut": {
+      "additionalProperties": false,
+      "properties": {
+        "cause_id": {
+          "title": "Cause Id",
+          "type": "string"
+        },
+        "hypothesis": {
+          "title": "Hypothesis",
+          "type": "string"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "evidence_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Evidence Id"
+        }
+      },
+      "required": [
+        "cause_id",
+        "hypothesis",
+        "reason"
+      ],
+      "title": "RuledOut",
+      "type": "object"
+    },
+    "Stats": {
+      "additionalProperties": false,
+      "properties": {
+        "duration_s": {
+          "title": "Duration S",
+          "type": "number"
+        },
+        "zetaris_queries": {
+          "title": "Zetaris Queries",
+          "type": "integer"
+        },
+        "model_calls": {
+          "title": "Model Calls",
+          "type": "integer"
+        },
+        "retries": {
+          "title": "Retries",
+          "type": "integer"
+        },
+        "models": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "description": "Model name -> number of requests it handled",
+          "title": "Models",
+          "type": "object"
+        },
+        "via": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "description": "Route -> count, e.g. nightshift, zetaris, local, sample-rules",
+          "title": "Via",
+          "type": "object"
+        }
+      },
+      "required": [
+        "duration_s",
+        "zetaris_queries",
+        "model_calls",
+        "retries",
+        "models",
+        "via"
+      ],
+      "title": "Stats",
+      "type": "object"
+    },
+    "Summary": {
+      "additionalProperties": false,
+      "properties": {
+        "what_happened": {
+          "title": "What Happened",
+          "type": "string"
+        },
+        "why": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Why",
+          "type": "array"
+        },
+        "what_to_do": {
+          "items": {
+            "type": "string"
+          },
+          "title": "What To Do",
+          "type": "array"
+        }
+      },
+      "required": [
+        "what_happened",
+        "why",
+        "what_to_do"
+      ],
+      "title": "Summary",
+      "type": "object"
+    },
+    "TreeNode": {
+      "additionalProperties": false,
+      "properties": {
+        "component": {
+          "enum": [
+            "net_sales",
+            "cogs",
+            "wastage",
+            "opex",
+            "leakage"
+          ],
+          "title": "Component",
+          "type": "string"
+        },
+        "current_ngn": {
+          "title": "Current Ngn",
+          "type": "number"
+        },
+        "baseline_ngn": {
+          "title": "Baseline Ngn",
+          "type": "number"
+        },
+        "change_ngn": {
+          "title": "Change Ngn",
+          "type": "number"
+        },
+        "share_of_change_pct": {
+          "description": "This component's share of the profit change",
+          "title": "Share Of Change Pct",
+          "type": "number"
+        },
+        "status": {
+          "enum": [
+            "explained",
+            "partly_explained",
+            "unexplained",
+            "no_change"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "component",
+        "current_ngn",
+        "baseline_ngn",
+        "change_ngn",
+        "share_of_change_pct",
+        "status"
+      ],
+      "title": "TreeNode",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "run_id": {
+      "title": "Run Id",
+      "type": "string"
+    },
+    "mode": {
+      "enum": [
+        "live",
+        "sample"
+      ],
+      "title": "Mode",
+      "type": "string"
+    },
+    "scenario": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Synthetic scenario id, e.g. s01",
+      "title": "Scenario"
+    },
+    "frame": {
+      "$ref": "#/$defs/Frame"
+    },
+    "headline": {
+      "$ref": "#/$defs/Headline"
+    },
+    "tree": {
+      "items": {
+        "$ref": "#/$defs/TreeNode"
+      },
+      "title": "Tree",
+      "type": "array"
+    },
+    "causes": {
+      "items": {
+        "$ref": "#/$defs/Cause"
+      },
+      "title": "Causes",
+      "type": "array"
+    },
+    "ruled_out": {
+      "items": {
+        "$ref": "#/$defs/RuledOut"
+      },
+      "title": "Ruled Out",
+      "type": "array"
+    },
+    "convergence": {
+      "$ref": "#/$defs/Convergence"
+    },
+    "summary": {
+      "$ref": "#/$defs/Summary"
+    },
+    "owner_questions": {
+      "items": {
+        "$ref": "#/$defs/OwnerQuestion"
+      },
+      "title": "Owner Questions",
+      "type": "array"
+    },
+    "limitations": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Limitations",
+      "type": "array"
+    },
+    "stats": {
+      "$ref": "#/$defs/Stats"
+    },
+    "trace_file": {
+      "title": "Trace File",
+      "type": "string"
+    }
+  },
+  "required": [
+    "run_id",
+    "mode",
+    "frame",
+    "headline",
+    "tree",
+    "causes",
+    "ruled_out",
+    "convergence",
+    "summary",
+    "owner_questions",
+    "limitations",
+    "stats",
+    "trace_file"
+  ],
+  "title": "Investigation",
+  "type": "object"
+}
