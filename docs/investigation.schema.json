@@ -1,7 +1,27 @@
 {
   "$defs": {
+    "Action": {
+      "additionalProperties": false,
+      "properties": {
+        "cause_id": {
+          "title": "Cause Id",
+          "type": "string"
+        },
+        "action": {
+          "title": "Action",
+          "type": "string"
+        }
+      },
+      "required": [
+        "cause_id",
+        "action"
+      ],
+      "title": "Action",
+      "type": "object"
+    },
     "Cause": {
       "additionalProperties": false,
+      "description": "A supported cause. Rejected or unverified hypotheses go to ruled_out instead.",
       "properties": {
         "cause_id": {
           "title": "Cause Id",
@@ -12,12 +32,21 @@
           "type": "string"
         },
         "status": {
-          "enum": [
-            "open",
-            "supported",
-            "rejected"
-          ],
+          "const": "supported",
+          "default": "supported",
           "title": "Status",
+          "type": "string"
+        },
+        "component": {
+          "description": "The tree node this cause explains",
+          "enum": [
+            "net_sales",
+            "cogs",
+            "wastage",
+            "opex",
+            "leakage"
+          ],
+          "title": "Component",
           "type": "string"
         },
         "impact_ngn": {
@@ -25,22 +54,20 @@
           "title": "Impact Ngn",
           "type": "number"
         },
-        "share_of_drop_pct": {
-          "title": "Share Of Drop Pct",
+        "impact_evidence_id": {
+          "description": "Evidence row whose value_ngn is the impact",
+          "title": "Impact Evidence Id",
+          "type": "string"
+        },
+        "share_of_change_pct": {
+          "title": "Share Of Change Pct",
           "type": "number"
         },
         "rank": {
-          "anyOf": [
-            {
-              "type": "integer"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Set for supported causes, 1 = largest",
-          "title": "Rank"
+          "description": "1 = largest effect",
+          "minimum": 1,
+          "title": "Rank",
+          "type": "integer"
         },
         "origin": {
           "enum": [
@@ -68,25 +95,31 @@
           "items": {
             "$ref": "#/$defs/Evidence"
           },
+          "minItems": 1,
           "title": "Evidence",
           "type": "array"
         },
         "falsified_by": {
-          "description": "Tests that could have disproved this cause, and what each found",
           "items": {
-            "type": "string"
+            "$ref": "#/$defs/FalsificationTest"
           },
           "title": "Falsified By",
           "type": "array"
         },
         "counterfactual_ngn": {
-          "description": "This week's profit if this cause had not happened",
+          "description": "This week's profit without this cause: headline.current_ngn - impact_ngn",
           "title": "Counterfactual Ngn",
           "type": "number"
         },
         "depends_on_sources": {
-          "description": "Zetaris sources the claim relies on, e.g. pos_files, bank_files",
+          "description": "Zetaris sources the evidence read",
           "items": {
+            "enum": [
+              "pos_files",
+              "bank_files",
+              "books_files",
+              "context_files"
+            ],
             "type": "string"
           },
           "title": "Depends On Sources",
@@ -96,19 +129,16 @@
           "default": 0,
           "title": "Retries",
           "type": "integer"
-        },
-        "recommendation": {
-          "default": "",
-          "title": "Recommendation",
-          "type": "string"
         }
       },
       "required": [
         "cause_id",
         "title",
-        "status",
+        "component",
         "impact_ngn",
-        "share_of_drop_pct",
+        "impact_evidence_id",
+        "share_of_change_pct",
+        "rank",
         "origin",
         "nature",
         "confidence",
@@ -122,7 +152,7 @@
     },
     "Check": {
       "additionalProperties": false,
-      "description": "The Checker's independent re-run of an evidence query.",
+      "description": "The Checker's independent re-run of an evidence query, and its verdict.",
       "properties": {
         "match": {
           "title": "Match",
@@ -144,10 +174,34 @@
           "default": "",
           "title": "Note",
           "type": "string"
+        },
+        "model": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Model that judged the evidence, as reported by Nightshift",
+          "title": "Model"
+        },
+        "via": {
+          "description": "nightshift or sample-rules",
+          "title": "Via",
+          "type": "string"
+        },
+        "signed": {
+          "default": false,
+          "title": "Signed",
+          "type": "boolean"
         }
       },
       "required": [
-        "match"
+        "match",
+        "via"
       ],
       "title": "Check",
       "type": "object"
@@ -156,6 +210,7 @@
       "additionalProperties": false,
       "properties": {
         "explained_ngn": {
+          "description": "Sum of supported causes' impact_ngn",
           "title": "Explained Ngn",
           "type": "number"
         },
@@ -164,6 +219,7 @@
           "type": "number"
         },
         "unexplained_ngn": {
+          "description": "headline.change_ngn - explained_ngn",
           "title": "Unexplained Ngn",
           "type": "number"
         }
@@ -183,9 +239,9 @@
           "title": "Evidence Id",
           "type": "string"
         },
-        "source": {
+        "table": {
           "description": "USL table the query read, e.g. becuz.supplier_invoices",
-          "title": "Source",
+          "title": "Table",
           "type": "string"
         },
         "sql": {
@@ -193,7 +249,7 @@
           "type": "string"
         },
         "row_ids": {
-          "description": "Record IDs behind the number; a claim without them is rejected",
+          "description": "Record IDs behind the number",
           "items": {
             "type": "string"
           },
@@ -216,6 +272,14 @@
           "title": "Summary",
           "type": "string"
         },
+        "via": {
+          "enum": [
+            "zetaris",
+            "local"
+          ],
+          "title": "Via",
+          "type": "string"
+        },
         "check": {
           "anyOf": [
             {
@@ -230,12 +294,39 @@
       },
       "required": [
         "evidence_id",
-        "source",
+        "table",
         "sql",
         "row_ids",
-        "summary"
+        "summary",
+        "via"
       ],
       "title": "Evidence",
+      "type": "object"
+    },
+    "FalsificationTest": {
+      "additionalProperties": false,
+      "properties": {
+        "test": {
+          "description": "What would have disproved the cause, e.g. 'unit cost flat across the baseline weeks'",
+          "title": "Test",
+          "type": "string"
+        },
+        "evidence_id": {
+          "title": "Evidence Id",
+          "type": "string"
+        },
+        "survived": {
+          "description": "True if the cause survived the test",
+          "title": "Survived",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "test",
+        "evidence_id",
+        "survived"
+      ],
+      "title": "FalsificationTest",
       "type": "object"
     },
     "Frame": {
@@ -294,19 +385,30 @@
           "type": "number"
         },
         "change_ngn": {
+          "description": "current_ngn - baseline_ngn",
           "title": "Change Ngn",
           "type": "number"
         },
         "change_pct": {
           "title": "Change Pct",
           "type": "number"
+        },
+        "direction": {
+          "enum": [
+            "down",
+            "up",
+            "flat"
+          ],
+          "title": "Direction",
+          "type": "string"
         }
       },
       "required": [
         "current_ngn",
         "baseline_ngn",
         "change_ngn",
-        "change_pct"
+        "change_pct",
+        "direction"
       ],
       "title": "Headline",
       "type": "object"
@@ -344,6 +446,18 @@
         "reason": {
           "title": "Reason",
           "type": "string"
+        },
+        "tested_value_ngn": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tested Value Ngn"
         },
         "evidence_id": {
           "anyOf": [
@@ -429,7 +543,7 @@
         },
         "what_to_do": {
           "items": {
-            "type": "string"
+            "$ref": "#/$defs/Action"
           },
           "title": "What To Do",
           "type": "array"
@@ -466,11 +580,17 @@
           "type": "number"
         },
         "change_ngn": {
+          "description": "current - baseline for this component (a cost rise is positive)",
           "title": "Change Ngn",
           "type": "number"
         },
+        "profit_effect_ngn": {
+          "description": "Effect on profit: equals change_ngn for net_sales, minus change_ngn for costs",
+          "title": "Profit Effect Ngn",
+          "type": "number"
+        },
         "share_of_change_pct": {
-          "description": "This component's share of the profit change",
+          "description": "profit_effect_ngn as a percentage of the headline change",
           "title": "Share Of Change Pct",
           "type": "number"
         },
@@ -490,6 +610,7 @@
         "current_ngn",
         "baseline_ngn",
         "change_ngn",
+        "profit_effect_ngn",
         "share_of_change_pct",
         "status"
       ],
@@ -503,6 +624,23 @@
       "title": "Run Id",
       "type": "string"
     },
+    "status": {
+      "enum": [
+        "complete",
+        "partial",
+        "failed"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "errors": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Errors",
+      "type": "array"
+    },
     "mode": {
       "enum": [
         "live",
@@ -510,6 +648,11 @@
       ],
       "title": "Mode",
       "type": "string"
+    },
+    "synthetic": {
+      "description": "True when the shop data is generated test data",
+      "title": "Synthetic",
+      "type": "boolean"
     },
     "scenario": {
       "anyOf": [
@@ -551,6 +694,14 @@
       "title": "Ruled Out",
       "type": "array"
     },
+    "not_tested": {
+      "description": "Possible causes the run did not test, and why",
+      "items": {
+        "type": "string"
+      },
+      "title": "Not Tested",
+      "type": "array"
+    },
     "convergence": {
       "$ref": "#/$defs/Convergence"
     },
@@ -581,12 +732,15 @@
   },
   "required": [
     "run_id",
+    "status",
     "mode",
+    "synthetic",
     "frame",
     "headline",
     "tree",
     "causes",
     "ruled_out",
+    "not_tested",
     "convergence",
     "summary",
     "owner_questions",
