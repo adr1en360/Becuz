@@ -6,9 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "types": "json2ts ../docs/investigation.schema.json src/lib/investigation.ts --additionalProperties false --bannerComment \"/* Generated from docs/investigation.schema.json by npm run types. Do not edit by hand. */\""
   },
   "dependencies": {
+    "@solar-icons/react": "^2.3.3",
     "next": "16.4.2",
     "react": "19.3.0",
     "react-dom": "19.3.0"
@@ -20,6 +22,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.4.2",
+    "json-schema-to-typescript": "^16.0.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
