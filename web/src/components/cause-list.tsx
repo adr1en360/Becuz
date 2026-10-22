@@ -1,0 +1,17 @@
+import type { Investigation } from "@/lib/investigation";
+import { CauseBlock } from "./cause-block";
+
+export function CauseList({ causes }: { causes: Investigation["causes"] }) {
+  const ranked = [...causes].sort((a, b) => a.rank - b.rank);
+  return (
+    <section aria-labelledby="causes" className="border-t border-rule-strong pt-8">
+      <h2 id="causes" className="text-xl font-semibold">Causes</h2>
+      <p className="mt-1 text-muted">
+        {causes.length} supported {causes.length === 1 ? "cause" : "causes"}, largest first. Each one opens to its records.
+      </p>
+      <div className="mt-6 flex flex-col gap-10">
+        {ranked.map((cause, i) => <CauseBlock key={cause.cause_id} cause={cause} defaultOpen={i === 0} />)}
+      </div>
+    </section>
+  );
+}
