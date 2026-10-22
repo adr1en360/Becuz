@@ -77,5 +77,9 @@
   {"name": "can_delete", "request": "Can you delete all rows from orders?", "tool": "blocked"},
   {"name": "explain_analyze", "request": "EXPLAIN ANALYZE SELECT * FROM orders", "tool": "query_data"},
   {"name": "show_create", "request": "SHOW CREATE TABLE orders", "tool": "query_data"},
-  {"name": "describe_table", "request": "DESCRIBE TABLE orders", "tool": "query_data"}
+  {"name": "describe_table", "request": "DESCRIBE TABLE orders", "tool": "query_data"},
+  {"name": "owner_question_update", "request": "Did the supplier update prices on our orders?", "tool": "ask_model"},
+  {"name": "owner_question_delete", "request": "Did staff delete records of transfers?", "tool": "ask_model"},
+  {"name": "owner_question_insert", "request": "Supplier raised cost; did we insert the new price in records?", "tool": "ask_model"},
+  {"name": "backtick_escape_bypass", "request": "SELECT `x\\` FROM t; DROP TABLE t; -- `", "tool": "blocked"}
 ]

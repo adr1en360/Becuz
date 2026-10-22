@@ -118,7 +118,8 @@ def classify(text: str) -> Decision:
         return Decision("blocked", "empty request")
     if HOW_TO_QUESTION.match(cleaned):
         return Decision("ask_model", "how-to question", prompt=cleaned)
-    if cleaned.endswith("?") and not _destructive(cleaned):
+    # A question only reaches the model, never the database, so block only SQL-shaped writes.
+    if cleaned.endswith("?") and not DML_PHRASE.search(strip_literals(cleaned)):
         return Decision("ask_model", "question", prompt=cleaned)
     if QUESTION_START.match(cleaned) and not _looks_like_sql(cleaned):
         return Decision("ask_model", "question", prompt=cleaned)
