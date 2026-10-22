@@ -8,7 +8,7 @@ ledger, or the server.
 
 ## What is fixed
 
-- Nightshift first, direct NVIDIA fallback.
+- Nightshift as the only model provider.
 - Zetaris read-only access with the SQL guard.
 - One ledger for model, query, and blocked events; one trace file for agent steps.
 - Sample mode for offline judging.
@@ -95,8 +95,8 @@ The default tools `remember` and `recall` use this interface.
 ### 4. Provider seam
 
 `Pipeline.ask_messages(messages, label="", model=None)` is the only model call.
-It applies Nightshift first, then direct NVIDIA. An empty or failed Nightshift
-answer falls back. Engines and policies should call this or the `ask_model` tool;
+It calls Nightshift. An empty or failed Nightshift answer raises
+`ProviderError`. Engines and policies should call this or the `ask_model` tool;
 they should not build HTTP requests.
 
 Nightshift receipts settle after the call. Run `python verify_receipts.py` to
@@ -130,14 +130,10 @@ Use it for judge reproduction and UI work. Unset `SAMPLE_MODE` for real runs.
 
 ## Meterless mapping
 
-- **Scout Intent**: already live in `base/scout.py`.
-- **H-MEM**: the `Memory` interface and `JsonMemory` stand-in.
-- **World Model**: add a `World` service and tools when the idea needs shared
-  entities. Do not build it before the idea needs it.
-- **Markovian**: add a chunked runner when a task is too long for one context.
-  Do not build it before the idea needs it.
-
-Mount the smallest set that helps. Document which engines are mounted and where.
+`base/scout.py` is a local intent router. It is not the Meterless Scout Intent
+engine. All four engines (Scout Intent, H-MEM, World Model, Markovian) are
+built in `becuz/engines/`. The `Memory` interface is the slot H-MEM implements.
+Placement is in `docs/PRD.md` §6.
 
 ## Idea checklist
 

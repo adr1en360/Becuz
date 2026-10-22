@@ -184,7 +184,7 @@ API base ending in `/api/v1.0`). This repository uses direct REST.
 - Do not call port 8889.
 - Never ask an agent to create or fetch an API key.
 - Never print, log, or commit `.env`, `ZETARIS_API_KEY`,
-  `ZETARIS_PASSWORD`, or `NVIDIA_API_KEY`.
+  `ZETARIS_PASSWORD`, or the Nightshift runtime token.
 
 ## Starter prompt
 
@@ -239,7 +239,6 @@ Last checked: 2026-10-22.
 - `SELECT * FROM NY_TAXI.taxi_zones LIMIT 5` returns 5 rows.
 - `smoke.py` passes 4/4.
 - Unit tests pass offline.
-- Nightshift is running on `127.0.0.1:8088`; the direct NVIDIA fallback is
-  configured.
+- Nightshift is running on `127.0.0.1:8088`.
 
 Local Docker and `zetaris-platform.zip` are not needed for the AWS path.

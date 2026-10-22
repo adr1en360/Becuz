@@ -52,7 +52,7 @@ This plan builds `docs/PRD.md` in small slices. Each slice has a fixed scope and
 | 6 | Entry points and engines: `run.py --input`, `POST /run` with CORS, `--confirm`, and the agreed Meterless engines wired in | Adrien | `run.py`, `server.py`, `becuz/` | 3 `input_examples` with real saved outputs; a confirmed cause is recalled on a re-run |
 | 7 | Eval: s02, s03 and `python -m becuz.eval` | Adrien | `data/`, `becuz/eval.py` | The metrics table is produced and reported as measured |
 | 8 | UI: Next.js in `web/`, built on real saved outputs and then on live `POST /run` | tmb | `web/` | A screenshot of each screen; it works against the live server |
-| 9 | Submission pack: README, `metadata.json`, Dockerfile, `.env.example`, clean-clone test, deck, demo video | Adrien + tmb | repo root, `docs/` | The full validation flow passes from a fresh clone with an empty `.env` |
+| 9 | Submission pack: README, `metadata.json`, Dockerfile (reaching Nightshift and Zetaris via `host.docker.internal`), `.env.example`, clean-clone test, deck, demo video, sponsor explanation (engines with test results, Nightshift connection, the Nemotron models logged) | Adrien + tmb | repo root, `docs/` | The full validation flow passes from a fresh clone with an empty `.env` |
 
 ### Dependencies between slices
 
@@ -80,7 +80,7 @@ This plan builds `docs/PRD.md` in small slices. Each slice has a fixed scope and
 
 | Need | Use |
 |---|---|
-| Model calls (Nightshift first, NVIDIA fallback, ledger) | `Pipeline.ask_messages` in `base/pipeline.py` |
+| Model calls (Nightshift, ledger) | `Pipeline.ask_messages` in `base/pipeline.py` |
 | Zetaris queries | `Pipeline.query` in `base/pipeline.py` |
 | Read-only SQL check | `is_read_only` in `base/tools.py` |
 | Event ledger | `ledger.write` in `base/ledger.py` |

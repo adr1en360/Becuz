@@ -137,10 +137,23 @@ The test for each sponsor: if we removed it, would the agent still work? It must
 
 | Sponsor | Role in Becuz |
 |---|---|
-| **Zetaris** | The only path to the data. It runs every metric, evidence and critic query across the four sources, including the transfers-vs-bank join. |
-| **Meterless Nightshift** | The primary model provider (`127.0.0.1:8088/v1`). Every model call is routed through it and gets a signed receipt in the ledger. Calling NVIDIA directly is a fallback only. |
-| **Meterless engines** | Scout Intent, H-MEM, World Model and Markovian. **Placement to agree** (see §11). |
-| **NVIDIA Nemotron** | Lighter steps run on the fast lane (Nemotron 3.5 Lightning). The critic runs on the deep lane (Nemotron 3.5 Super). The routing mode is **to confirm** (§11). |
+| **Zetaris** | The data layer and the only path to the data. It runs every metric, evidence and critic query across the four sources, including the transfers-vs-bank join. |
+| **Meterless Nightshift** | The app's only model provider (`127.0.0.1:8088/v1`). Every model call goes through it and gets a signed receipt in the ledger. The NVIDIA key lives in Nightshift's Providers tab, not in this project. |
+| **Meterless engines** | All four, each powering a working feature with a passing conformance test. Placement is in the table below and in `docs/diagrams/engine-placement-proposed.html`. |
+| **NVIDIA Nemotron** | Lighter steps run on the fast lane (Nemotron 3.5 Lightning). The critic runs on the deep lane (Nemotron 3.5 Super). Every model event logs the model that actually handled the request, so the trace shows where Nemotron did the work. We are competing for the NVIDIA Nemotron award. The routing mode is **to confirm** (§11). |
+
+### Meterless engine placement (agreed)
+
+Each engine is built in `becuz/engines/` from the Meterless open specs. Each one has its own conformance test in `tests/`.
+
+| Engine | Where it works | What it does in Becuz |
+|---|---|---|
+| **Scout Intent** | intake, investigate, verify | Turns the owner's question into a **signed investigation contract** (metric, period, allowed sources and tables, query budget). Every query and every critic check is tested against that contract. The current `base/scout.py` is only a local router and does not count as this engine. |
+| **H-MEM** | recall, hypothesize, owner confirmation | Stores **owner-confirmed causes** and **the checks that found them**. They are recalled before each investigation, so a later run tests them first. It writes only facts the owner has confirmed. |
+| **World Model** | recall, investigate, report | Gives products, suppliers, staff and payment channels one canonical ID each, linked to their source rows. Every cause points to these entities. Confirmed facts are copied into H-MEM. |
+| **Markovian** | verify | The critic carries a compact summary of accepted and rejected evidence forward, instead of the full history, and logs the tokens saved. |
+
+Night mode (overnight multi-attempt runs) is future work. Meterless has not published its job API yet.
 
 ---
 
@@ -149,7 +162,7 @@ The test for each sponsor: if we removed it, would the agent still work? It must
 - **CLI:** `python run.py --input input_examples/example_N.json` prints the Investigation JSON.
 - **HTTP:** `POST /run` on `server.py` takes the same input and returns the same JSON. CORS is enabled for the UI.
 - **Owner confirmation:** `python run.py --confirm <run_id> <cause_id>`.
-- **Trace:** one file per run, `logs/trace-<run_id>.jsonl`, plus readable stdout. Each line carries `timestamp, run_id, agent_name, action, input_summary, output_summary, target_agent, confidence, retry_count, status`. Model and query events also carry `via` and `signed`.
+- **Trace:** one file per run, `logs/trace-<run_id>.jsonl`, plus readable stdout. Each line carries `timestamp, run_id, agent_name, action, input_summary, output_summary, target_agent, confidence, retry_count, status`. Model and query events also carry `via` and `signed`, and model events carry the `model` that handled the request.
 - **Investigation JSON fields:**
   - `run_id`, `question`, `frame`, `headline`, `tree`
   - `causes[]`, each with `evidence[]` and `verified`
@@ -173,7 +186,7 @@ All of these are enforced in code, not in prompts:
 
 ### Sample mode (`SAMPLE_MODE=true`)
 
-- Runs the whole agent with an **empty `.env` and no network**.
+- Runs the whole agent with an **empty `.env`, no network, and Zetaris and Nightshift stopped**.
 - Queries use the same Spark SQL templates, translated by sqlglot, on in-memory DuckDB over the scenario CSVs.
 - Model steps switch to **rule-based logic computed from that run's data**. Every candidate in the catalogue is tested for the nodes that moved, and the summary is filled from the computed numbers. They are labelled `via=sample-rules` in the trace and the output.
 - It **never** replays a saved output. Different inputs give different results.
@@ -219,6 +232,5 @@ Results are reported as measured, including any misses.
 
 ## 11. Open questions
 
-1. **Meterless engine placement:** which engines go where (Scout Intent, H-MEM, World Model, Markovian). To agree after the Meterless sessions.
-2. **Nightshift routing:** do the `meterless/fast` and `meterless/deep` modes map to the Lightning and Super lanes? To confirm with a live probe.
-3. **Pass marks** in §9: to confirm.
+1. **Nightshift routing:** do the `meterless/fast` and `meterless/deep` modes map to the Lightning and Super lanes? To confirm with a live probe.
+2. **Pass marks** in §9: to confirm.
