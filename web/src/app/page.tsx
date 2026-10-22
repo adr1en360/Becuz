@@ -1,17 +1,12 @@
-import { DevBanner } from "@/components/dev-banner";
-import { EmptyState } from "@/components/empty-state";
-import { Report } from "@/components/report";
+import { InvestigationApp } from "@/components/investigation-app";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { loadInvestigation } from "@/lib/investigation-source";
 
-export default async function Home() {
-  const investigation = await loadInvestigation();
+export default function Home() {
   return (
     <div className="flex min-h-dvh flex-col">
-      {investigation && <DevBanner />}
       <SiteHeader />
-      {investigation ? <Report data={investigation} /> : <EmptyState />}
+      <InvestigationApp />
       <SiteFooter />
     </div>
   );

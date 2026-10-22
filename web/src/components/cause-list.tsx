@@ -7,8 +7,11 @@ export function CauseList({ causes }: { causes: Investigation["causes"] }) {
     <section aria-labelledby="causes" className="border-t border-rule-strong pt-8">
       <h2 id="causes" className="text-xl font-semibold">Causes</h2>
       <p className="mt-1 text-muted">
-        {causes.length} supported {causes.length === 1 ? "cause" : "causes"}, largest first. Each one opens to its records.
+        {causes.length} supported {causes.length === 1 ? "cause" : "causes"}{causes.length > 0 && ", largest first. Each one opens to its records"}.
       </p>
+      {causes.length === 0 && (
+        <p className="mt-6 max-w-prose text-lg">No cause passed the checks this week, so Becuz does not name one.</p>
+      )}
       <div className="mt-6 flex flex-col gap-10">
         {ranked.map((cause, i) => <CauseBlock key={cause.cause_id} cause={cause} defaultOpen={i === 0} />)}
       </div>

@@ -1,7 +1,7 @@
-import { Composer } from "./composer";
+import type { ReactNode } from "react";
 import { ReportOutline } from "./report-outline";
 
-export function EmptyState() {
+export function EmptyState({ composer, alert }: { composer: ReactNode; alert?: ReactNode }) {
   return (
     <main className="mx-auto grid w-full max-w-5xl flex-1 gap-12 px-4 pb-16 pt-8 sm:px-8 lg:grid-cols-[minmax(0,24rem)_minmax(0,1fr)] lg:gap-20 lg:pt-16">
       <div className="flex flex-col gap-8">
@@ -13,7 +13,8 @@ export function EmptyState() {
             Becuz checks your till, bank, supplier invoices and expenses, and shows the records behind every cause.
           </p>
         </div>
-        <Composer />
+        {alert}
+        {composer}
       </div>
       <ReportOutline />
     </main>

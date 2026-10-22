@@ -5,6 +5,9 @@ export function NextSteps({ data }: { data: Investigation }) {
   return (
     <section aria-labelledby="next" className="border-t border-rule-strong pt-8">
       <h2 id="next" className="text-xl font-semibold">What to do this week</h2>
+      {data.summary.what_to_do.length === 0 && (
+        <p className="mt-2 text-muted">This run found nothing to change. If the drop continues next week, ask again.</p>
+      )}
       <ul className="mt-4 divide-y divide-rule">
         {data.summary.what_to_do.map((step) => (
           <li key={step.action} className="py-4">

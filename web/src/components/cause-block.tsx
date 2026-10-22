@@ -8,7 +8,7 @@ type Cause = Investigation["causes"][number];
 const pill = "rounded-full border border-rule-strong px-3 py-1 text-sm text-muted";
 
 function checkedBy(check: NonNullable<Cause["evidence"][number]["check"]>) {
-  const who = check.model ?? (check.via === "sample-rules" ? "sample rules" : check.via);
+  const who = check.model ?? (check.via === "rules" || check.via === "sample-rules" ? "fixed rules" : check.via);
   return `${who}${check.signed ? ", signed" : ""}`;
 }
 
@@ -55,9 +55,9 @@ export function CauseBlock({ cause, defaultOpen = false }: { cause: Cause; defau
                     <CloseCircleIcon size={18} className="mt-0.5 shrink-0 text-accent" aria-hidden />
                   )}
                   <span>
-                    {item.check.match ? "The checker re-ran this query and got the same figure." : "The checker re-ran this query and the figure did not match."}{" "}
+                    <span className="font-semibold">{item.check.match ? "Checker: matched." : "Checker: did not match."}</span>{" "}
                     <span className="text-muted">
-                      {item.check.note} Checked by {checkedBy(item.check)}.
+                      {item.check.note ? `${item.check.note[0].toUpperCase()}${item.check.note.slice(1)}. ` : ""}Checked by {checkedBy(item.check)}.
                     </span>
                   </span>
                 </p>

@@ -8,7 +8,7 @@ export function Headline({ data }: { data: Investigation }) {
   const flat = headline.direction === "flat";
   return (
     <section aria-labelledby="headline">
-      <h1 id="headline" className="text-balance text-3xl font-bold leading-[1.15] tracking-[-0.02em] sm:text-4xl">
+      <h1 id="headline" tabIndex={-1} className="outline-none text-balance text-3xl font-bold leading-[1.15] tracking-[-0.02em] sm:text-4xl">
         Profit this week was <span className="num">{formatNaira(headline.current_ngn)}</span>
         {flat ? ", " : ", "}
         {!flat && (
@@ -22,8 +22,7 @@ export function Headline({ data }: { data: Investigation }) {
         {formatRange(frame.period_start, frame.period_end)}, compared with {formatRange(frame.baseline_start, frame.baseline_end)}.
         You asked: &ldquo;{frame.question}&rdquo;
       </p>
-      <p className="mt-6 max-w-prose text-lg leading-relaxed">{summary.what_happened}</p>
-      <ul className="mt-4 max-w-prose list-disc space-y-1 pl-5 text-muted">
+      <ul className="mt-6 max-w-prose list-disc space-y-1 pl-5 text-lg">
         {summary.why.map((reason) => <li key={reason}>{reason}</li>)}
       </ul>
     </section>

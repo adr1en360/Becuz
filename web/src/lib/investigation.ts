@@ -24,7 +24,10 @@ export type BaselineNgn = number;
  * current_ngn - baseline_ngn
  */
 export type ChangeNgn = number;
-export type ChangePct = number;
+/**
+ * None when the baseline profit is zero
+ */
+export type ChangePct = number | null;
 export type Direction = "down" | "up" | "flat";
 export type Component = "net_sales" | "cogs" | "wastage" | "opex" | "leakage";
 export type CurrentNgn1 = number;

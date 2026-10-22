@@ -7,10 +7,19 @@ import { NextSteps } from "./next-steps";
 import { RuledOut } from "./ruled-out";
 import { RunDetails } from "./run-details";
 
-export function Report({ data }: { data: Investigation }) {
+export function Report({ data, onReset }: { data: Investigation; onReset: () => void }) {
   return (
     <main className="mx-auto w-full max-w-5xl flex-1 px-4 pb-20 pt-8 sm:px-8 lg:pt-14">
       <div className="flex max-w-3xl flex-col gap-14">
+        <div>
+          <button
+            type="button"
+            onClick={onReset}
+            className="inline-flex h-10 items-center rounded-full border border-ink px-4 text-sm font-semibold hover:bg-ink hover:text-paper"
+          >
+            Ask another question
+          </button>
+        </div>
       {data.status !== "complete" && (
         <section role="alert" className="rounded-2xl border border-accent px-5 py-4">
           <h2 className="font-semibold">This run is {data.status}.</h2>
@@ -23,7 +32,7 @@ export function Report({ data }: { data: Investigation }) {
       <Breakdown tree={data.tree} />
       <CauseList causes={data.causes} />
       <RuledOut items={data.ruled_out} />
-      <Convergence convergence={data.convergence} notTested={data.not_tested} />
+      <Convergence convergence={data.convergence} change={data.headline.change_ngn} notTested={data.not_tested} />
       <NextSteps data={data} />
       <RunDetails data={data} />
       </div>
