@@ -27,7 +27,6 @@ def completion(messages: list[dict]) -> Completion:
             break
     return Completion(
         text=answer(prompt),
-        provider="sample",
         model="sample",
         via="sample",
     )

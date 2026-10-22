@@ -9,12 +9,9 @@ from pathlib import Path
 
 from .providers import (
     Completion,
-    ModelRetired,
     ProviderError,
-    RuntimeUnavailable,
     clean_answer,
     first_message,
-    looks_retired,
     message_text,
     read_http_error,
 )
@@ -28,7 +25,7 @@ class NightshiftClient:
 
     def complete(self, messages: list[dict], model: str | None = None, timeout: int = 120) -> Completion:
         if not self.token:
-            raise RuntimeUnavailable("nightshift", "no runtime token")
+            raise ProviderError("nightshift", 0, "no runtime token")
         payload = {
             "model": model or self.model,
             "messages": messages,
@@ -41,7 +38,7 @@ class NightshiftClient:
             headers={
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {self.token}",
-                "meterless-app": "open-agent",
+                "meterless-app": "becuz",
                 "meterless-scope": "user",
             },
             method="POST",
@@ -50,26 +47,22 @@ class NightshiftClient:
             with urllib.request.urlopen(request, timeout=timeout) as response:
                 body = json.loads(response.read().decode("utf-8"))
         except urllib.error.HTTPError as exc:
-            detail = read_http_error(exc)
-            if exc.code == 410 or looks_retired(detail):
-                raise ModelRetired("nightshift", exc.code, detail) from exc
-            raise ProviderError("nightshift", exc.code, detail) from exc
+            raise ProviderError("nightshift", exc.code, read_http_error(exc)) from exc
         except (urllib.error.URLError, TimeoutError, ConnectionError) as exc:
-            raise RuntimeUnavailable("nightshift", str(exc)) from exc
+            raise ProviderError("nightshift", 0, str(exc)) from exc
         except UnicodeDecodeError as exc:
             raise ProviderError("nightshift", 0, "invalid UTF-8 response") from exc
         except json.JSONDecodeError as exc:
             raise ProviderError("nightshift", 0, "invalid JSON response") from exc
 
         message = first_message(body, "nightshift")
-        text = message_text(message, "nightshift")
-        if not text.strip():
+        text = clean_answer(message_text(message, "nightshift"))
+        if not text:
             raise ProviderError("nightshift", 0, "empty answer")
         request_id = str(body.get("id") or "")
         receipt = find_receipt(request_id)
         return Completion(
-            text=clean_answer(text),
-            provider="nightshift",
+            text=text,
             model=body.get("model") or (model or self.model),
             via="nightshift",
             request_id=request_id,

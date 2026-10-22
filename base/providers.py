@@ -8,7 +8,6 @@ from dataclasses import dataclass, field
 @dataclass
 class Completion:
     text: str
-    provider: str
     model: str
     via: str
     request_id: str = ""
@@ -22,21 +21,6 @@ class ProviderError(RuntimeError):
         self.status = status
         self.message = message
         super().__init__(f"{provider}: HTTP {status}: {message}")
-
-
-class RuntimeUnavailable(ProviderError):
-    def __init__(self, provider: str, message: str):
-        super().__init__(provider, 0, message)
-
-
-class ModelRetired(ProviderError):
-    pass
-
-
-class AllProvidersFailed(RuntimeError):
-    def __init__(self, errors: list[str]):
-        self.errors = errors
-        super().__init__("; ".join(errors))
 
 
 _SECRET = re.compile(r"nvapi-[A-Za-z0-9_-]+")
@@ -88,10 +72,3 @@ def read_http_error(exc: urllib.error.HTTPError) -> str:
         body = str(exc.reason or "request failed")
     return redact(body[:800])
 
-
-def looks_retired(detail: str) -> bool:
-    text = detail.lower()
-    return any(
-        word in text
-        for word in ("retired", "end of life", "eol", "no longer available", "deprecated", "gone")
-    )
