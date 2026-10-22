@@ -12,15 +12,9 @@ import argparse
 import sys
 
 from base.zetaris import rows
+from becuz.usl import SOURCES
 from scripts.admin import admin_env, hide, run_plan
 
-# Logical source -> tables, matching docs/PRD.md section 4.
-SOURCES = {
-    "pos_files": ["products", "staff", "sales", "sale_lines", "promos", "stock_movements"],
-    "bank_files": ["bank_statement"],
-    "books_files": ["supplier_invoices", "expenses"],
-    "context_files": ["fx_rates"],
-}
 DESCRIPTIONS = {
     "pos_files": "Becuz synthetic POS records",
     "bank_files": "Becuz synthetic bank statement",

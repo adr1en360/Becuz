@@ -3,7 +3,8 @@ from __future__ import annotations
 import unittest
 
 from scripts.admin import hide
-from scripts.zetaris_setup import SOURCES, statements
+from becuz.usl import SOURCES
+from scripts.zetaris_setup import statements
 
 
 class ZetarisSetupTests(unittest.TestCase):

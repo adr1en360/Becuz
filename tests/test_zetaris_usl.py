@@ -9,8 +9,8 @@ import sqlglot
 
 from base.tools import is_read_only
 from data.generator import ROOT
-from scripts.zetaris_setup import SOURCES
-from scripts.zetaris_usl import DDL, activations, statements
+from becuz.usl import DDL, SOURCES, activations
+from scripts.zetaris_usl import statements
 
 S01 = ROOT / "s01"
 KEY = json.loads((S01 / "answer_key.json").read_text(encoding="utf-8"))
