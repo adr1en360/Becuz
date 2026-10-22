@@ -6,6 +6,7 @@ import sys
 
 from base.config import load
 from base.runtime import build_agent
+from becuz.investigate import BadRequest, investigate
 
 
 def main() -> int:
@@ -14,7 +15,11 @@ def main() -> int:
     parser.add_argument("--sql")
     parser.add_argument("--full", action="store_true", help="print the full query response")
     parser.add_argument("--trace", action="store_true", help="print the agent trace")
+    parser.add_argument("--input", help="run an investigation from a JSON request file")
     args = parser.parse_args()
+
+    if args.input:
+        return run_investigation(args.input)
 
     request = args.sql or " ".join(args.request)
     if not request:
@@ -36,6 +41,17 @@ def main() -> int:
 
     print(json.dumps(output, indent=2, ensure_ascii=True))
     return 0 if result.get("ok") else 1
+
+
+def run_investigation(path: str) -> int:
+    try:
+        with open(path, encoding="utf-8") as handle:
+            report = investigate(json.load(handle), load())
+    except (OSError, json.JSONDecodeError, BadRequest) as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
+    print(json.dumps(report, indent=2, ensure_ascii=False))
+    return 0
 
 
 def _preview(result: dict) -> dict:

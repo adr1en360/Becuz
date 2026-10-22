@@ -1,0 +1,24 @@
+{
+  "scenario": "s02",
+  "synthetic": true,
+  "final_week": {
+    "start": "2026-10-12",
+    "end": "2026-10-18"
+  },
+  "baseline_weeks": {
+    "start": "2026-09-14",
+    "end": "2026-10-11"
+  },
+  "causes": [
+    {
+      "cause_id": "supplier_cost_rise",
+      "impact_ngn": -39600.0,
+      "rank": 1
+    }
+  ],
+  "red_herrings": [
+    "pos_charge_rise"
+  ],
+  "leaked_sale_ids": [],
+  "tolerance_pct": 10
+}

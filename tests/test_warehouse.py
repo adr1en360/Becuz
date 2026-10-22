@@ -12,7 +12,7 @@ from base.pipeline import Pipeline
 from becuz.adapters import QueryError, warehouse
 from becuz.adapters.local_sql import LocalWarehouse
 from becuz.adapters.zetaris import ZetarisWarehouse
-from becuz.metrics import COMPONENTS, period_totals, profit_tree
+from becuz.metrics import COMPONENTS, profit_tree
 from data.generator import ROOT
 
 KEY = json.loads((ROOT / "s01" / "answer_key.json").read_text(encoding="utf-8"))
@@ -59,9 +59,15 @@ class LocalWarehouseTests(unittest.TestCase):
 
     def test_period_must_be_real_dates(self) -> None:
         with self.assertRaises(ValueError):
-            period_totals(self.wh, "2026-10-12' OR 1=1 --", FINAL[1])
+            profit_tree(self.wh, "2026-10-12' OR 1=1 --", FINAL[1])
         with self.assertRaises(ValueError):
-            period_totals(self.wh, FINAL[1], FINAL[0])
+            profit_tree(self.wh, FINAL[1], FINAL[0])
+        with self.assertRaises(ValueError):  # not a 7-day week
+            profit_tree(self.wh, FINAL[0], date(2026, 10, 14))
+
+    def test_a_week_without_data_fails_instead_of_reading_zero(self) -> None:
+        with self.assertRaises(ValueError):
+            profit_tree(self.wh, date(2027, 1, 4), date(2027, 1, 10))
 
     def test_unknown_scenario_fails_clearly(self) -> None:
         with self.assertRaises(QueryError):

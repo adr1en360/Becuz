@@ -7,11 +7,17 @@ Each scenario covers 8 weeks of one Nigerian mini-mart. Causes are planted only 
 | Scenario | Planted causes | Red herring |
 |---|---|---|
 | `s01` | supplier cost rise, promo overrun, wastage spike, transfer leakage | POS charge rise (charges stay flat at 0.5%) |
+| `s02` | supplier cost rise | POS charge rise |
+| `s03` | promo overrun, wastage spike | POS charge rise |
+| `s04` | transfer leakage | sales fell (they did not), POS charge rise |
+| `s05` | none: a normal week | POS charge rise |
+
+`s01` has natural day-to-day variation, so part of its drop is honestly unexplained. In `s02` to `s05`, each weekday repeats the same customers, so only the planted causes change the final week.
 
 Regenerate a scenario:
 
 ```powershell
-uv run python -m data.generator s01
+uv run python -m data.generator s01   # or s02 to s05
 ```
 
 The same seed always produces byte-identical files. Each scenario folder holds:

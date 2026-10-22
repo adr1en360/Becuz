@@ -390,8 +390,16 @@
           "type": "number"
         },
         "change_pct": {
-          "title": "Change Pct",
-          "type": "number"
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "None when the baseline profit is zero",
+          "title": "Change Pct"
         },
         "direction": {
           "enum": [

@@ -22,11 +22,18 @@ BASELINE = range(FINAL - 4, FINAL)  # the 4 weeks before the final week
 POS_CHARGE = 0.005  # flat in every week, so pos_charge_rise is always a red herring
 
 SCENARIOS = {
-    "s01": {
+    "s01": {  # demo: four causes at once
         "seed": 101,
         "causes": ["supplier_cost_rise", "promo_overrun", "wastage_spike", "transfer_leakage"],
         "red_herrings": ["pos_charge_rise"],
     },
+    # Steady scenarios: only the planted causes change the final week.
+    "s02": {"seed": 202, "steady": True, "causes": ["supplier_cost_rise"], "red_herrings": ["pos_charge_rise"]},
+    "s03": {"seed": 303, "steady": True, "causes": ["promo_overrun", "wastage_spike"], "red_herrings": ["pos_charge_rise"]},
+    # "Sales fell" is plausible but false: sales hold steady while transfers go missing.
+    "s04": {"seed": 404, "steady": True, "causes": ["transfer_leakage"],
+            "red_herrings": ["sales_volume_drop", "pos_charge_rise"]},
+    "s05": {"seed": 505, "steady": True, "causes": [], "red_herrings": ["pos_charge_rise"]},  # no planted cause
 }
 
 # name, category, unit, list price (NGN), perishable, popularity weight
@@ -154,17 +161,19 @@ def generate(scenario: str, out: Path) -> dict:
         today = day(d)
         week = week_of(today)
         settle_pos = cash_total = 0.0
-        for _ in range(rng.randint(50, 70)):
+        # Steady scenarios replay the same customers on each weekday, so only the planted causes move the week.
+        shop = random.Random(spec["seed"] * 10 + today.weekday()) if spec.get("steady") else rng
+        for _ in range(shop.randint(50, 70)):
             sale_no += 1
             sale_id = f"SL-{sale_no:05d}"
-            staff_id = STAFF[rng.randrange(2)][0]
-            method = rng.choices(["cash", "transfer", "pos_card"], [45, 35, 20])[0]
-            sold_at = datetime.combine(today, datetime.min.time()) + timedelta(minutes=rng.randint(8 * 60, 20 * 60))
+            staff_id = STAFF[shop.randrange(2)][0]
+            method = shop.choices(["cash", "transfer", "pos_card"], [45, 35, 20])[0]
+            sold_at = datetime.combine(today, datetime.min.time()) + timedelta(minutes=shop.randint(8 * 60, 20 * 60))
             gross = discount = 0.0
             # dict.fromkeys dedupes in draw order; a set would vary with hash seeding.
-            for pid in dict.fromkeys(p["product_id"] for p in rng.choices(products, weights, k=rng.randint(1, 4))):
+            for pid in dict.fromkeys(p["product_id"] for p in shop.choices(products, weights, k=shop.randint(1, 4))):
                 line_no += 1
-                qty = rng.randint(1, 3)
+                qty = shop.randint(1, 3)
                 price = by_id[pid]["price"]
                 promo = pid == PROMO_PRODUCT and (promo_start <= today <= promo_end or (
                     week == FINAL and "promo_overrun" in causes))
@@ -219,7 +228,7 @@ def generate(scenario: str, out: Path) -> dict:
         for p in products:
             if not p["perishable"]:
                 continue
-            qty = rng.choice((0, 0, 0, 1))
+            qty = shop.choice((0, 0, 0, 1))
             if week == FINAL and "wastage_spike" in causes:
                 qty += rng.randint(0, 1)
             if qty:

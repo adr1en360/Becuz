@@ -1,0 +1,18 @@
+{
+  "scenario": "s05",
+  "synthetic": true,
+  "final_week": {
+    "start": "2026-10-12",
+    "end": "2026-10-18"
+  },
+  "baseline_weeks": {
+    "start": "2026-09-14",
+    "end": "2026-10-11"
+  },
+  "causes": [],
+  "red_herrings": [
+    "pos_charge_rise"
+  ],
+  "leaked_sale_ids": [],
+  "tolerance_pct": 10
+}

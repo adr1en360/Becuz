@@ -61,6 +61,10 @@ class SchemaTests(unittest.TestCase):
         with self.assertRaises(ValidationError):
             Cause.model_validate(cause(impact_evidence_id="missing"))
 
+    def test_a_negligible_effect_cannot_be_supported(self) -> None:
+        with self.assertRaises(ValidationError):
+            Cause.model_validate(cause(impact_ngn=0.0, evidence=[evidence(value_ngn=0.0)], counterfactual_ngn=CURRENT))
+
     def test_supported_cause_needs_records(self) -> None:
         with self.assertRaises(ValidationError):
             Cause.model_validate(cause(evidence=[evidence(row_ids=[])]))

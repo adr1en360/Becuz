@@ -8,6 +8,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from base.config import load
 from base.providers import redact
 from base.runtime import build_agent
+from becuz.investigate import BadRequest, investigate
 
 MAX_BODY = 1_000_000
 MAX_REQUEST = 4000
@@ -164,7 +165,7 @@ HTML = """<!doctype html>
 
 
 class Handler(BaseHTTPRequestHandler):
-    server_version = "OpenAgent/0.1"
+    server_version = "Becuz/0.1"
 
     def do_GET(self) -> None:
         if self.path in ("/", "/index.html"):
@@ -189,8 +190,11 @@ class Handler(BaseHTTPRequestHandler):
             return
         self._json(404, {"ok": False, "error": "not found"})
 
+    def do_OPTIONS(self) -> None:
+        self._send(204, b"", "text/plain")  # CORS preflight for the web UI
+
     def do_POST(self) -> None:
-        if self.path != "/ask":
+        if self.path not in ("/ask", "/run"):
             self._json(404, {"ok": False, "error": "not found"})
             return
         try:
@@ -212,6 +216,9 @@ class Handler(BaseHTTPRequestHandler):
         if not isinstance(body, dict):
             self._json(400, {"ok": False, "error": "JSON object required"})
             return
+        if self.path == "/run":
+            self._run(body)
+            return
         value = body.get("request")
         if not isinstance(value, str) or not value.strip():
             self._json(400, {"ok": False, "error": "request is required"})
@@ -232,6 +239,18 @@ class Handler(BaseHTTPRequestHandler):
             return
         self._send(200, body, "application/json; charset=utf-8")
 
+    def _run(self, body: dict) -> None:
+        try:
+            report = investigate(body, self.server.agent.config)
+        except BadRequest as exc:
+            self._json(400, {"ok": False, "error": str(exc)})
+            return
+        except Exception as exc:
+            print(f"investigation error: {type(exc).__name__}: {redact(str(exc)[:200])}", file=sys.stderr)
+            self._json(500, {"ok": False, "error": "investigation failed"})
+            return
+        self._json(200, report)
+
     def _json(self, status: int, payload: dict) -> None:
         body = json.dumps(payload, ensure_ascii=True, indent=2).encode("utf-8")
         self._send(status, body, "application/json; charset=utf-8")
@@ -241,6 +260,10 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Cache-Control", "no-store")
+        # The web UI runs on its own local port; allow it to call this API.
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.end_headers()
         if body:
             self.wfile.write(body)

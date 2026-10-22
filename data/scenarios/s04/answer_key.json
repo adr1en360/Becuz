@@ -1,0 +1,32 @@
+{
+  "scenario": "s04",
+  "synthetic": true,
+  "final_week": {
+    "start": "2026-10-12",
+    "end": "2026-10-18"
+  },
+  "baseline_weeks": {
+    "start": "2026-09-14",
+    "end": "2026-10-11"
+  },
+  "causes": [
+    {
+      "cause_id": "transfer_leakage",
+      "impact_ngn": -33100.0,
+      "rank": 1
+    }
+  ],
+  "red_herrings": [
+    "sales_volume_drop",
+    "pos_charge_rise"
+  ],
+  "leaked_sale_ids": [
+    "SL-03208",
+    "SL-03231",
+    "SL-03302",
+    "SL-03323",
+    "SL-03333",
+    "SL-03372"
+  ],
+  "tolerance_pct": 10
+}

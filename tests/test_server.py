@@ -61,6 +61,19 @@ class ServerTests(unittest.TestCase):
         self.assertEqual(status, 200)
         self.assertEqual(json.loads(data)["request"], "hello")
 
+    def test_run_rejects_a_bad_request_and_allows_the_web_ui(self) -> None:
+        status, data = self.call("POST", "/run", {"question": ""})
+        self.assertEqual(status, 400)
+        self.assertIn("question", json.loads(data)["error"])
+        connection = http.client.HTTPConnection("127.0.0.1", self.port, timeout=2)
+        try:
+            connection.request("OPTIONS", "/run")
+            response = connection.getresponse()
+            self.assertEqual(response.status, 204)
+            self.assertEqual(response.getheader("Access-Control-Allow-Origin"), "*")
+        finally:
+            connection.close()
+
     def test_bad_requests(self) -> None:
         status, _ = self.call("POST", "/ask", {"request": None})
         self.assertEqual(status, 400)

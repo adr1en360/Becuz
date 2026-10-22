@@ -42,10 +42,10 @@ class LocalWarehouse:
             self.db.execute(f"CREATE SCHEMA {source}")
             for table in tables:
                 path = (folder / f"{table}.csv").as_posix()
-                self.db.execute(f"CREATE VIEW {source}.{table} AS SELECT * FROM read_csv_auto('{path}')")
+                self.db.execute(f"CREATE TABLE {source}.{table} AS SELECT * FROM read_csv_auto('{path}')")
         self.db.execute(f"CREATE SCHEMA {self.usl}")
         for table, sql in activations().items():
-            self.db.execute(f"CREATE VIEW {self.usl}.{table} AS {to_duckdb(sql)}")
+            self.db.execute(f"CREATE TABLE {self.usl}.{table} AS {to_duckdb(sql)}")
 
     def query(self, sql: str) -> list[dict]:
         if not is_read_only(sql):
