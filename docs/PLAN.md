@@ -50,14 +50,14 @@ becuz/
   metrics.py            metric tree and its SQL templates
   catalogue.py          cause catalogue: tags and evidence templates
   tracing.py            per-run trace in logs/trace-<run_id>.jsonl
-  agents/               one file per graph node: framer, decomposer, hypothesizer, investigator, critic, reporter
+  agents/               planner.py, investigator.py, checker.py, writer.py
   orchestration/        graph.py, state.py
   engines/              scout_intent.py, hmem.py, world_model.py, markovian.py
   adapters/             zetaris.py, nightshift.py, local_sql.py (DuckDB for sample mode)
 data/
   README.md             synthetic data statement
   generator.py
-  scenarios/            s01, s02, s03
+  scenarios/            s01 to s05
 scripts/                S3 upload, Zetaris registration (placeholders only)
 input_examples/         example_1.json to example_3.json
 output_examples/        real saved outputs
@@ -77,11 +77,11 @@ run.py  server.py  pyproject.toml  uv.lock  .env.example  README.md
 | 2 | Zetaris sources: upload s01 to S3, register the four sources, then the USL model (tables and keys) with `daily_pnl` and the data-quality rules. Every write goes dry run first, then waits for Adrien's go-ahead | Adrien | `scripts/` (placeholders only in committed SQL) | `DESCRIBE` succeeds on every table; the transfers-vs-bank join returns the planted rows |
 | 3 | SQL layer (reads `daily_pnl` and data-quality results through Zetaris, with plain SQL as the fallback): `becuz/adapters/zetaris.py` and `becuz/adapters/local_sql.py` (DuckDB via sqlglot in sample mode), both behind the guard; `becuz/metrics.py` holds the metric tree templates | Adrien | `becuz/`, `tests/` | One parity test per template; the transpiled SQL text is pinned in a test |
 | 4 | Cause catalogue: `becuz/catalogue.py` with evidence templates and tags for C1, C2, C3, C5, C9 | Adrien | `becuz/`, `tests/` | Each planted cause is found on s01; C9 comes back flat |
-| 5 | Graph golden path: `becuz/schemas.py`, `becuz/orchestration/`, `becuz/agents/`; per-run trace in `becuz/tracing.py`; sample-rules for model steps | Adrien | `becuz/`, `tests/` | s01 runs live and with an empty `.env`; the trace shows a critic rejection and a retry |
+| 5 | Graph golden path: `becuz/schemas.py`, `becuz/orchestration/`, `becuz/agents/`; per-run trace in `becuz/tracing.py`; sample-rules for model steps | Adrien | `becuz/`, `tests/` | s01 runs live and with an empty `.env`; the trace shows the Checker rejecting a claim and the Investigator retrying |
 | 6 | Entry points and engines: `run.py --input`, `POST /run` with CORS, `--confirm`, and the agreed Meterless engines wired in | Adrien | `run.py`, `server.py`, `becuz/` | 3 `input_examples` with real saved outputs; a confirmed cause is recalled on a re-run |
-| 7 | Eval: s02, s03 and `python -m becuz.eval` | Adrien | `data/`, `becuz/eval.py` | The metrics table is produced and reported as measured |
+| 7 | Eval: s02 to s05 and `python -m becuz.eval` | Adrien | `data/`, `becuz/eval.py` | The metrics table is produced and reported as measured |
 | 8 | UI: Next.js in `web/`, built on real saved outputs and then on live `POST /run` | tmb | `web/` | A screenshot of each screen; it works against the live server |
-| 9 | Submission pack: README, `metadata.json`, `.env.example`, clean-clone test, deck, demo video, sponsor explanation (engines with test results, Nightshift connection, the Nemotron models logged) | Adrien + tmb | repo root, `docs/` | The full validation flow passes from a fresh clone with an empty `.env` |
+| 9 | Submission pack: README, `metadata.json`, a Dockerfile that runs sample mode with one command, `.env.example`, clean-clone test, deck, demo video, sponsor explanation (engines with test results, Nightshift connection, the Nemotron models logged) | Adrien + tmb | repo root, `docs/` | The full validation flow passes from a fresh clone with an empty `.env` |
 
 ### Dependencies between slices
 

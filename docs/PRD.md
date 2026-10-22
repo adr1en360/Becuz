@@ -55,7 +55,12 @@ Becuz is **not** a dashboard, a chat window over SQL, or a forecaster. It never 
 | C5 | `transfer_leakage`: transfer sales by one staff member with no matching bank credit | **pos + bank (cross-source)** | internal, actionable |
 | C9 | `pos_charge_rise`: planted as a **red herring** (charges stay flat), so the critic must rule it out | bank | external, actionable |
 
-- **3 scenarios.** `s01` is the demo (C1 + C2 + C3 + C5, with C9 as the red herring). `s02` and `s03` use different cause mixes.
+- **5 scenarios**, each with a different outcome:
+  - `s01` is the demo (C1 + C2 + C3 + C5, with C9 as the red herring)
+  - `s02` has one main cause
+  - `s03` has two causes
+  - `s04` has a plausible cause that is false (sales did not fall)
+  - `s05` has no clear cause (a large unexplained share)
 - Everything runs through Zetaris live, and through sample mode offline (§8).
 
 ### Out of scope (future work)
@@ -107,20 +112,16 @@ The baseline is the average of the previous 4 weeks, unless the question names a
 
 ## 5. Agent design
 
-**Pattern:** a hypothesis-driven investigator over a decomposition tree, with a verifier gate. It is built as a LangGraph state graph in `becuz/`.
+**Pattern:** four agents that share one list of claims and check each other's work, built as a LangGraph state graph in `becuz/`. The Checker can send work back or block it, so the flow is a loop, not a pipeline.
 
-```text
-intake       Scout Intent: route and safety check
-frame        LLM: question → {metric, period, baseline}
-recall       memory: owner-confirmed causes for these entities
-decompose    SQL: change per node of the profit tree; drill into nodes above the threshold
-hypothesize  LLM: candidate causes from the catalogue for the nodes that moved
-investigate  SQL: each candidate's evidence templates → EvidenceObject
-verify       critic: re-runs the cited SQL independently, checks record IDs, size and contradictions
-               reject → investigate again with a revised query (max 2 retries) or mark ruled out
-converge     SQL: share of the drop explained, plus the unexplained remainder
-report       LLM: Investigation JSON plus an owner-language summary
-```
+| Agent | Job | Steps it runs | Can block or retry? |
+|---|---|---|---|
+| **Planner** | Frames the question, recalls confirmed causes, finds which part of profit moved, and lists candidate causes from the catalogue | intake, frame, recall, decompose, hypothesize | Chooses which cause is tested next |
+| **Investigator** | Tests one cause with SQL through Zetaris and writes a claim with its records | investigate | Retries with a narrower query when the Checker sends it back |
+| **Checker** | Re-runs each cited query itself and compares the numbers, record IDs and size of effect | verify | Yes. It sends a claim back (max 2 retries) or rejects it. No claim reaches the report without supporting records |
+| **Writer** | Works out how much of the drop is explained and writes the owner's report from the supported claims only | converge, report | No |
+
+**Shared claims list.** Every claim has a status (open, supported or rejected). The Investigator writes claims, the Checker marks them, and the Writer reads only the supported ones. The World Model engine holds this list.
 
 **Core rule:** deterministic SQL does every calculation and every match. The model frames the question, proposes hypotheses, judges the evidence and writes the narrative. **The model never computes a naira figure.**
 
@@ -147,10 +148,10 @@ Each engine is built in `becuz/engines/` from the Meterless open specs. Each one
 
 | Engine | Where it works | What it does in Becuz |
 |---|---|---|
-| **Scout Intent** | intake, investigate, verify | Turns the owner's question into a **signed investigation contract** (metric, period, allowed sources and tables, query budget). Every query and every critic check is tested against that contract. The current `base/scout.py` is only a local router and does not count as this engine. |
-| **H-MEM** | recall, hypothesize, owner confirmation | Stores **owner-confirmed causes** and **the checks that found them**. They are recalled before each investigation, so a later run tests them first. It writes only facts the owner has confirmed. |
-| **World Model** | recall, investigate, report | Gives products, suppliers, staff and payment channels one canonical ID each, linked to their source rows. Every cause points to these entities. Confirmed facts are copied into H-MEM. |
-| **Markovian** | verify | The critic carries a compact summary of accepted and rejected evidence forward, instead of the full history, and logs the tokens saved. |
+| **Scout Intent** | Planner (intake), Investigator, Checker | Turns the owner's question into a **signed investigation contract** (metric, period, allowed sources and tables, query budget). Every query and every critic check is tested against that contract. The current `base/scout.py` is only a local router and does not count as this engine. |
+| **H-MEM** | Planner, owner confirmation | Stores **owner-confirmed causes** and **the checks that found them**. They are recalled before each investigation, so a later run tests them first. It writes only facts the owner has confirmed. |
+| **World Model** | Planner, Investigator, Checker, Writer | Holds the **shared claims list** that every agent reads: the Investigator writes claims, the Checker marks them supported or rejected, the Writer reads the supported ones. It also gives products, suppliers, staff and payment channels one canonical ID each, linked to their source rows. Confirmed facts are copied into H-MEM. |
+| **Markovian** | Checker | The critic carries a compact summary of accepted and rejected evidence forward, instead of the full history, and logs the tokens saved. |
 
 Night mode (overnight multi-attempt runs) is future work. Meterless has not published its job API yet.
 
@@ -182,6 +183,8 @@ All of these are enforced in code, not in prompts:
 - A step budget (40) and a retry cap (2) for the graph.
 - No claim without record IDs; the critic rejects it.
 - Key redaction in every log.
+- Text inside records (expense notes, bank narrations) is data, never instructions. It is passed to the model clearly marked as record content, and a test week includes a note that tries to give orders.
+- The owner decides about people. The report names the records and the gap ("6 transfers recorded by ST01 have no matching bank credit") and suggests a check, never an accusation.
 - Templates use only SQL that both Zetaris (Spark 3.5.3) and the local engine run identically. No `QUALIFY`, no `dayofweek`, no `ORDER BY` without a unique tiebreaker.
 
 ### Sample mode (`SAMPLE_MODE=true`)
@@ -195,13 +198,13 @@ All of these are enforced in code, not in prompts:
 
 ## 9. Success criteria
 
-The eval runs over the 3 scenarios (`python -m becuz.eval`).
+The eval runs over the 5 scenarios (`python -m becuz.eval`).
 
 | Metric | Target |
 |---|---|
 | Cause recall (planted causes found) | ≥ 0.8 |
 | False cause rate (reported causes not planted) | ≤ 0.1 |
-| Red herring rejected | 3 of 3 |
+| Planted false causes rejected | all |
 | Determinism: same cause set and ranks over 5 runs | 5 of 5 |
 | Impact error against the answer key | within ±10% |
 | Run time | under 2 minutes |
