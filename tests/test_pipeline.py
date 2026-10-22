@@ -15,9 +15,6 @@ def sample_pipeline(tmp: str) -> Pipeline:
         nightshift_base_url="http://127.0.0.1:9/v1",
         nightshift_token="",
         nightshift_model="",
-        nvidia_base_url="http://127.0.0.1:9/v1",
-        nvidia_api_key="",
-        nvidia_model="",
     )
     return Pipeline(config)
 

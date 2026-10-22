@@ -31,10 +31,10 @@ def _runtime_token() -> str:
     return ""
 
 
-def _path(name: str, default: Path) -> Path:
+def _path(name: str, default: Path) -> Path | None:
     raw = os.getenv(name, "").strip()
     if raw.lower() == "none":
-        return Path("none")
+        return None
     path = Path(raw).expanduser() if raw else default
     return path if path.is_absolute() else ROOT / path
 
@@ -51,12 +51,9 @@ class Config:
     nightshift_base_url: str
     nightshift_token: str
     nightshift_model: str
-    nvidia_api_key: str
-    nvidia_base_url: str
-    nvidia_model: str
-    ledger_path: Path
-    trace_path: Path
-    memory_path: Path
+    ledger_path: Path | None
+    trace_path: Path | None
+    memory_path: Path | None
     sample_mode: bool
     max_steps: int
     agent_policy: str
@@ -71,10 +68,6 @@ class Config:
     def has_nightshift(self) -> bool:
         return bool(self.nightshift_token)
 
-    @property
-    def has_nvidia(self) -> bool:
-        return bool(self.nvidia_api_key)
-
 
 def load() -> Config:
     _load_env(ROOT / ".env")
@@ -85,15 +78,12 @@ def load() -> Config:
         nightshift_base_url=os.getenv("METERLESS_BASE_URL", "http://127.0.0.1:8088/v1").rstrip("/"),
         nightshift_token=_runtime_token(),
         nightshift_model=os.getenv("METERLESS_MODEL", "meterless/auto").strip(),
-        nvidia_api_key=os.getenv("NVIDIA_API_KEY", "").strip(),
-        nvidia_base_url=os.getenv("NVIDIA_BASE_URL", "https://integrate.api.nvidia.com/v1").rstrip("/"),
-        nvidia_model=os.getenv("NVIDIA_MODEL", "nvidia/nemotron-3.5-lightning-30b-a3b").strip(),
         ledger_path=_path("LEDGER_PATH", ROOT / "logs" / "ledger.jsonl"),
         trace_path=_path("TRACE_PATH", ROOT / "logs" / "trace.jsonl"),
         memory_path=_path("MEMORY_PATH", ROOT / "logs" / "memory.json"),
         sample_mode=_flag("SAMPLE_MODE"),
-        max_steps=int(os.getenv("MAX_STEPS", "6")),
+        max_steps=int(os.getenv("MAX_STEPS") or 6),
         agent_policy=os.getenv("AGENT_POLICY", "").strip(),
         server_host=os.getenv("SERVER_HOST", "127.0.0.1").strip(),
-        server_port=int(os.getenv("SERVER_PORT", "8000")),
+        server_port=int(os.getenv("SERVER_PORT") or 8000),
     )

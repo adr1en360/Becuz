@@ -9,9 +9,8 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 from base.nightshift import NightshiftClient, find_receipt
-from base.nvidia import NvidiaClient
 from base.pipeline import Pipeline
-from base.providers import AllProvidersFailed, Completion, ProviderError, RuntimeUnavailable
+from base.providers import ProviderError
 
 
 class FakeClient:
@@ -55,65 +54,33 @@ class RawResponse:
         return self.body
 
 
-def make_pipeline(tmp: str, nightshift=None, nvidia=None) -> Pipeline:
+def make_pipeline(tmp: str, nightshift=None) -> Pipeline:
     config = SimpleNamespace(
         sample_mode=False,
         has_nightshift=nightshift is not None,
-        has_nvidia=nvidia is not None,
         ledger_path=Path(tmp) / "ledger.jsonl",
         nightshift_base_url="http://nightshift",
         nightshift_token="token",
         nightshift_model="meterless/auto",
-        nvidia_base_url="http://nvidia",
-        nvidia_api_key="key",
-        nvidia_model="model",
     )
     pipeline = Pipeline(config)
     if nightshift is not None:
         pipeline.nightshift = nightshift
-    if nvidia is not None:
-        pipeline.nvidia = nvidia
     return pipeline
 
 
 class ProviderTests(unittest.TestCase):
-    def test_empty_nightshift_falls_back(self) -> None:
+    def test_nightshift_failure_is_reported(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
-            nightshift = FakeClient(
-                Completion(text="", provider="nightshift", model="m", via="nightshift")
-            )
-            nvidia = FakeClient(
-                Completion(
-                    text="fallback",
-                    provider="nvidia-direct",
-                    model="m",
-                    via="nvidia-direct",
-                )
-            )
-            pipeline = make_pipeline(tmp, nightshift, nvidia)
-            result = pipeline.ask("hello")
-
-        self.assertEqual(result.text, "fallback")
-        self.assertEqual(result.via, "nvidia-direct")
-        self.assertEqual(nightshift.calls, 1)
-        self.assertEqual(nvidia.calls, 1)
-
-    def test_both_providers_fail(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            pipeline = make_pipeline(
-                tmp,
-                FakeClient(error=ProviderError("nightshift", 500, "down")),
-                FakeClient(error=RuntimeUnavailable("nvidia-direct", "down")),
-            )
-            with self.assertRaises(AllProvidersFailed) as caught:
+            pipeline = make_pipeline(tmp, FakeClient(error=ProviderError("nightshift", 500, "down")))
+            with self.assertRaises(ProviderError) as caught:
                 pipeline.ask("hello")
         self.assertIn("nightshift", str(caught.exception))
-        self.assertIn("nvidia-direct", str(caught.exception))
 
     def test_no_provider_configured(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             pipeline = make_pipeline(tmp)
-            with self.assertRaises(AllProvidersFailed):
+            with self.assertRaises(ProviderError):
                 pipeline.ask("hello")
 
     def test_find_receipt_requires_matching_shape(self) -> None:
@@ -168,6 +135,13 @@ class ProviderTests(unittest.TestCase):
             with self.assertRaises(ProviderError):
                 client.complete([{"role": "user", "content": "hi"}])
 
+    def test_nightshift_think_block_only_is_empty(self) -> None:
+        body = {"id": "r1", "choices": [{"message": {"content": "<think>hmm</think>  "}}]}
+        with patch("urllib.request.urlopen", return_value=FakeResponse(body)):
+            client = NightshiftClient("http://nightshift", "token", "model")
+            with self.assertRaises(ProviderError):
+                client.complete([{"role": "user", "content": "hi"}])
+
     def test_nightshift_reasoning_only_is_empty(self) -> None:
         body = {"id": "", "choices": [{"message": {"reasoning_content": "ready"}}]}
         with patch("urllib.request.urlopen", return_value=FakeResponse(body)):
@@ -201,26 +175,6 @@ class ProviderTests(unittest.TestCase):
                     ).complete([{"role": "user", "content": "hi"}])
         self.assertTrue(completion.signed)
         self.assertEqual(completion.receipt["_proof"], {"sig": "x"})
-
-    def test_nvidia_empty_choices(self) -> None:
-        with patch("urllib.request.urlopen", return_value=FakeResponse({"choices": []})):
-            client = NvidiaClient("http://nvidia", "key", "model")
-            with self.assertRaises(ProviderError):
-                client.complete([{"role": "user", "content": "hi"}])
-
-    def test_nvidia_invalid_content_part(self) -> None:
-        body = {"id": "r1", "choices": [{"message": {"content": [{"text": 123}]}}]}
-        with patch("urllib.request.urlopen", return_value=FakeResponse(body)):
-            client = NvidiaClient("http://nvidia", "key", "model")
-            with self.assertRaises(ProviderError):
-                client.complete([{"role": "user", "content": "hi"}])
-
-    def test_nvidia_invalid_utf8(self) -> None:
-        with patch("urllib.request.urlopen", return_value=RawResponse(b"\xff")):
-            with self.assertRaises(ProviderError):
-                NvidiaClient("http://nvidia", "key", "model").complete(
-                    [{"role": "user", "content": "hi"}]
-                )
 
 
 if __name__ == "__main__":

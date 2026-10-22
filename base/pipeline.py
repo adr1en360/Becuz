@@ -3,8 +3,7 @@ from __future__ import annotations
 from . import ledger, sample
 from .config import Config
 from .nightshift import NightshiftClient
-from .nvidia import NvidiaClient
-from .providers import AllProvidersFailed, Completion, ProviderError
+from .providers import Completion, ProviderError
 from .tools import is_read_only, query_data
 from .zetaris import rows as extract_rows
 
@@ -15,7 +14,6 @@ class Pipeline:
         self.nightshift = NightshiftClient(
             config.nightshift_base_url, config.nightshift_token, config.nightshift_model
         )
-        self.nvidia = NvidiaClient(config.nvidia_base_url, config.nvidia_api_key, config.nvidia_model)
 
     def ask(self, prompt: str, system: str = "", model: str | None = None) -> Completion:
         messages = []
@@ -33,27 +31,16 @@ class Pipeline:
             self._record_model(result, label or _last_user(messages))
             return result
 
-        errors: list[str] = []
-        if self.config.has_nightshift:
-            try:
-                result = self.nightshift.complete(messages, model=model)
-                if not result.text.strip():
-                    raise ProviderError("nightshift", 0, "empty completion")
-                self._record_model(result, label or _last_user(messages))
-                return result
-            except ProviderError as exc:
-                errors.append(str(exc))
-        if self.config.has_nvidia:
-            try:
-                result = self.nvidia.complete(messages, model=model)
-                if not result.text.strip():
-                    raise ProviderError("nvidia-direct", 0, "empty completion")
-                self._record_model(result, label or _last_user(messages))
-                return result
-            except ProviderError as exc:
-                errors.append(str(exc))
-        self._record_error(label or _last_user(messages), errors)
-        raise AllProvidersFailed(errors or ["no AI provider configured"])
+        label = label or _last_user(messages)
+        try:
+            if not self.config.has_nightshift:
+                raise ProviderError("nightshift", 0, "no runtime token")
+            result = self.nightshift.complete(messages, model=model)
+        except ProviderError as exc:
+            self._record_error(label, str(exc))
+            raise
+        self._record_model(result, label)
+        return result
 
     def query(self, sql: str) -> dict:
         sql = (sql or "").strip()
@@ -91,7 +78,7 @@ class Pipeline:
     def answer(self, prompt: str, system: str = "") -> dict:
         try:
             completion = self.ask(prompt, system=system)
-        except AllProvidersFailed as exc:
+        except ProviderError as exc:
             return {"ok": False, "tool": "ask_model", "error": str(exc)}
         return {
             "ok": True,
@@ -114,7 +101,6 @@ class Pipeline:
                 "tool": "ask_model",
                 "ok": True,
                 "via": completion.via,
-                "provider": completion.provider,
                 "model": completion.model,
                 "request_id": completion.request_id,
                 "signed": completion.signed,
@@ -130,7 +116,6 @@ class Pipeline:
                 "tool": "query_data",
                 "ok": True,
                 "via": via,
-                "provider": via,
                 "sql": sql[:500],
                 "row_count": len(extract_rows(response)),
             },
@@ -148,14 +133,14 @@ class Pipeline:
             },
         )
 
-    def _record_error(self, prompt: str, errors: list[str]) -> None:
+    def _record_error(self, prompt: str, error: str) -> None:
         ledger.write(
             self.config.ledger_path,
             {
                 "kind": "error",
                 "tool": "ask_model",
                 "ok": False,
-                "error": " | ".join(errors),
+                "error": error,
                 "request": prompt[:200],
             },
         )
