@@ -22,8 +22,9 @@ def main() -> int:
 
     try:
         wh = warehouse(config)
-        found = wh.query("SELECT 1 AS one")
-        checks.append(("zetaris", bool(found), f"{len(found)} row(s) via={wh.via}"))
+        # A real USL read: proves the agent user can see the USL, and warms Zetaris before a live run.
+        found = wh.query(f"SELECT MAX(day) AS last_day FROM {wh.usl}.daily_pnl")
+        checks.append(("zetaris", bool(found and found[0]["last_day"]), f"daily_pnl up to {found[0]['last_day']} via={wh.via}"))
     except Exception as exc:
         checks.append(("zetaris", False, str(exc)[:160]))
 

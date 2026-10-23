@@ -42,7 +42,7 @@ python smoke.py
 
 Expected: four `PASS` lines (`config`, `zetaris`, `model`, `agent`).
 
-The `zetaris` line runs `SELECT 1 AS one` through the live warehouse. Then confirm the
+The `zetaris` line reads `daily_pnl` from the `becuz` USL. Then confirm the
 instance with:
 
 ```sql

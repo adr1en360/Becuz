@@ -150,7 +150,7 @@ uv run python smoke.py
 
 ```text
 config   PASS  zetaris=ok nightshift=ok
-zetaris  PASS  1 row(s) via=zetaris
+zetaris  PASS  daily_pnl up to 2026-10-18 via=zetaris
 model    PASS  via=nightshift model=nvidia/nemotron-3-ultra-550b-a55b
 agent    PASS  sample s01: 5 cause(s) supported
 ```

@@ -86,7 +86,7 @@ model    PASS
 agent    PASS
 ```
 
-`smoke.py` runs `SELECT 1 AS one` on Zetaris, asks Nightshift for one word, and
+`smoke.py` reads `daily_pnl` from the `becuz` USL, asks Nightshift for one word, and
 runs the full agent on the bundled s01 shop offline.
 
 ### Useful read-only commands
