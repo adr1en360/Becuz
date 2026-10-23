@@ -11,8 +11,8 @@ from pathlib import Path
 import duckdb
 import sqlglot
 
-from base import ledger
-from base.tools import is_read_only
+from becuz import ledger
+from becuz.safety import is_read_only
 from becuz.usl import SOURCES, activations
 from data.generator import ROOT
 

@@ -23,7 +23,7 @@ import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from base import ledger
+from becuz import ledger
 
 REGISTRY_VERSION = "becuz-intents-1"
 POLICY_PACK_VERSION = "becuz-policy-1"

@@ -148,7 +148,7 @@ Each engine is built in `becuz/engines/` from the Meterless open specs. Each one
 
 | Engine | Where it works | What it does in Becuz |
 |---|---|---|
-| **Scout Intent** | Planner (intake), Investigator, Checker | Turns the owner's question into a **signed investigation contract** (metric, period, allowed sources and tables, query budget). Every query and every critic check is tested against that contract. The current `base/scout.py` is only a local router and does not count as this engine. |
+| **Scout Intent** | Planner (intake), Investigator, Checker | Turns the owner's question into a **signed investigation contract** (metric, period, allowed sources and tables, query budget). Every query and every critic check is tested against that contract. |
 | **H-MEM** | Planner, owner confirmation | Stores **owner-confirmed causes** and **the checks that found them**. They are recalled before each investigation, so a later run tests them first. It writes only facts the owner has confirmed. |
 | **World Model** | Planner, Investigator, Checker, Writer | Holds the **shared claims list** that every agent reads: the Investigator writes claims, the Checker marks them supported or rejected, the Writer reads the supported ones. It also gives products, suppliers, staff and payment channels one canonical ID each, linked to their source rows. Confirmed facts are copied into H-MEM. |
 | **Markovian** | Checker | The critic carries a compact summary of accepted and rejected evidence forward, instead of the full history, and logs the tokens saved. |
@@ -178,7 +178,7 @@ Night mode (overnight multi-attempt runs) is future work. Meterless has not publ
 All of these are enforced in code, not in prompts:
 
 - The agent connects to Zetaris as a **non-admin user**, so Zetaris itself blocks writes. Only the setup scripts use an admin key, to register sources, the USL and the data-quality rules.
-- Read-only SQL guard (`base/tools.py:is_read_only`) on every statement, plus an allowlist of sources and tables.
+- Read-only SQL guard (`becuz/safety.py:is_read_only`) on every statement, plus an allowlist of sources and tables.
 - Templates aggregate in SQL, because Zetaris returns at most 100 rows per call.
 - A step budget (40) and a retry cap (2) for the graph.
 - No claim without record IDs; the critic rejects it.

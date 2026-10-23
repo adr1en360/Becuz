@@ -28,8 +28,6 @@ def warehouse(config, scenario: str = "s01") -> Warehouse:
         from .local_sql import LocalWarehouse
 
         return LocalWarehouse(scenario, config.ledger_path)
-    from base.pipeline import Pipeline
-
     from .zetaris import ZetarisWarehouse
 
-    return ZetarisWarehouse(Pipeline(config))
+    return ZetarisWarehouse.from_config(config)

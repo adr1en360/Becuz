@@ -7,7 +7,6 @@ this file.
 ## Read first
 
 - `README.md` — setup, provider order, and run commands.
-- `SCAFFOLD.md` — what is fixed and what is still empty.
 - `ZETARIS-CONNECTION.md` — Zetaris REST/JDBC connection, preflight, starter
   prompt, and safety rules.
 
@@ -16,12 +15,11 @@ this file.
 - Keep `Becuz/` self-contained. Do not depend on files outside this folder.
 - `.env` holds the live values and is gitignored. `.env.example` is the
   template. Never print, log, or commit secrets.
-- Product logic goes in `becuz/`. Keep `base/` domain-free.
-- `base/` is standard library only. `becuz/` may use LangGraph.
-- A policy is stateless across runs. Keep per-run state in `RunState`.
-- Every model call goes through `Pipeline.ask_messages`.
-- Every Zetaris SQL call goes through `base.tools.is_read_only` first.
-- New tools and policies need unit tests.
+- All code lives in `becuz/`. Sponsor services sit behind `becuz/adapters/`.
+- Per-run state lives in `InvestigationState`; claims live in the World Model.
+- Every model call goes through `Nightshift.ask_messages` (`becuz/adapters/nightshift.py`).
+- Every SQL statement goes through `becuz.safety.is_read_only` first.
+- New nodes, tools and engines need unit tests.
 
 ## Zetaris connection
 
@@ -44,13 +42,8 @@ python smoke.py
 
 Expected: four `PASS` lines (`config`, `zetaris`, `model`, `agent`).
 
-For a Zetaris-only check:
-
-```powershell
-python run.py "SELECT 1 AS one"
-```
-
-Then confirm the instance with:
+The `zetaris` line runs `SELECT 1 AS one` through the live warehouse. Then confirm the
+instance with:
 
 ```sql
 SHOW LIGHTNING DATABASES
@@ -85,8 +78,8 @@ explicit go-ahead.
 
 ## Current state
 
-- The idea is Becuz (Track 2). The base scaffold works; `becuz/` is being
-  built on LangGraph.
+- The idea is Becuz (Track 2). The four-agent LangGraph investigation runs
+  live and in sample mode.
 - Zetaris AWS is the active path; local Docker and `zetaris-platform.zip` are
   not needed.
 - Add tests for every `becuz/` node and tool before expanding the graph.

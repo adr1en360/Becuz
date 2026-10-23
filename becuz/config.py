@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-# Values that switch a log or memory path off.
+# Values that switch a log path off.
 OFF = {"none", "null", "off", "false"}
 
 
@@ -68,10 +68,7 @@ class Config:
     nightshift_model: str
     ledger_path: Path | None
     trace_path: Path | None
-    memory_path: Path | None
     sample_mode: bool
-    max_steps: int
-    agent_policy: str
     server_host: str
     server_port: int
 
@@ -95,10 +92,7 @@ def load() -> Config:
         nightshift_model=os.getenv("METERLESS_MODEL", "meterless/auto").strip(),
         ledger_path=_path("LEDGER_PATH", ROOT / "logs" / "ledger.jsonl"),
         trace_path=_path("TRACE_PATH", ROOT / "logs" / "trace.jsonl"),
-        memory_path=_path("MEMORY_PATH", ROOT / "logs" / "memory.json"),
         sample_mode=_flag("SAMPLE_MODE"),
-        max_steps=_int("MAX_STEPS", 6),
-        agent_policy=os.getenv("AGENT_POLICY", "").strip(),
         server_host=os.getenv("SERVER_HOST", "127.0.0.1").strip(),
         server_port=_int("SERVER_PORT", 8000),
     )

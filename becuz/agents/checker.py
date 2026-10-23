@@ -9,7 +9,7 @@ from __future__ import annotations
 from typing import Literal
 
 from becuz.adapters import Warehouse
-from base.providers import ProviderError
+from becuz.adapters.nightshift import ProviderError
 from becuz.catalogue import CATALOGUE, measure
 from becuz.engines.hmem import HMEM
 from becuz.engines.markovian import Markovian

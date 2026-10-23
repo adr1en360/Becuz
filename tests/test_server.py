@@ -6,32 +6,16 @@ import socket
 import threading
 import unittest
 from types import SimpleNamespace
+from unittest.mock import patch
 
 from server import AppServer
 
-
-class FakeAgent:
-    config = SimpleNamespace(
-        sample_mode=True,
-        has_zetaris=False,
-        has_nightshift=False,
-    )
-
-    def __init__(self, fail: bool = False, unserializable: bool = False):
-        self.fail = fail
-        self.unserializable = unserializable
-
-    def run(self, request: str) -> dict:
-        if self.fail:
-            raise RuntimeError("boom")
-        if self.unserializable:
-            return {"ok": True, "bad": {1}}
-        return {"ok": True, "request": request}
+CONFIG = SimpleNamespace(sample_mode=True, has_zetaris=False, has_nightshift=False)
 
 
 class ServerTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.server = AppServer(("127.0.0.1", 0), FakeAgent())
+        self.server = AppServer(("127.0.0.1", 0), CONFIG)
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
         self.thread.start()
         self.port = self.server.server_address[1]
@@ -52,14 +36,14 @@ class ServerTests(unittest.TestCase):
         finally:
             connection.close()
 
-    def test_health_and_ask(self) -> None:
+    def test_health(self) -> None:
         status, data = self.call("GET", "/health")
         self.assertEqual(status, 200)
-        self.assertTrue(json.loads(data)["ok"])
+        self.assertTrue(json.loads(data)["sample"])
 
-        status, data = self.call("POST", "/ask", {"request": "hello"})
-        self.assertEqual(status, 200)
-        self.assertEqual(json.loads(data)["request"], "hello")
+    def test_only_run_and_health_exist(self) -> None:
+        self.assertEqual(self.call("POST", "/ask", {"request": "hello"})[0], 404)
+        self.assertEqual(self.call("GET", "/")[0], 404)
 
     def test_run_rejects_a_bad_request_and_allows_the_web_ui(self) -> None:
         status, data = self.call("POST", "/run", {"question": ""})
@@ -74,31 +58,18 @@ class ServerTests(unittest.TestCase):
         finally:
             connection.close()
 
-    def test_bad_requests(self) -> None:
-        status, _ = self.call("POST", "/ask", {"request": None})
-        self.assertEqual(status, 400)
-        status, _ = self.call("POST", "/ask", {"request": "x" * 4001})
-        self.assertEqual(status, 400)
-
-    def test_negative_length(self) -> None:
+    def test_bad_bodies(self) -> None:
+        self.assertEqual(self.call("POST", "/run", ["not", "an", "object"])[0], 400)
         with socket.create_connection(("127.0.0.1", self.port), timeout=2) as sock:
-            sock.sendall(
-                b"POST /ask HTTP/1.1\r\nHost: localhost\r\nContent-Length: -1\r\n\r\n"
-            )
+            sock.sendall(b"POST /run HTTP/1.1\r\nHost: localhost\r\nContent-Length: -1\r\n\r\n")
             data = sock.recv(4096)
         self.assertIn(b"400", data)
 
-    def test_agent_error(self) -> None:
-        self.server.agent = FakeAgent(fail=True)
-        status, data = self.call("POST", "/ask", {"request": "hello"})
+    def test_a_crash_returns_500_without_details(self) -> None:
+        with patch("server.investigate", side_effect=RuntimeError("secret detail")):
+            status, data = self.call("POST", "/run", {"question": "Why is my profit down?"})
         self.assertEqual(status, 500)
-        self.assertFalse(json.loads(data)["ok"])
-
-    def test_unserializable_result(self) -> None:
-        self.server.agent = FakeAgent(unserializable=True)
-        status, data = self.call("POST", "/ask", {"request": "hello"})
-        self.assertEqual(status, 500)
-        self.assertFalse(json.loads(data)["ok"])
+        self.assertEqual(json.loads(data)["error"], "investigation failed")
 
 
 if __name__ == "__main__":

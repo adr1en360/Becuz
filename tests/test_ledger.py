@@ -7,7 +7,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from base import ledger
+from becuz import ledger
 
 
 class LedgerTests(unittest.TestCase):

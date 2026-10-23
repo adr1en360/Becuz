@@ -12,8 +12,8 @@ import uuid
 from datetime import date
 from pathlib import Path
 
-from base.pipeline import Pipeline
 from becuz.adapters import warehouse
+from becuz.adapters.nightshift import Nightshift
 from becuz.catalogue import CATALOGUE
 from becuz.engines.hmem import HMEM
 from becuz.engines.scout_intent import ContractGate, ContractRefused, Scout
@@ -96,7 +96,7 @@ def investigate(request: dict, config) -> dict:
            "via": wh.via, "started": time.monotonic(), "queries": lambda: wh.used,
            "trace_file": shown(trace.path)}
     world = WorldModel(log_path=logs / "world.jsonl" if logs else None)  # the shared claims list
-    judge = RulesJudge() if config.sample_mode else NightshiftJudge(Pipeline(config))
+    judge = RulesJudge() if config.sample_mode else NightshiftJudge(Nightshift(config))
     # The Checker's bounded context; its carryover is one summary line, so the spec's minimum budget fits.
     chain = Markovian(run_id, config=ChunkConfig(carryover_tokens=128), log_path=logs / "markovian.jsonl" if logs else None)
     graph = build_graph(wh, trace, run, world, open_memory(logs), chain, judge)

@@ -29,7 +29,7 @@ uses `.env`; the variable names are the same. `.env.example` is the template.
 ## Protocol choice
 
 Use **REST** for agent work. It needs no Java runtime and no JDBC driver, and
-the existing Python client in `base/zetaris.py` already uses it.
+the Python client in `becuz/adapters/zetaris.py` already uses it.
 
 Use JDBC only if you specifically need the Zetaris Java driver. This agent does
 not require it.
@@ -71,23 +71,7 @@ Body:
 `queryId` and `X-Request-ID` must be valid UUIDs. The API key belongs in the
 `Authorization` header, never in a URL.
 
-### Check it from this folder
-
-```powershell
-python run.py "SELECT 1 AS one"
-```
-
-Expected: `ok: true`, `row_count: 1`.
-
-A real sample query:
-
-```powershell
-python run.py "SELECT * FROM NY_TAXI.taxi_zones LIMIT 5"
-```
-
-Expected: `row_count: 5`.
-
-### Full preflight
+### Preflight from this folder
 
 ```powershell
 python smoke.py
@@ -102,8 +86,8 @@ model    PASS
 agent    PASS
 ```
 
-`smoke.py` checks Zetaris, the model provider, and the agent. Use `run.py` for
-a Zetaris-only check.
+`smoke.py` runs `SELECT 1 AS one` on Zetaris, asks Nightshift for one word, and
+runs the full agent on the bundled s01 shop offline.
 
 ### Useful read-only commands
 
@@ -236,7 +220,6 @@ Last checked: 2026-10-22.
 
 - Zetaris AWS cluster reachable.
 - `SELECT 1 AS one` returns 1 row.
-- `SELECT * FROM NY_TAXI.taxi_zones LIMIT 5` returns 5 rows.
 - `smoke.py` passes 4/4.
 - Unit tests pass offline.
 - Nightshift is running on `127.0.0.1:8088`.

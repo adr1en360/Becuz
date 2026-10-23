@@ -10,7 +10,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-from base.providers import redact
+from becuz.safety import redact
 
 
 class Trace:

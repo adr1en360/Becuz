@@ -16,7 +16,7 @@ import unicodedata
 from datetime import datetime, timezone
 from pathlib import Path
 
-from base import ledger
+from becuz import ledger
 
 AUTO_MERGE, REVIEW = 0.85, 0.82  # similarity bands from the spec's decide()
 

@@ -2,7 +2,7 @@
 
 The SQL re-check decides whether a claim is supported; the model only rates how convincing the
 evidence is and writes a one-line note for the owner. Live, every call goes through
-Pipeline.ask_messages (Nightshift, Nemotron) and records the model that answered. In sample mode
+Nightshift.ask_messages (Nemotron) and records the model that answered. In sample mode
 the same judgement comes from fixed rules, labelled "sample-rules", so no network is needed.
 """
 from __future__ import annotations
@@ -10,8 +10,7 @@ from __future__ import annotations
 import json
 import re
 
-from base.pipeline import Pipeline
-from base.providers import ProviderError
+from becuz.adapters.nightshift import Nightshift, ProviderError
 
 JUDGE_MODEL = "meterless/judge"
 FRAMING = ("You are the Checker in Becuz, which explains why a small shop's profit changed. "
@@ -58,15 +57,15 @@ class NightshiftJudge:
 
     via = "nightshift"
 
-    def __init__(self, pipeline: Pipeline):
-        self.pipeline, self.calls, self.models = pipeline, 0, {}
+    def __init__(self, nightshift: Nightshift):
+        self.nightshift, self.calls, self.models = nightshift, 0, {}
 
     def __call__(self, msgs: list[dict]) -> str:
         last_error = None
         for _ in range(2):
             self.calls += 1
             try:
-                completion = self.pipeline.ask_messages(msgs, label="checker judgement", model=JUDGE_MODEL)
+                completion = self.nightshift.ask_messages(msgs, label="checker judgement", model=JUDGE_MODEL)
             except ProviderError as exc:
                 last_error = exc
                 continue

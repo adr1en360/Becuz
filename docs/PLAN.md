@@ -13,14 +13,14 @@ This plan builds `docs/PRD.md` in small slices. Each slice has a fixed scope and
 - Run a read-only audit before writing code. Report the findings, then build.
 - Before writing code against a table, show its DDL (`DESCRIBE <source>.<table>`). Before editing any file over 50 lines, show its first 10 lines.
 - Install packages with `uv add` and run code with `uv run`.
-- Send every model call through `Pipeline.ask_messages`, and pass every SQL statement through `is_read_only`.
+- Send every model call through `Nightshift.ask_messages`, and pass every SQL statement through `becuz.safety.is_read_only`.
 - Give every non-trivial node, tool and template a test. Run the full suite before handing off.
 - Back browser claims with screenshots.
 
 **Ask first**
 - Any Zetaris write (`CREATE`, `REGISTER`, `CACHE`). Show a dry run first.
 - A new dependency.
-- Any change to `base/`.
+- Any change to the read-only guard in `becuz/safety.py`.
 - Anything outside the PRD scope, or anything that changes what judges see.
 
 **Never**
@@ -34,7 +34,7 @@ This plan builds `docs/PRD.md` in small slices. Each slice has a fixed scope and
 - Check the slice against the submission bar: the strong and weak submission examples, the submission form preview, the demo video guide, and what a judge will open and run. Note any gap before starting the next slice.
 
 **Code shape**
-- `base/` stays domain-free and standard library only. Product code lives in `becuz/`.
+- All code lives in `becuz/`.
 - Small files with one job each. State and schemas are typed. Each sponsor service sits behind its own adapter.
 - Write the least code that works. No speculative options or layers.
 
@@ -42,7 +42,7 @@ This plan builds `docs/PRD.md` in small slices. Each slice has a fixed scope and
 
 ## Target repository structure
 
-This follows the organizers' strong repository layout, adapted to Becuz. `base/` keeps the existing domain-free scaffold.
+This follows the organizers' strong repository layout, adapted to Becuz.
 
 ```text
 becuz/
@@ -50,6 +50,8 @@ becuz/
   metrics.py            metric tree and its SQL templates
   catalogue.py          cause catalogue: tags and evidence templates
   tracing.py            per-run trace in logs/trace-<run_id>.jsonl
+  config.py ledger.py   .env loading and the event ledger
+  safety.py             read-only SQL guard and secret redaction
   agents/               planner.py, investigator.py, checker.py, writer.py
   orchestration/        graph.py, state.py
   engines/              scout_intent.py, hmem.py, world_model.py, markovian.py
@@ -63,7 +65,7 @@ input_examples/         example_1.json to example_3.json
 output_examples/        real saved outputs
 logs/                   created at runtime
 tests/
-run.py  server.py  pyproject.toml  uv.lock  .env.example  README.md
+run.py  server.py  smoke.py  pyproject.toml  uv.lock  .env.example  README.md
 ```
 
 ## Slices
@@ -109,12 +111,10 @@ run.py  server.py  pyproject.toml  uv.lock  .env.example  README.md
 
 | Need | Use |
 |---|---|
-| Model calls (Nightshift, ledger) | `Pipeline.ask_messages` in `base/pipeline.py` |
-| Zetaris queries | `Pipeline.query` in `base/pipeline.py` |
-| Read-only SQL check | `is_read_only` in `base/tools.py` |
-| Event ledger | `ledger.write` in `base/ledger.py` |
-| Memory interface | the `Memory` protocol in `base/memory.py` |
-| Intake routing and safety | Scout in `base/scout.py` |
-| HTTP server | the `Handler` in `server.py` (add `/run`) |
+| Model calls (Nightshift, ledger) | `Nightshift.ask_messages` in `becuz/adapters/nightshift.py` |
+| Zetaris queries | `ZetarisWarehouse.query` in `becuz/adapters/zetaris.py` |
+| Read-only SQL check | `is_read_only` in `becuz/safety.py` |
+| Event ledger | `ledger.write` in `becuz/ledger.py` |
+| HTTP server | the `Handler` in `server.py` (`POST /run`) |
 
-`base/sample.py` returns fixed rows and answers. Becuz does not use it. Sample mode goes through `becuz/adapters/local_sql.py` and the sample-rules instead, so `base/` stays unchanged.
+Sample mode goes through `becuz/adapters/local_sql.py` and the sample-rules judge. There are no canned rows or answers.

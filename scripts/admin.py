@@ -4,8 +4,8 @@ from __future__ import annotations
 import os
 import sys
 
-from base.config import load
-from base.zetaris import ZetarisClient
+from becuz.adapters.zetaris import ZetarisClient
+from becuz.config import load
 
 HIDDEN = "***"
 
