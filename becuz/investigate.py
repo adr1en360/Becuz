@@ -11,6 +11,7 @@ from datetime import date
 from pathlib import Path
 
 from becuz.adapters import warehouse
+from becuz.engines.scout_intent import ContractGate, ContractRefused, Scout
 from becuz.orchestration.graph import STEP_LIMIT, build_graph
 from becuz.tracing import Trace
 from data.generator import SCENARIOS
@@ -21,17 +22,6 @@ REPO = Path(__file__).resolve().parent.parent
 
 class BadRequest(ValueError):
     pass
-
-
-class Counted:
-    """Counts queries for the report's stats without changing the warehouse."""
-
-    def __init__(self, wh):
-        self.wh, self.via, self.usl, self.count = wh, wh.via, wh.usl, 0
-
-    def query(self, sql: str) -> list[dict]:
-        self.count += 1
-        return self.wh.query(sql)
 
 
 def parse(request: dict, sample_mode: bool) -> tuple[str, date | None, str | None]:
@@ -64,11 +54,18 @@ def shown(path) -> str:
 def investigate(request: dict, config) -> dict:
     question, week_start, scenario = parse(request, config.sample_mode)
     run_id = f"inv-{uuid.uuid4().hex[:10]}"
-    wh = Counted(warehouse(config, scenario or "s01"))
-    trace = Trace(run_id, config.trace_path.parent if config.trace_path else None)
+    logs = config.trace_path.parent if config.trace_path else None
+    trace = Trace(run_id, logs)
+    # Every query passes the Scout Intent contract gate; it also counts queries for the report.
+    wh = ContractGate(warehouse(config, scenario or "s01"), Scout(log_path=logs / "scout.jsonl" if logs else None))
     run = {"run_id": run_id, "mode": "sample" if config.sample_mode else "live", "scenario": scenario,
-           "via": wh.via, "started": time.monotonic(), "queries": lambda: wh.count,
+           "via": wh.via, "started": time.monotonic(), "queries": lambda: wh.used,
            "trace_file": shown(trace.path)}
     graph = build_graph(wh, trace, run)
     state = {"question": question} | ({"week_start": week_start} if week_start else {})
-    return graph.invoke(state, {"recursion_limit": STEP_LIMIT})["report"]
+    try:
+        return graph.invoke(state, {"recursion_limit": STEP_LIMIT})["report"]
+    except ContractRefused as exc:
+        if exc.reason == "out-of-scope":
+            raise BadRequest("Becuz answers questions about why your profit changed") from None
+        raise

@@ -5,6 +5,7 @@ from datetime import date, timedelta
 
 from becuz.adapters import Warehouse
 from becuz.catalogue import CATALOGUE
+from becuz.engines.scout_intent import ContractRefused
 from becuz.metrics import profit_tree
 from becuz.orchestration.state import InvestigationState
 from becuz.tracing import Trace
@@ -24,6 +25,15 @@ def profit_effects(tree: dict) -> dict[str, float]:
 
 def make_planner(wh: Warehouse, trace: Trace):
     def planner(state: InvestigationState) -> dict:
+        # Intake: Scout Intent reads the question and signs the contract every later query must fit.
+        contract = wh.open(state["question"], trace.run_id)
+        intent = contract["intent"]
+        trace.emit("Planner", "scout_contract", state["question"],
+                   f"{intent['primary']} (confidence {intent['confidence']:.2f}), contract {contract['contractId']}, "
+                   f"{len(contract['scope']['capabilities'])} tables, {contract['scope']['budget']['queriesMax']} queries max",
+                   confidence=intent["confidence"], engine="scout_intent")
+        if intent["confidence"] == 0:
+            raise ContractRefused("out-of-scope")
         start = state.get("week_start")
         start, end = latest_week(wh) if start is None else (start, start + timedelta(days=6))
         tree = profit_tree(wh, start, end)

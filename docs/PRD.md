@@ -139,7 +139,7 @@ The test for each sponsor: if we removed it, would the agent still work? It must
 |---|---|
 | **Zetaris** | The data layer, and it does real work in the agent. A **USL model** (Unified Semantic Layer) declares the shop's tables and keys once. Zetaris then computes `daily_pnl`, the profit breakdown, from the four sources, and the USL definition feeds the World Model. **Data-quality rules** run inside Zetaris. For example, a transfer sale with no matching bank credit returns the failing record IDs, which become receipts, and the critic re-runs the rules. Every metric, evidence and critic query goes through Zetaris. |
 | **Meterless Nightshift** | The app's only model provider (`127.0.0.1:8088/v1`). Every model call goes through it and gets a signed receipt in the ledger. The NVIDIA key lives in Nightshift's Providers tab, not in this project. |
-| **Meterless engines** | All four, each powering a working feature with a passing conformance test. Placement is in the table below and in `docs/diagrams/architecture.html`. |
+| **Meterless engines** | All four, each powering a working feature with a passing test: a Python port of the engine's conformance checks, or for Scout Intent (which ships evals, not a conformance suite) tests written from its hard rules. Placement is in the table below and in `docs/diagrams/architecture.html`. |
 | **NVIDIA Nemotron** | Lighter steps run on the fast lane (Nemotron 3.5 Lightning). The critic runs on the deep lane (Nemotron 3.5 Super). Every model event logs the model that actually handled the request, so the trace shows where Nemotron did the work. We are competing for the NVIDIA Nemotron award. The routing mode is **to confirm** (§11). |
 
 ### Meterless engine placement (agreed)

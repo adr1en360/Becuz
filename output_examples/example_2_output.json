@@ -1,5 +1,5 @@
 {
-  "run_id": "inv-8c200fac30",
+  "run_id": "inv-b45882e011",
   "status": "complete",
   "errors": [],
   "mode": "sample",
@@ -188,7 +188,7 @@
     "The report wording comes from fixed templates; every number comes from SQL."
   ],
   "stats": {
-    "duration_s": 0.73,
+    "duration_s": 0.66,
     "zetaris_queries": 27,
     "model_calls": 0,
     "retries": 0,
@@ -198,5 +198,5 @@
       "rules": 1
     }
   },
-  "trace_file": "logs/trace-inv-8c200fac30.jsonl"
+  "trace_file": "logs/trace-inv-b45882e011.jsonl"
 }
