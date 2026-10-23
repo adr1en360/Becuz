@@ -39,41 +39,41 @@ export function Composer({ running, showScenario, note, onSubmit }: Props) {
         onChange={(event) => setQuestion(event.target.value)}
         className={`${field} w-full resize-none px-4 py-3.5 text-lg leading-snug`}
       />
-      {showScenario && (
-        <div className="flex flex-col gap-2">
-          <label htmlFor="scenario" className="text-sm font-semibold">
-            Test week
-          </label>
-          <div className="relative w-fit">
-            <select
-              id="scenario"
-              value={scenario}
-              onChange={(event) => setScenario(event.target.value)}
-              className="h-11 appearance-none rounded-full border border-desk-line bg-desk-2 pl-4 pr-10 text-base text-paper"
-            >
-              {SAMPLE_SCENARIOS.map((id) => (
-                <option key={id} value={id}>
-                  Scenario {id}
-                </option>
-              ))}
-            </select>
-            <AltArrowDownIcon size={16} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2" aria-hidden />
+      <div className="flex flex-wrap items-end gap-2 sm:gap-3">
+        {showScenario && (
+          <div className="flex flex-col gap-2">
+            <label htmlFor="scenario" className="text-sm font-semibold">
+              Test week
+            </label>
+            <div className="relative w-fit">
+              <select
+                id="scenario"
+                value={scenario}
+                onChange={(event) => setScenario(event.target.value)}
+                className="h-12 appearance-none rounded-full border border-desk-line bg-desk-2 pl-4 pr-9 text-base text-paper"
+              >
+                {SAMPLE_SCENARIOS.map((id) => (
+                  <option key={id} value={id}>
+                    Scenario {id}
+                  </option>
+                ))}
+              </select>
+              <AltArrowDownIcon size={16} className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" aria-hidden />
+            </div>
           </div>
-        </div>
-      )}
-      <div className="flex flex-col items-start gap-3">
+        )}
         <button
           type="submit"
           disabled={!ready}
-          className="inline-flex h-12 items-center gap-2 rounded-full bg-flare px-6 text-base font-bold text-desk transition-colors hover:bg-paper disabled:cursor-not-allowed disabled:bg-desk-2 disabled:text-desk-muted"
+          className="inline-flex h-12 items-center gap-2 rounded-full bg-flare px-5 text-base font-bold sm:px-6 text-desk transition-colors hover:bg-paper disabled:cursor-not-allowed disabled:bg-desk-2 disabled:text-desk-muted"
         >
           {running ? "Investigating" : "Investigate"}
           <ArrowRightIcon size={18} aria-hidden />
         </button>
-        <p id="composer-note" role="status" className="max-w-sm text-sm text-desk-muted">
-          {note}
-        </p>
       </div>
+      <p id="composer-note" role="status" className="max-w-sm text-sm text-desk-muted">
+        {note}
+      </p>
     </form>
   );
 }
