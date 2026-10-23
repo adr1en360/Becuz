@@ -5,12 +5,16 @@ week; default the latest week in the data), "scenario": "s01" (sample mode only)
 """
 from __future__ import annotations
 
+import json
+import re
 import time
 import uuid
 from datetime import date
 from pathlib import Path
 
 from becuz.adapters import warehouse
+from becuz.catalogue import CATALOGUE
+from becuz.engines.hmem import HMEM
 from becuz.engines.scout_intent import ContractGate, ContractRefused, Scout
 from becuz.engines.world_model import WorldModel
 from becuz.orchestration.graph import STEP_LIMIT, build_graph
@@ -52,6 +56,32 @@ def shown(path) -> str:
         return Path(path).name
 
 
+def open_memory(logs: Path | None) -> HMEM:
+    return HMEM(path=logs / "hmem.json" if logs else None, ledger_path=logs / "hmem.jsonl" if logs else None)
+
+
+def confirm(run_id: str, cause_id: str, config) -> str:
+    """The owner confirms a cause from an earlier run; H-MEM stores it so later runs test it first.
+
+    Only a cause the Checker supported in that run can be confirmed.
+    """
+    logs = config.trace_path.parent if config.trace_path else None
+    trace_file = logs / f"trace-{run_id}.jsonl" if logs and re.fullmatch(r"inv-[0-9a-f]{10}", run_id) else None
+    if not trace_file or not trace_file.exists():
+        raise BadRequest(f"no trace found for run {run_id}")
+    lines = [json.loads(line) for line in trace_file.read_text(encoding="utf-8").splitlines()]
+    if not any(l["agent_name"] == "Checker" and l["action"] == "supported" and l["input_summary"] == cause_id for l in lines):
+        raise BadRequest(f"{cause_id} was not a supported cause in run {run_id}")
+    spec = CATALOGUE[cause_id]
+    memory = open_memory(logs)
+    fact = memory.add(f"{spec.title}. The owner confirmed this cause after run {run_id}.", "owner_confirm",
+                      tags=["owner_confirmed", f"cause:{cause_id}", spec.component], agent_id="owner", run_id=run_id)
+    memory.add(f"How it was found: {spec.falsified_if} was tested against the records.", "owner_confirm",
+               type="procedural", tags=["procedure", f"cause:{cause_id}"], agent_id="owner", run_id=run_id,
+               related_to=[fact])
+    return fact
+
+
 def investigate(request: dict, config) -> dict:
     question, week_start, scenario = parse(request, config.sample_mode)
     run_id = f"inv-{uuid.uuid4().hex[:10]}"
@@ -63,7 +93,7 @@ def investigate(request: dict, config) -> dict:
            "via": wh.via, "started": time.monotonic(), "queries": lambda: wh.used,
            "trace_file": shown(trace.path)}
     world = WorldModel(log_path=logs / "world.jsonl" if logs else None)  # the shared claims list
-    graph = build_graph(wh, trace, run, world)
+    graph = build_graph(wh, trace, run, world, open_memory(logs))
     state = {"question": question} | ({"week_start": week_start} if week_start else {})
     try:
         return graph.invoke(state, {"recursion_limit": STEP_LIMIT})["report"]

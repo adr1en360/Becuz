@@ -12,6 +12,7 @@ class InvestigationState(TypedDict, total=False):
     tree: dict  # metrics.profit_tree output
     queue: list[str]  # causes still to test, most promising first
     current: str | None  # the cause being tested or re-tested
+    recalled: dict[str, str]  # cause_id -> H-MEM memory id, for causes the owner confirmed before
     report: dict  # the Writer's Investigation JSON
 
 

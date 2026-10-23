@@ -14,6 +14,7 @@ from becuz.agents.checker import make_checker, make_router
 from becuz.agents.investigator import make_investigator
 from becuz.agents.planner import make_planner
 from becuz.agents.writer import make_writer
+from becuz.engines.hmem import HMEM
 from becuz.engines.world_model import WorldModel
 from becuz.orchestration.state import InvestigationState
 from becuz.tracing import Trace
@@ -22,11 +23,11 @@ RETRY = RetryPolicy(max_attempts=3, retry_on=lambda exc: isinstance(exc, QueryEr
 STEP_LIMIT = 60  # planner + 6 causes x (investigate + check) x up to 3 attempts + writer, with room to spare
 
 
-def build_graph(wh: Warehouse, trace: Trace, run: dict, world: WorldModel):
+def build_graph(wh: Warehouse, trace: Trace, run: dict, world: WorldModel, memory: HMEM):
     graph = StateGraph(InvestigationState)
-    graph.add_node("planner", make_planner(wh, trace), retry_policy=RETRY)
+    graph.add_node("planner", make_planner(wh, trace, memory), retry_policy=RETRY)
     graph.add_node("investigator", make_investigator(wh, trace, world), retry_policy=RETRY)
-    graph.add_node("checker", make_checker(wh, trace, world), retry_policy=RETRY)
+    graph.add_node("checker", make_checker(wh, trace, world, memory), retry_policy=RETRY)
     graph.add_node("writer", make_writer(wh, trace, run, world))
     graph.add_edge(START, "planner")
     graph.add_edge("planner", "investigator")

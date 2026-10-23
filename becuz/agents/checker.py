@@ -10,6 +10,7 @@ from typing import Literal
 
 from becuz.adapters import Warehouse
 from becuz.catalogue import measure
+from becuz.engines.hmem import HMEM
 from becuz.engines.world_model import WorldModel
 from becuz.orchestration.state import InvestigationState, period
 from becuz.schemas import MIN_EFFECT_NGN, TOLERANCE_NGN
@@ -37,7 +38,7 @@ def verdict(claim: dict, rerun_effect: float | None, rerun_rows: list[str]) -> t
     return "supported", f"The re-check matched: {abs(rerun_effect):,.0f} naira from {len(rerun_rows)} records."
 
 
-def make_checker(wh: Warehouse, trace: Trace, world: WorldModel):
+def make_checker(wh: Warehouse, trace: Trace, world: WorldModel, memory: HMEM):
     def checker(state: InvestigationState) -> dict:
         cause = state["current"]
         claim_id = world.claim_id(cause, period(state))
@@ -48,6 +49,10 @@ def make_checker(wh: Warehouse, trace: Trace, world: WorldModel):
         world.update_claim(claim_id, "Checker", retries=retries, reason=reason,
                            check={"match": status != "sent_back", "rerun_value_ngn": rerun.effect_ngn, "note": reason})
         world.set_status(claim_id, status, "Checker", reason)
+        memory_id = state.get("recalled", {}).get(cause)
+        if memory_id and status in ("supported", "rejected"):
+            # H-MEM feedback: a remembered cause that holds again gains confidence; one that fails is flagged.
+            memory.feedback(memory_id, "helpful" if status == "supported" else "wrong")
         target = "Investigator" if status == "sent_back" or state["queue"] else "Writer"
         trace.emit("Checker", status, cause, reason, target_agent=target, confidence=1.0 if status == "supported" else None,
                    retry_count=retries, status="needs_revision" if status == "sent_back" else "success",
