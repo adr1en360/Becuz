@@ -12,6 +12,7 @@ from pathlib import Path
 
 from becuz.adapters import warehouse
 from becuz.engines.scout_intent import ContractGate, ContractRefused, Scout
+from becuz.engines.world_model import WorldModel
 from becuz.orchestration.graph import STEP_LIMIT, build_graph
 from becuz.tracing import Trace
 from data.generator import SCENARIOS
@@ -61,7 +62,8 @@ def investigate(request: dict, config) -> dict:
     run = {"run_id": run_id, "mode": "sample" if config.sample_mode else "live", "scenario": scenario,
            "via": wh.via, "started": time.monotonic(), "queries": lambda: wh.used,
            "trace_file": shown(trace.path)}
-    graph = build_graph(wh, trace, run)
+    world = WorldModel(log_path=logs / "world.jsonl" if logs else None)  # the shared claims list
+    graph = build_graph(wh, trace, run, world)
     state = {"question": question} | ({"week_start": week_start} if week_start else {})
     try:
         return graph.invoke(state, {"recursion_limit": STEP_LIMIT})["report"]

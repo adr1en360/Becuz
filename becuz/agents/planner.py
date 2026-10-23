@@ -43,6 +43,6 @@ def make_planner(wh: Warehouse, trace: Trace):
         trace.emit("Planner", "plan", state["question"],
                    f"profit change {tree['profit_ngn']['change']:+,.0f} for {start}..{end}; testing {', '.join(queue)}",
                    target_agent="Investigator")
-        return {"week_start": start, "week_end": end, "tree": tree, "queue": queue, "claims": {}, "current": None}
+        return {"week_start": start, "week_end": end, "tree": tree, "queue": queue, "current": None}
 
     return planner

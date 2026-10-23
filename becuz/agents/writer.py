@@ -12,7 +12,8 @@ from becuz.adapters import Warehouse
 from becuz.agents.planner import profit_effects
 from becuz.catalogue import CATALOGUE
 from becuz.metrics import week
-from becuz.orchestration.state import InvestigationState
+from becuz.engines.world_model import WorldModel
+from becuz.orchestration.state import InvestigationState, period
 from becuz.schemas import MIN_EFFECT_NGN, Investigation
 from becuz.tracing import Trace
 
@@ -29,13 +30,14 @@ def node_status(effect: float, explained: float) -> str:
     return "explained" if abs(effect - explained) <= 0.1 * abs(effect) else "partly_explained"
 
 
-def assemble(state: InvestigationState, run: dict) -> Investigation:
+def assemble(state: InvestigationState, run: dict, world: WorldModel) -> Investigation:
     tree = state["tree"]
     baseline = week(state["week_start"], state["week_end"])
     profit = tree["profit_ngn"]
     change = profit["change"]
-    claims = state["claims"].values()
-    supported = sorted((c for c in claims if c["status"] == "supported"), key=lambda c: c["effect_ngn"])
+    claims = world.claims_by_cause(period(state)).values()
+    # The Writer may only use what the World Model hands it: the claims the Checker supported.
+    supported = sorted(world.context_for("writer")["claims"], key=lambda c: c["effect_ngn"])
     effects = profit_effects(tree)
     explained_by = {name: sum(c["effect_ngn"] for c in supported if CATALOGUE[c["cause_id"]].component == name)
                     for name in effects}
@@ -105,10 +107,10 @@ def assemble(state: InvestigationState, run: dict) -> Investigation:
     return Investigation.model_validate(data)
 
 
-def make_writer(wh: Warehouse, trace: Trace, run: dict):
+def make_writer(wh: Warehouse, trace: Trace, run: dict, world: WorldModel):
     def writer(state: InvestigationState) -> dict:
-        report = assemble(state, run)
-        trace.emit("Writer", "write_report", f"{len(state['claims'])} claims",
+        report = assemble(state, run, world)
+        trace.emit("Writer", "write_report", f"{len(world.claims())} claims from the World Model",
                    f"{len(report.causes)} supported, {len(report.ruled_out)} ruled out, "
                    f"{report.convergence.explained_pct}% of the change explained")
         return {"report": report.model_dump(mode="json")}

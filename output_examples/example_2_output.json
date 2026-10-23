@@ -1,5 +1,5 @@
 {
-  "run_id": "inv-b45882e011",
+  "run_id": "inv-c3bb6cbdf6",
   "status": "complete",
   "errors": [],
   "mode": "sample",
@@ -99,7 +99,7 @@
           "check": {
             "match": true,
             "rerun_value_ngn": -33100.0,
-            "note": "re-run matched -33,100 with 6 records",
+            "note": "The re-check matched: 33,100 naira from 6 records.",
             "model": null,
             "via": "rules",
             "signed": false
@@ -125,35 +125,35 @@
     {
       "cause_id": "supplier_cost_rise",
       "hypothesis": "A supplier raised the unit cost of a product",
-      "reason": "no loss: measured +0",
+      "reason": "The records show no loss from this cause this week.",
       "tested_value_ngn": 0.0,
       "evidence_id": null
     },
     {
       "cause_id": "wastage_spike",
       "hypothesis": "More stock expired or was damaged than usual",
-      "reason": "no loss: measured +0",
+      "reason": "The records show no loss from this cause this week.",
       "tested_value_ngn": 0.0,
       "evidence_id": null
     },
     {
       "cause_id": "pos_charge_rise",
       "hypothesis": "The POS terminal charged a higher fee",
-      "reason": "no loss: measured +0",
+      "reason": "The records show no loss from this cause this week.",
       "tested_value_ngn": 0.0,
       "evidence_id": null
     },
     {
       "cause_id": "promo_overrun",
       "hypothesis": "A discount kept running after the promo ended",
-      "reason": "no loss: measured +0",
+      "reason": "The records show no loss from this cause this week.",
       "tested_value_ngn": 0.0,
       "evidence_id": null
     },
     {
       "cause_id": "sales_volume_drop",
       "hypothesis": "Fewer items sold than in a usual week",
-      "reason": "no loss: measured +0",
+      "reason": "The records show no loss from this cause this week.",
       "tested_value_ngn": 0.0,
       "evidence_id": null
     }
@@ -188,7 +188,7 @@
     "The report wording comes from fixed templates; every number comes from SQL."
   ],
   "stats": {
-    "duration_s": 0.66,
+    "duration_s": 0.56,
     "zetaris_queries": 27,
     "model_calls": 0,
     "retries": 0,
@@ -198,5 +198,5 @@
       "rules": 1
     }
   },
-  "trace_file": "logs/trace-inv-b45882e011.jsonl"
+  "trace_file": "logs/trace-inv-c3bb6cbdf6.jsonl"
 }

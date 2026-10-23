@@ -1,5 +1,5 @@
 {
-  "run_id": "inv-fd4833529e",
+  "run_id": "inv-36e654284b",
   "status": "complete",
   "errors": [],
   "mode": "sample",
@@ -94,7 +94,7 @@
           "check": {
             "match": true,
             "rerun_value_ngn": -46992.0,
-            "note": "re-run matched -46,992 with 1 records",
+            "note": "The re-check matched: 46,992 naira from 1 records.",
             "model": null,
             "via": "rules",
             "signed": false
@@ -166,7 +166,7 @@
           "check": {
             "match": true,
             "rerun_value_ngn": -38611.0,
-            "note": "re-run matched -38,611 with 26 records",
+            "note": "The re-check matched: 38,611 naira from 26 records.",
             "model": null,
             "via": "rules",
             "signed": false
@@ -241,7 +241,7 @@
           "check": {
             "match": true,
             "rerun_value_ngn": -35948.0,
-            "note": "re-run matched -35,948 with 29 records",
+            "note": "The re-check matched: 35,948 naira from 29 records.",
             "model": null,
             "via": "rules",
             "signed": false
@@ -292,7 +292,7 @@
           "check": {
             "match": true,
             "rerun_value_ngn": -28360.0,
-            "note": "re-run matched -28,360 with 6 records",
+            "note": "The re-check matched: 28,360 naira from 6 records.",
             "model": null,
             "via": "rules",
             "signed": false
@@ -357,7 +357,7 @@
           "check": {
             "match": true,
             "rerun_value_ngn": -20475.0,
-            "note": "re-run matched -20,475 with 19 records",
+            "note": "The re-check matched: 20,475 naira from 19 records.",
             "model": null,
             "via": "rules",
             "signed": false
@@ -382,7 +382,7 @@
     {
       "cause_id": "pos_charge_rise",
       "hypothesis": "The POS terminal charged a higher fee",
-      "reason": "no loss: measured +0",
+      "reason": "The records show no loss from this cause this week.",
       "tested_value_ngn": 0.0,
       "evidence_id": null
     }
@@ -437,7 +437,7 @@
     "The report wording comes from fixed templates; every number comes from SQL."
   ],
   "stats": {
-    "duration_s": 0.62,
+    "duration_s": 0.59,
     "zetaris_queries": 27,
     "model_calls": 0,
     "retries": 0,
@@ -447,5 +447,5 @@
       "rules": 1
     }
   },
-  "trace_file": "logs/trace-inv-fd4833529e.jsonl"
+  "trace_file": "logs/trace-inv-36e654284b.jsonl"
 }
