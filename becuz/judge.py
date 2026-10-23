@@ -44,7 +44,7 @@ def rules(claim: dict) -> str:
     """Sample mode's rating: fixed rules on the same claim, in the model's reply format."""
     records, supported = len(claim["row_ids"]), claim["status"] == "supported"
     confidence = (0.9 if records >= 5 else 0.7) if supported else 0.0
-    note = f"{records} records back this." if supported else "The records do not support this."
+    note = (f"{records} records back this." if records != 1 else "One record backs this.") if supported else "The records do not support this."
     return json.dumps({"confidence": confidence, "note": note}) + f"\n{CHECKPOINT} {claim['status']}: {records} records"
 
 

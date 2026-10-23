@@ -1,5 +1,5 @@
 {
-  "run_id": "inv-3bf6df9c9d",
+  "run_id": "inv-3796f94a4e",
   "status": "complete",
   "errors": [],
   "mode": "sample",
@@ -94,7 +94,7 @@
           "check": {
             "match": true,
             "rerun_value_ngn": -46992.0,
-            "note": "The re-check matched: 46,992 naira from 1 records. 1 records back this.",
+            "note": "The re-check matched: 46,992 naira from 1 record. One record backs this.",
             "model": null,
             "via": "sample-rules",
             "signed": false
@@ -437,7 +437,7 @@
     "Sample mode: evidence ratings come from fixed rules, not a model; every number comes from SQL."
   ],
   "stats": {
-    "duration_s": 0.91,
+    "duration_s": 0.88,
     "zetaris_queries": 27,
     "model_calls": 0,
     "retries": 0,
@@ -447,5 +447,5 @@
       "sample-rules": 6
     }
   },
-  "trace_file": "logs/trace-inv-3bf6df9c9d.jsonl"
+  "trace_file": "logs/trace-inv-3796f94a4e.jsonl"
 }

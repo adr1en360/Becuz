@@ -1,4 +1,4 @@
-"""Per-run trace: one JSONL line per agent decision in logs/trace-<run_id>.jsonl, echoed to stdout.
+"""Per-run trace: one JSONL line per agent decision in logs/trace-<run_id>.jsonl, echoed to stderr.
 
 Every line carries the fields the hackathon asks for: timestamp, run_id, agent_name,
 action, input_summary, output_summary, target_agent, confidence, retry_count, status.

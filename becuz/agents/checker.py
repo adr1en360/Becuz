@@ -36,7 +36,7 @@ def verdict(claim: dict, rerun_effect: float | None, rerun_rows: list[str]) -> t
         return "rejected", f"Too small to matter: {abs(rerun_effect):,.0f} naira."
     if not rerun_rows:
         return "rejected", "No records back this cause."
-    return "supported", f"The re-check matched: {abs(rerun_effect):,.0f} naira from {len(rerun_rows)} records."
+    return "supported", f"The re-check matched: {abs(rerun_effect):,.0f} naira from {len(rerun_rows)} record{'s' * (len(rerun_rows) != 1)}."
 
 
 def make_checker(wh: Warehouse, trace: Trace, world: WorldModel, memory: HMEM, judge: Judge):
