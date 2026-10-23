@@ -1,22 +1,24 @@
 import type { ReactNode } from "react";
 import { ReportOutline } from "./report-outline";
 
-export function EmptyState({ composer, alert }: { composer: ReactNode; alert?: ReactNode }) {
+export function EmptyState({ composer, alert, busy }: { composer: ReactNode; alert?: ReactNode; busy: boolean }) {
   return (
-    <main className="mx-auto grid w-full max-w-5xl flex-1 gap-12 px-4 pb-16 pt-8 sm:px-8 lg:grid-cols-[minmax(0,24rem)_minmax(0,1fr)] lg:gap-20 lg:pt-16">
-      <div className="flex flex-col gap-8">
-        <div className="flex flex-col gap-4">
-          <h1 className="text-balance text-4xl font-bold leading-[1.05] tracking-[-0.03em] sm:text-5xl">
+    <main className="mx-auto grid w-full max-w-5xl flex-1 gap-14 px-4 pb-20 pt-8 sm:px-8 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:gap-16 lg:pt-14">
+      <div className="flex flex-col gap-9">
+        <div className="flex flex-col gap-5">
+          <h1 className="text-balance font-display text-[2.75rem] font-extrabold leading-[0.95] tracking-[-0.02em] [font-stretch:125%] sm:text-6xl">
             Ask why your profit moved.
           </h1>
-          <p className="max-w-md text-lg leading-relaxed text-muted">
-            Becuz checks your till, bank, supplier invoices and expenses, and shows the records behind every cause.
+          <p className="max-w-md text-lg leading-relaxed text-desk-muted">
+            Becuz checks your till, bank, supplier invoices and expenses, and prints the receipts behind every cause.
           </p>
         </div>
         {alert}
         {composer}
       </div>
-      <ReportOutline />
+      <div className="lg:pt-3">
+        <ReportOutline busy={busy} />
+      </div>
     </main>
   );
 }

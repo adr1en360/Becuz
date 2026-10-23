@@ -56,9 +56,10 @@ export function InvestigationApp() {
 
   return (
     <EmptyState
+      busy={phase.kind === "running"}
       alert={
         phase.kind === "error" ? (
-          <p role="alert" className="rounded-2xl border border-accent px-4 py-3 text-sm">
+          <p role="alert" className="rounded-2xl border border-flare px-4 py-3 text-sm">
             {phase.message}
           </p>
         ) : null

@@ -11,6 +11,8 @@ type Props = {
   onSubmit: (question: string, scenario?: string) => void;
 };
 
+const field = "rounded-2xl border border-desk-line bg-desk-2 text-paper";
+
 export function Composer({ running, showScenario, note, onSubmit }: Props) {
   const [question, setQuestion] = useState("Why is my profit down this week?");
   const [scenario, setScenario] = useState<string>(SAMPLE_SCENARIOS[0]);
@@ -35,7 +37,7 @@ export function Composer({ running, showScenario, note, onSubmit }: Props) {
         maxLength={500}
         value={question}
         onChange={(event) => setQuestion(event.target.value)}
-        className="w-full resize-none rounded-2xl border border-rule-strong bg-field px-4 py-3.5 text-lg leading-snug text-ink"
+        className={`${field} w-full resize-none px-4 py-3.5 text-lg leading-snug`}
       />
       {showScenario && (
         <div className="flex flex-col gap-2">
@@ -47,7 +49,7 @@ export function Composer({ running, showScenario, note, onSubmit }: Props) {
               id="scenario"
               value={scenario}
               onChange={(event) => setScenario(event.target.value)}
-              className="h-11 appearance-none rounded-full border border-rule-strong bg-field pl-4 pr-10 text-base"
+              className="h-11 appearance-none rounded-full border border-desk-line bg-desk-2 pl-4 pr-10 text-base text-paper"
             >
               {SAMPLE_SCENARIOS.map((id) => (
                 <option key={id} value={id}>
@@ -63,12 +65,12 @@ export function Composer({ running, showScenario, note, onSubmit }: Props) {
         <button
           type="submit"
           disabled={!ready}
-          className="inline-flex h-12 items-center gap-2 rounded-full bg-ink px-6 text-base font-semibold text-paper transition-colors hover:bg-[#1d2f55] disabled:cursor-not-allowed disabled:bg-disabled disabled:text-disabled-text"
+          className="inline-flex h-12 items-center gap-2 rounded-full bg-flare px-6 text-base font-bold text-desk transition-colors hover:bg-paper disabled:cursor-not-allowed disabled:bg-desk-2 disabled:text-desk-muted"
         >
           {running ? "Investigating" : "Investigate"}
           <ArrowRightIcon size={18} aria-hidden />
         </button>
-        <p id="composer-note" role="status" className="max-w-sm text-sm text-muted">
+        <p id="composer-note" role="status" className="max-w-sm text-sm text-desk-muted">
           {note}
         </p>
       </div>
