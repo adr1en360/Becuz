@@ -1,5 +1,5 @@
 {
-  "run_id": "inv-b9cf9a06df",
+  "run_id": "inv-48c38930e5",
   "status": "complete",
   "errors": [],
   "mode": "sample",
@@ -129,18 +129,18 @@
   "limitations": [
     "Findings show correlation, not proven causation.",
     "The shop data is synthetic.",
-    "The report wording comes from fixed templates; every number comes from SQL."
+    "Sample mode: evidence ratings come from fixed rules, not a model; every number comes from SQL."
   ],
   "stats": {
-    "duration_s": 0.5,
+    "duration_s": 0.62,
     "zetaris_queries": 27,
     "model_calls": 0,
     "retries": 0,
     "models": {},
     "via": {
       "local": 27,
-      "rules": 1
+      "sample-rules": 6
     }
   },
-  "trace_file": "logs/trace-inv-b9cf9a06df.jsonl"
+  "trace_file": "logs/trace-inv-48c38930e5.jsonl"
 }

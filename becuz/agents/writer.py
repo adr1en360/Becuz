@@ -1,8 +1,8 @@
 """Writer: builds the Investigation from the supported claims only.
 
 Every number is computed here from the profit tree and the claims; the schema's
-validators then re-check that they add up. The wording comes from fixed templates
-until the Nightshift model steps are connected.
+validators then re-check that they add up. The summary wording comes from fixed templates;
+the Checker's model judgement (through Nightshift) supplies each cause's confidence and note.
 """
 from __future__ import annotations
 
@@ -12,6 +12,7 @@ from becuz.adapters import Warehouse
 from becuz.agents.planner import profit_effects
 from becuz.catalogue import CATALOGUE
 from becuz.metrics import week
+from becuz.engines.markovian import Markovian
 from becuz.engines.world_model import WorldModel
 from becuz.orchestration.state import InvestigationState, period
 from becuz.schemas import MIN_EFFECT_NGN, Investigation
@@ -30,7 +31,7 @@ def node_status(effect: float, explained: float) -> str:
     return "explained" if abs(effect - explained) <= 0.1 * abs(effect) else "partly_explained"
 
 
-def assemble(state: InvestigationState, run: dict, world: WorldModel) -> Investigation:
+def assemble(state: InvestigationState, run: dict, world: WorldModel, chain: Markovian, judge) -> Investigation:
     tree = state["tree"]
     baseline = week(state["week_start"], state["week_end"])
     profit = tree["profit_ngn"]
@@ -42,6 +43,7 @@ def assemble(state: InvestigationState, run: dict, world: WorldModel) -> Investi
     explained_by = {name: sum(c["effect_ngn"] for c in supported if CATALOGUE[c["cause_id"]].component == name)
                     for name in effects}
     explained = sum(c["effect_ngn"] for c in supported)
+    errors = [f"{c['cause_id']}: {c['judgement']['error']}" for c in claims if "error" in c.get("judgement", {})]
 
     def evidence(claim: dict) -> dict:
         spec = CATALOGUE[claim["cause_id"]]
@@ -49,14 +51,16 @@ def assemble(state: InvestigationState, run: dict, world: WorldModel) -> Investi
                 "row_ids": claim["row_ids"], "value_ngn": claim["effect_ngn"],
                 "summary": f"{spec.title}: {claim['effect_ngn']:+,.0f}", "via": run["via"],
                 "check": {"match": claim["check"]["match"], "rerun_value_ngn": claim["check"]["rerun_value_ngn"],
-                          "note": claim["reason"], "via": "rules"}}
+                          "note": f"{claim['reason']} {claim['judgement']['note']}",
+                          "model": claim["judgement"]["model"], "via": claim["judgement"]["via"],
+                          "signed": claim["judgement"]["signed"]}}
 
     causes = [{
         "cause_id": c["cause_id"], "title": CATALOGUE[c["cause_id"]].title, "component": CATALOGUE[c["cause_id"]].component,
         "impact_ngn": c["effect_ngn"], "impact_evidence_id": f"ev-{c['cause_id']}",
         "share_of_change_pct": pct(c["effect_ngn"], change), "rank": rank,
         "origin": CATALOGUE[c["cause_id"]].origin, "nature": CATALOGUE[c["cause_id"]].nature,
-        "confidence": 1.0, "evidence": [evidence(c)],
+        "confidence": c["judgement"]["confidence"], "evidence": [evidence(c)],
         "falsified_by": [{"test": CATALOGUE[c["cause_id"]].falsified_if, "evidence_id": f"ev-{c['cause_id']}",
                           "survived": True}],
         "counterfactual_ngn": round(profit["current"] - c["effect_ngn"], 2),
@@ -71,7 +75,7 @@ def assemble(state: InvestigationState, run: dict, world: WorldModel) -> Investi
 
     direction = "down" if change <= -1 else "up" if change >= 1 else "flat"
     data = {
-        "run_id": run["run_id"], "status": "complete", "mode": run["mode"], "synthetic": True, "scenario": run["scenario"],
+        "run_id": run["run_id"], "status": "partial" if errors else "complete", "errors": errors, "mode": run["mode"], "synthetic": True, "scenario": run["scenario"],
         "frame": {"question": state["question"], "period_start": state["week_start"], "period_end": state["week_end"],
                   "baseline_start": baseline[0], "baseline_end": baseline[1]},
         "headline": {"current_ngn": profit["current"], "baseline_ngn": profit["baseline"], "change_ngn": change,
@@ -98,18 +102,25 @@ def assemble(state: InvestigationState, run: dict, world: WorldModel) -> Investi
         "owner_questions": owner_questions,
         "limitations": ["Findings show correlation, not proven causation.",
                         "The shop data is synthetic.",
-                        "The report wording comes from fixed templates; every number comes from SQL."],
+                        "Every number comes from SQL; the model only rates the evidence and words the notes."
+                        if judge.via == "nightshift" else
+                        "Sample mode: evidence ratings come from fixed rules, not a model; every number comes from SQL."],
         "stats": {"duration_s": round(time.monotonic() - run["started"], 2), "zetaris_queries": run["queries"](),
-                  "model_calls": 0, "retries": sum(c["retries"] for c in claims), "models": {},
-                  "via": {run["via"]: run["queries"](), "rules": 1}},
+                  "model_calls": judge.calls, "retries": sum(c["retries"] for c in claims),
+                  "models": dict(getattr(judge, "models", {})),
+                  "via": {run["via"]: run["queries"](), judge.via: len(chain.run.chunks)}},
         "trace_file": run["trace_file"],
     }
     return Investigation.model_validate(data)
 
 
-def make_writer(wh: Warehouse, trace: Trace, run: dict, world: WorldModel):
+def make_writer(wh: Warehouse, trace: Trace, run: dict, world: WorldModel, chain: Markovian, judge):
     def writer(state: InvestigationState) -> dict:
-        report = assemble(state, run, world)
+        efficiency = chain.finish()
+        trace.emit("Checker", "markovian_summary", f"{efficiency['chunks']} reviews",
+                   f"{efficiency['totalTokensUsed']} tokens used, {efficiency['totalTokensSaved']} saved "
+                   f"({efficiency['efficiencyPercent']}%, {efficiency['tokenLabel']})", engine="markovian")
+        report = assemble(state, run, world, chain, judge)
         trace.emit("Writer", "write_report", f"{len(world.claims())} claims from the World Model",
                    f"{len(report.causes)} supported, {len(report.ruled_out)} ruled out, "
                    f"{report.convergence.explained_pct}% of the change explained")

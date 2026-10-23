@@ -86,10 +86,18 @@
           "type": "string"
         },
         "confidence": {
-          "maximum": 1,
-          "minimum": 0,
-          "title": "Confidence",
-          "type": "number"
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "The model's rating of the evidence; None if it was unavailable",
+          "title": "Confidence"
         },
         "evidence": {
           "items": {

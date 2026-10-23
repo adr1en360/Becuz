@@ -1,5 +1,5 @@
 {
-  "run_id": "inv-573197d04b",
+  "run_id": "inv-f5de907f79",
   "status": "complete",
   "errors": [],
   "mode": "sample",
@@ -79,7 +79,7 @@
       "rank": 1,
       "origin": "internal",
       "nature": "actionable",
-      "confidence": 1.0,
+      "confidence": 0.9,
       "evidence": [
         {
           "evidence_id": "ev-transfer_leakage",
@@ -99,9 +99,9 @@
           "check": {
             "match": true,
             "rerun_value_ngn": -33100.0,
-            "note": "The re-check matched: 33,100 naira from 6 records.",
+            "note": "The re-check matched: 33,100 naira from 6 records. 6 records back this.",
             "model": null,
-            "via": "rules",
+            "via": "sample-rules",
             "signed": false
           }
         }
@@ -185,18 +185,18 @@
   "limitations": [
     "Findings show correlation, not proven causation.",
     "The shop data is synthetic.",
-    "The report wording comes from fixed templates; every number comes from SQL."
+    "Sample mode: evidence ratings come from fixed rules, not a model; every number comes from SQL."
   ],
   "stats": {
-    "duration_s": 0.62,
+    "duration_s": 0.59,
     "zetaris_queries": 27,
     "model_calls": 0,
     "retries": 0,
     "models": {},
     "via": {
       "local": 27,
-      "rules": 1
+      "sample-rules": 6
     }
   },
-  "trace_file": "logs/trace-inv-573197d04b.jsonl"
+  "trace_file": "logs/trace-inv-f5de907f79.jsonl"
 }

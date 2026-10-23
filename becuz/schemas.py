@@ -99,7 +99,7 @@ class Cause(Model):
     rank: int = Field(ge=1, description="1 = largest effect")
     origin: Literal["internal", "external"]
     nature: Literal["actionable", "temporary"]
-    confidence: float = Field(ge=0, le=1)
+    confidence: float | None = Field(ge=0, le=1, description="The model's rating of the evidence; None if it was unavailable")
     evidence: list[Evidence] = Field(min_length=1)
     falsified_by: list[FalsificationTest]
     counterfactual_ngn: float = Field(description="This week's profit without this cause: headline.current_ngn - impact_ngn")

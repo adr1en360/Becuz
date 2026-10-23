@@ -9,10 +9,13 @@ from __future__ import annotations
 from typing import Literal
 
 from becuz.adapters import Warehouse
-from becuz.catalogue import measure
+from base.providers import ProviderError
+from becuz.catalogue import CATALOGUE, measure
 from becuz.engines.hmem import HMEM
+from becuz.engines.markovian import Markovian
 from becuz.engines.world_model import WorldModel
 from becuz.orchestration.state import InvestigationState, period
+from becuz.judge import messages, parse
 from becuz.schemas import MIN_EFFECT_NGN, TOLERANCE_NGN
 from becuz.tracing import Trace
 
@@ -38,7 +41,7 @@ def verdict(claim: dict, rerun_effect: float | None, rerun_rows: list[str]) -> t
     return "supported", f"The re-check matched: {abs(rerun_effect):,.0f} naira from {len(rerun_rows)} records."
 
 
-def make_checker(wh: Warehouse, trace: Trace, world: WorldModel, memory: HMEM):
+def make_checker(wh: Warehouse, trace: Trace, world: WorldModel, memory: HMEM, chain: Markovian, judge):
     def checker(state: InvestigationState) -> dict:
         cause = state["current"]
         claim_id = world.claim_id(cause, period(state))
@@ -49,6 +52,12 @@ def make_checker(wh: Warehouse, trace: Trace, world: WorldModel, memory: HMEM):
         world.update_claim(claim_id, "Checker", retries=retries, reason=reason,
                            check={"match": status != "sent_back", "rerun_value_ngn": rerun.effect_ngn, "note": reason})
         world.set_status(claim_id, status, "Checker", reason)
+        if status in ("supported", "rejected"):
+            judgement = judge_claim(chain, judge, cause, status, rerun)
+            world.update_claim(claim_id, "Checker", judgement=judgement)
+            trace.emit("Checker", "judge", cause, judgement["note"], confidence=judgement["confidence"],
+                       status="success" if "error" not in judgement else "failed", engine="markovian",
+                       model=judgement["model"], via=judgement["via"])
         memory_id = state.get("recalled", {}).get(cause)
         if memory_id and status in ("supported", "rejected"):
             # H-MEM feedback: a remembered cause that holds again gains confidence; one that fails is flagged.
@@ -60,6 +69,18 @@ def make_checker(wh: Warehouse, trace: Trace, world: WorldModel, memory: HMEM):
         return {}
 
     return checker
+
+
+def judge_claim(chain: Markovian, judge, cause: str, status: str, rerun) -> dict:
+    """The model rates the evidence; Markovian keeps each call to this claim plus a short carryover."""
+    view = {"title": CATALOGUE[cause].title, "status": status, "effect_ngn": rerun.effect_ngn,
+            "row_ids": rerun.row_ids, "falsified_if": CATALOGUE[cause].falsified_if}
+    try:
+        judged = parse(chain.step(lambda carryover: messages(carryover, view), judge))
+    except ProviderError as exc:  # the SQL verdict stands; the report says the model was unavailable
+        return {"confidence": None, "note": "The model judgement was unavailable.", "model": None,
+                "via": judge.via, "signed": False, "error": str(exc)[:200]}
+    return {**judged, "model": judge.last["model"], "via": judge.via, "signed": judge.last["signed"]}
 
 
 def make_router(world: WorldModel):
