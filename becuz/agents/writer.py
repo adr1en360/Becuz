@@ -12,8 +12,8 @@ from becuz.adapters import Warehouse
 from becuz.agents.planner import profit_effects
 from becuz.catalogue import CATALOGUE
 from becuz.metrics import week
-from becuz.engines.markovian import Markovian
 from becuz.engines.world_model import WorldModel
+from becuz.judge import Judge
 from becuz.orchestration.state import InvestigationState, period
 from becuz.schemas import MIN_EFFECT_NGN, Investigation
 from becuz.tracing import Trace
@@ -31,7 +31,7 @@ def node_status(effect: float, explained: float) -> str:
     return "explained" if abs(effect - explained) <= 0.1 * abs(effect) else "partly_explained"
 
 
-def assemble(state: InvestigationState, run: dict, world: WorldModel, chain: Markovian, judge) -> Investigation:
+def assemble(state: InvestigationState, run: dict, world: WorldModel, judge: Judge) -> Investigation:
     tree = state["tree"]
     baseline = week(state["week_start"], state["week_end"])
     profit = tree["profit_ngn"]
@@ -102,25 +102,22 @@ def assemble(state: InvestigationState, run: dict, world: WorldModel, chain: Mar
         "owner_questions": owner_questions,
         "limitations": ["Findings show correlation, not proven causation.",
                         "The shop data is synthetic.",
-                        "Every number comes from SQL; the model only rates the evidence and words the notes."
-                        if judge.via == "nightshift" else
-                        "Sample mode: evidence ratings come from fixed rules, not a model; every number comes from SQL."],
+                        judge.limitation],
         "stats": {"duration_s": round(time.monotonic() - run["started"], 2), "zetaris_queries": run["queries"](),
                   "model_calls": judge.calls, "retries": sum(c["retries"] for c in claims),
-                  "models": dict(getattr(judge, "models", {})),
-                  "via": {run["via"]: run["queries"](), judge.via: len(chain.run.chunks)}},
+                  "models": dict(judge.models), "via": {run["via"]: run["queries"](), judge.via: judge.reviews}},
         "trace_file": run["trace_file"],
     }
     return Investigation.model_validate(data)
 
 
-def make_writer(wh: Warehouse, trace: Trace, run: dict, world: WorldModel, chain: Markovian, judge):
+def make_writer(wh: Warehouse, trace: Trace, run: dict, world: WorldModel, judge: Judge):
     def writer(state: InvestigationState) -> dict:
-        efficiency = chain.finish()
+        efficiency = judge.finish()
         trace.emit("Checker", "markovian_summary", f"{efficiency['chunks']} reviews",
                    f"{efficiency['totalTokensUsed']} tokens used, {efficiency['totalTokensSaved']} saved "
                    f"({efficiency['efficiencyPercent']}%, {efficiency['tokenLabel']})", engine="markovian")
-        report = assemble(state, run, world, chain, judge)
+        report = assemble(state, run, world, judge)
         trace.emit("Writer", "write_report", f"{len(world.claims())} claims from the World Model",
                    f"{len(report.causes)} supported, {len(report.ruled_out)} ruled out, "
                    f"{report.convergence.explained_pct}% of the change explained")

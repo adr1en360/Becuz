@@ -19,7 +19,7 @@ from becuz.engines.hmem import HMEM
 from becuz.engines.scout_intent import ContractGate, ContractRefused, Scout
 from becuz.engines.markovian import ChunkConfig, Markovian
 from becuz.engines.world_model import WorldModel
-from becuz.judge import NightshiftJudge, RulesJudge
+from becuz.judge import Judge
 from becuz.orchestration.graph import STEP_LIMIT, build_graph
 from becuz.tracing import Trace
 from data.generator import SCENARIOS
@@ -96,10 +96,10 @@ def investigate(request: dict, config) -> dict:
            "via": wh.via, "started": time.monotonic(), "queries": lambda: wh.used,
            "trace_file": shown(trace.path)}
     world = WorldModel(log_path=logs / "world.jsonl" if logs else None)  # the shared claims list
-    judge = RulesJudge() if config.sample_mode else NightshiftJudge(Nightshift(config))
     # The Checker's bounded context; its carryover is one summary line, so the spec's minimum budget fits.
     chain = Markovian(run_id, config=ChunkConfig(carryover_tokens=128), log_path=logs / "markovian.jsonl" if logs else None)
-    graph = build_graph(wh, trace, run, world, open_memory(logs), chain, judge)
+    judge = Judge(chain, None if config.sample_mode else Nightshift(config))
+    graph = build_graph(wh, trace, run, world, open_memory(logs), judge)
     state = {"question": question} | ({"week_start": week_start} if week_start else {})
     try:
         return graph.invoke(state, {"recursion_limit": STEP_LIMIT})["report"]

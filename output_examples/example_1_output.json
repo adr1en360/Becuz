@@ -1,5 +1,5 @@
 {
-  "run_id": "inv-890528827d",
+  "run_id": "inv-3bf6df9c9d",
   "status": "complete",
   "errors": [],
   "mode": "sample",
@@ -437,7 +437,7 @@
     "Sample mode: evidence ratings come from fixed rules, not a model; every number comes from SQL."
   ],
   "stats": {
-    "duration_s": 0.69,
+    "duration_s": 0.91,
     "zetaris_queries": 27,
     "model_calls": 0,
     "retries": 0,
@@ -447,5 +447,5 @@
       "sample-rules": 6
     }
   },
-  "trace_file": "logs/trace-inv-890528827d.jsonl"
+  "trace_file": "logs/trace-inv-3bf6df9c9d.jsonl"
 }

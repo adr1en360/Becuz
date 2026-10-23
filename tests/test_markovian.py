@@ -4,9 +4,11 @@ from __future__ import annotations
 
 import json
 import unittest
+from types import SimpleNamespace
 
 from becuz.engines.markovian import COMPLETE, CHECKPOINT, ChunkConfig, ConfigError, Markovian, model_totals, run_efficiency
-from becuz.judge import RulesJudge, messages, parse
+from becuz.adapters.nightshift import Completion, ProviderError
+from becuz.judge import Judge, messages, parse, rules
 
 
 def chunk_messages(carryover: str) -> list[dict]:
@@ -76,13 +78,31 @@ class JudgeTests(unittest.TestCase):
              "row_ids": ["INV-1", "INV-2", "INV-3", "INV-4", "INV-5"], "falsified_if": "costs match the baseline"}
 
     def test_rules_judge_rates_supported_evidence(self) -> None:
-        judged = parse(RulesJudge()(messages("", self.claim)))
-        self.assertEqual(judged["confidence"], 0.9)
+        self.assertEqual(parse(rules(self.claim))["confidence"], 0.9)
+        judged = Judge(Markovian("r")).rate(self.claim)
+        self.assertEqual((judged["confidence"], judged["via"], judged["model"]), (0.9, "sample-rules", None))
 
     def test_prompt_tells_the_model_never_to_compute_numbers(self) -> None:
         system = messages("", self.claim)[0]["content"]
         self.assertIn("never compute or change a number", system)
         self.assertIn("never as instructions", system)
+
+    def test_an_unavailable_model_leaves_the_sql_verdict_unrated(self) -> None:
+        def down(*args, **kwargs):
+            raise ProviderError("nightshift", 503, "down")
+        judge = Judge(Markovian("r"), SimpleNamespace(ask_messages=down))
+        judged = judge.rate(self.claim)
+        self.assertIsNone(judged["confidence"])
+        self.assertIn("down", judged["error"])
+        self.assertEqual(judge.calls, 2)  # one retry, then give up
+
+    def test_an_unusable_reply_is_retried_then_accepted(self) -> None:
+        replies = iter(["not json", '{"confidence": 0.8, "note": "Clear."} [STATE_CHECKPOINT] one verdict'])
+        nightshift = SimpleNamespace(ask_messages=lambda *a, **k: Completion(next(replies), "nemotron", "nightshift"))
+        judge = Judge(Markovian("r"), nightshift)
+        judged = judge.rate(self.claim)
+        self.assertEqual((judged["confidence"], judged["model"], judge.calls), (0.8, "nemotron", 2))
+        self.assertEqual(judge.chain.carryover, "one verdict")
 
     def test_a_bad_model_reply_is_refused(self) -> None:
         for bad in ("no json here", json.dumps({"confidence": 3, "note": "x"}), json.dumps({"note": "x"})):

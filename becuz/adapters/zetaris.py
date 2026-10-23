@@ -54,7 +54,7 @@ class ZetarisClient:
             raise ZetarisError(exc.code, read_http_error(exc)) from exc
         except (urllib.error.URLError, TimeoutError, ConnectionError) as exc:
             raise ZetarisError(0, str(exc)) from exc
-        except json.JSONDecodeError as exc:
+        except (json.JSONDecodeError, UnicodeDecodeError) as exc:
             raise ZetarisError(0, "invalid JSON response") from exc
 
 
