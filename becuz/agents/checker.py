@@ -1,15 +1,19 @@
 """Checker: re-runs each claim's SQL itself and supports, rejects or sends it back.
 
 No claim reaches the report unless the re-run matches, the effect is a real loss
-of at least MIN_EFFECT_NGN, and record IDs back it.
+of at least MIN_EFFECT_NGN, and record IDs back it. Verdicts are written to the
+World Model as new status edges, so the claim's history is kept.
 """
 from __future__ import annotations
 
 from typing import Literal
 
 from becuz.adapters import Warehouse
-from becuz.catalogue import measure
-from becuz.orchestration.state import InvestigationState
+from becuz.catalogue import CATALOGUE, measure
+from becuz.engines.hmem import HMEM
+from becuz.engines.world_model import WorldModel
+from becuz.orchestration.state import InvestigationState, period
+from becuz.judge import Judge
 from becuz.schemas import MIN_EFFECT_NGN, TOLERANCE_NGN
 from becuz.tracing import Trace
 
@@ -22,39 +26,64 @@ def verdict(claim: dict, rerun_effect: float | None, rerun_rows: list[str]) -> t
         and abs(claim["effect_ngn"] - rerun_effect) <= TOLERANCE_NGN)
     if not same or rerun_rows != claim["row_ids"]:
         if claim["retries"] < MAX_RETRIES:
-            return "sent_back", "the re-run gave a different result"
-        return "rejected", "the re-run never matched"
+            return "sent_back", "The re-check gave a different result, so it is being tested again."
+        return "rejected", "The re-check never matched, so this cause is not reported."
     if rerun_effect is None:
-        return "not_tested", "the data cannot measure this cause for the week"
+        return "not_tested", "The records for this week cannot measure this cause."
     if rerun_effect >= 0:
-        return "rejected", f"no loss: measured {rerun_effect:+,.0f}"
+        return "rejected", "The records show no loss from this cause this week."
     if rerun_effect > -MIN_EFFECT_NGN:
-        return "rejected", f"too small to matter: {rerun_effect:+,.0f}"
+        return "rejected", f"Too small to matter: {abs(rerun_effect):,.0f} naira."
     if not rerun_rows:
-        return "rejected", "no records back it"
-    return "supported", f"re-run matched {rerun_effect:+,.0f} with {len(rerun_rows)} records"
+        return "rejected", "No records back this cause."
+    return "supported", f"The re-check matched: {abs(rerun_effect):,.0f} naira from {len(rerun_rows)} record{'s' * (len(rerun_rows) != 1)}."
 
 
-def make_checker(wh: Warehouse, trace: Trace):
+def make_checker(wh: Warehouse, trace: Trace, world: WorldModel, memory: HMEM, judge: Judge):
     def checker(state: InvestigationState) -> dict:
         cause = state["current"]
-        claims = dict(state["claims"])
-        claim = dict(claims[cause])
+        claim_id = world.claim_id(cause, period(state))
+        claim = world.claims_by_cause(period(state))[cause]
         rerun = measure(wh, cause, state["week_start"], state["week_end"])
         status, reason = verdict(claim, rerun.effect_ngn, rerun.row_ids)
-        claim.update(status=status, reason=reason,
-                     retries=claim["retries"] + (status == "sent_back"),
-                     check={"match": status != "sent_back", "rerun_value_ngn": rerun.effect_ngn, "note": reason})
-        claims[cause] = claim
+        retries = claim["retries"] + (status == "sent_back")
+        world.update_claim(claim_id, "Checker", retries=retries, reason=reason,
+                           check={"match": status != "sent_back", "rerun_value_ngn": rerun.effect_ngn, "note": reason})
+        world.set_status(claim_id, status, "Checker", reason)
+        if status in ("supported", "rejected"):
+            judgement = judge.rate({"title": CATALOGUE[cause].title, "status": status, "effect_ngn": rerun.effect_ngn,
+                                    "row_ids": rerun.row_ids, "falsified_if": CATALOGUE[cause].falsified_if})
+            world.update_claim(claim_id, "Checker", judgement=judgement)
+            trace.emit("Checker", "judge", cause, judgement["note"], confidence=judgement["confidence"],
+                       status="success" if "error" not in judgement else "failed", engine="markovian",
+                       model=judgement["model"], via=judgement["via"])
+        memory_id = state.get("recalled", {}).get(cause)
+        if memory_id and status != "sent_back":
+            world.update_claim(claim_id, "Checker", recall=recall_feedback(memory, memory_id, status))
         target = "Investigator" if status == "sent_back" or state["queue"] else "Writer"
         trace.emit("Checker", status, cause, reason, target_agent=target, confidence=1.0 if status == "supported" else None,
-                   retry_count=claim["retries"], status="needs_revision" if status == "sent_back" else "success")
-        return {"claims": claims}
+                   retry_count=retries, status="needs_revision" if status == "sent_back" else "success",
+                   engine="world_model")
+        return {}
 
     return checker
 
 
-def route_after_check(state: InvestigationState) -> Literal["investigator", "writer"]:
-    if state["claims"][state["current"]]["status"] == "sent_back":
-        return "investigator"
-    return "investigator" if state["queue"] else "writer"
+def recall_feedback(memory: HMEM, memory_id: str, status: str) -> dict:
+    """H-MEM feedback: a remembered cause that holds again gains confidence; one that fails is flagged."""
+    record = memory.get(memory_id)
+    before = record["confidence"]
+    held = {"supported": True, "rejected": False}.get(status)
+    if held is not None:
+        record = memory.feedback(memory_id, "helpful" if held else "wrong")
+    return {"memory_id": memory_id, "confirmed_at": record["timestamp"], "held_again": held,
+            "confidence_before": before, "confidence_after": record["confidence"]}
+
+
+def make_router(world: WorldModel):
+    def route_after_check(state: InvestigationState) -> Literal["investigator", "writer"]:
+        if world.status(world.claim_id(state["current"], period(state))) == "sent_back":
+            return "investigator"
+        return "investigator" if state["queue"] else "writer"
+
+    return route_after_check

@@ -1,22 +1,8 @@
-"""Shared state for one investigation. All four agents read and write it through LangGraph."""
+"""Shared run state for one investigation. The claims themselves live in the World Model."""
 from __future__ import annotations
 
 from datetime import date
 from typing import TypedDict
-
-
-class Claim(TypedDict):
-    """One entry in the shared claims list: the Investigator writes it, the Checker marks it."""
-
-    cause_id: str
-    status: str  # open, sent_back, supported, rejected, not_tested
-    effect_ngn: float | None
-    row_ids: list[str]
-    effect_sql: str
-    records_sql: str
-    retries: int
-    check: dict | None  # the Checker's re-run: match, rerun_value_ngn, note
-    reason: str
 
 
 class InvestigationState(TypedDict, total=False):
@@ -25,6 +11,10 @@ class InvestigationState(TypedDict, total=False):
     week_end: date
     tree: dict  # metrics.profit_tree output
     queue: list[str]  # causes still to test, most promising first
-    current: str | None
-    claims: dict[str, Claim]
+    current: str | None  # the cause being tested or re-tested
+    recalled: dict[str, str]  # cause_id -> H-MEM memory id, for causes the owner confirmed before
     report: dict  # the Writer's Investigation JSON
+
+
+def period(state: InvestigationState) -> str:
+    return f"{state['week_start']}..{state['week_end']}"

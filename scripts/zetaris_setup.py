@@ -1,7 +1,7 @@
 """Register a scenario's S3 CSVs in Zetaris as four Lightning sources.
 
 Uses the ADMIN key: these statements create objects, so the agent's read-only
-path (Pipeline.query and its guard) is deliberately not used here.
+path (ZetarisWarehouse and its guard) is deliberately not used here.
 
     uv run python -m scripts.zetaris_setup s01            # dry run: print statements, keys hidden
     uv run python -m scripts.zetaris_setup s01 --apply    # run them, one statement per call
@@ -11,7 +11,7 @@ from __future__ import annotations
 import argparse
 import sys
 
-from base.zetaris import rows
+from becuz.adapters.zetaris import rows
 from becuz.usl import SOURCES
 from scripts.admin import admin_env, hide, run_plan
 

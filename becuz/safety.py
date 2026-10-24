@@ -1,9 +1,8 @@
+"""Safety checks every query and log line passes: the read-only SQL guard and secret redaction."""
 from __future__ import annotations
 
 import re
-
-from .config import Config
-from .zetaris import ZetarisClient
+import urllib.error
 
 ALLOWED_START = re.compile(r"^(select|with|show|describe|desc|explain)\b", re.IGNORECASE)
 DML = re.compile(
@@ -98,8 +97,19 @@ def is_read_only(sql: str) -> bool:
     return True
 
 
-def query_data(sql: str, config: Config, limit: int = 100) -> dict:
-    if not is_read_only(sql):
-        raise ValueError("refusing non-read-only SQL")
-    client = ZetarisClient(config.zetaris_rest_url, config.zetaris_org_id, config.zetaris_api_key)
-    return client.run_sql(sql, limit=limit)
+
+_SECRET = re.compile(r"nvapi-[A-Za-z0-9_-]+")
+_BEARER = re.compile(r"(?i)bearer\s+[A-Za-z0-9._-]+")
+
+
+def redact(text: str) -> str:
+    text = _SECRET.sub("nvapi-REDACTED", text)
+    return _BEARER.sub("Bearer REDACTED", text)
+
+
+def read_http_error(exc: urllib.error.HTTPError) -> str:
+    try:
+        body = exc.read().decode("utf-8", errors="replace")
+    except Exception:
+        body = str(exc.reason or "request failed")
+    return redact(body[:800])

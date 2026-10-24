@@ -5,6 +5,10 @@ compared with the average week of the 4 weeks before it. Every *_pct field is a
 percentage from 0 to 100; confidence is a fraction from 0 to 1. A negative
 profit effect is a loss.
 
+Profit and cash are kept apart. A transfer sale that never reached the bank is a
+cash gap: the sale happened, so it stays in profit, and the missing money is
+reported in cash_gaps as money the shop is owed.
+
 Money comes from SQL, never from the model. The validators below tie each
 cause's impact to an evidence row and recompute every derived figure, so a
 report whose numbers don't add up cannot be built.
@@ -22,7 +26,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 Source = Literal["pos_files", "bank_files", "books_files", "context_files"]
-Component = Literal["net_sales", "cogs", "wastage", "opex", "leakage"]  # metrics.py names without "_ngn"
+Component = Literal["net_sales", "cogs", "wastage", "opex"]  # metrics.py names without "_ngn"
 TOLERANCE_NGN = 1.0
 MIN_EFFECT_NGN = 1000.0  # smaller effects are noise, so a cause below this can't be supported
 
@@ -86,28 +90,22 @@ class FalsificationTest(Model):
     survived: bool = Field(description="True if the cause survived the test")
 
 
-class Cause(Model):
-    """A supported cause. Rejected or unverified hypotheses go to ruled_out instead."""
+class Finding(Model):
+    """A supported finding with its receipt. Rejected or unverified hypotheses go to ruled_out instead."""
 
     cause_id: str
     title: str
     status: Literal["supported"] = "supported"
-    component: Component = Field(description="The tree node this cause explains")
-    impact_ngn: float = Field(description="Effect on profit this week; negative is a loss")
+    impact_ngn: float = Field(description="Naira this week; negative is a loss")
     impact_evidence_id: str = Field(description="Evidence row whose value_ngn is the impact")
-    share_of_change_pct: float
-    rank: int = Field(ge=1, description="1 = largest effect")
-    origin: Literal["internal", "external"]
-    nature: Literal["actionable", "temporary"]
-    confidence: float = Field(ge=0, le=1)
+    confidence: float | None = Field(ge=0, le=1, description="The model's rating of the evidence; None if it was unavailable")
     evidence: list[Evidence] = Field(min_length=1)
     falsified_by: list[FalsificationTest]
-    counterfactual_ngn: float = Field(description="This week's profit without this cause: headline.current_ngn - impact_ngn")
     depends_on_sources: list[Source] = Field(description="Zetaris sources the evidence read")
     retries: int = 0
 
     @model_validator(mode="after")
-    def impact_comes_from_evidence(self) -> Cause:
+    def impact_comes_from_evidence(self) -> Finding:
         source = {e.evidence_id: e for e in self.evidence}.get(self.impact_evidence_id)
         if source is None or source.value_ngn is None:
             raise ValueError(f"{self.cause_id}: impact must point at an evidence row with a value")
@@ -118,6 +116,33 @@ class Cause(Model):
         if not any(e.row_ids for e in self.evidence):
             raise ValueError(f"{self.cause_id}: a supported cause needs record IDs")
         return self
+
+
+class Cause(Finding):
+    """A supported cause of the profit change; impact_ngn is its effect on this week's profit."""
+
+    component: Component = Field(description="The tree node this cause explains")
+    share_of_change_pct: float
+    rank: int = Field(ge=1, description="1 = largest effect")
+    origin: Literal["internal", "external"]
+    nature: Literal["actionable", "temporary"]
+    counterfactual_ngn: float = Field(description="This week's profit without this cause: headline.current_ngn - impact_ngn")
+
+
+class CashGap(Finding):
+    """Money the till recorded but the bank never received; impact_ngn is the missing amount (negative).
+    It is cash the shop is owed, so it is not part of the profit change."""
+
+
+class Recall(Model):
+    """A cause the owner confirmed in an earlier run, recalled from H-MEM and tested first."""
+
+    cause_id: str
+    confirmed_at: str = Field(description="When the owner confirmed it (ISO timestamp)")
+    held_again: bool | None = Field(description="True if it was found again, False if not, None if this week could not test it")
+    confidence_before: float = Field(ge=0, le=1, description="H-MEM confidence in the memory before this run")
+    confidence_after: float = Field(ge=0, le=1, description="H-MEM confidence after this run's result")
+    message: str = Field(description="Plain-language line for the owner")
 
 
 class RuledOut(Model):
@@ -142,6 +167,7 @@ class Action(Model):
 class Summary(Model):
     what_happened: str
     why: list[str]
+    cash: list[str] = Field(default=[], description="One line per cash gap, kept apart from profit")
     what_to_do: list[Action]
 
 
@@ -170,6 +196,8 @@ class Investigation(Model):
     headline: Headline
     tree: list[TreeNode]
     causes: list[Cause]
+    cash_gaps: list[CashGap] = []
+    memory: list[Recall] = Field(default=[], description="Owner-confirmed causes recalled from H-MEM for this run")
     ruled_out: list[RuledOut]
     not_tested: list[str] = Field(description="Possible causes the run did not test, and why")
     convergence: Convergence

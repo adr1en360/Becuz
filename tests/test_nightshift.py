@@ -8,22 +8,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from base.nightshift import NightshiftClient, find_receipt
-from base.pipeline import Pipeline
-from base.providers import ProviderError
-
-
-class FakeClient:
-    def __init__(self, result=None, error=None):
-        self.result = result
-        self.error = error
-        self.calls = 0
-
-    def complete(self, messages, model=None):
-        self.calls += 1
-        if self.error:
-            raise self.error
-        return self.result
+from becuz.adapters.nightshift import Nightshift, ProviderError, find_receipt
 
 
 class FakeResponse:
@@ -54,34 +39,24 @@ class RawResponse:
         return self.body
 
 
-def make_pipeline(tmp: str, nightshift=None) -> Pipeline:
-    config = SimpleNamespace(
-        sample_mode=False,
-        has_nightshift=nightshift is not None,
-        ledger_path=Path(tmp) / "ledger.jsonl",
-        nightshift_base_url="http://nightshift",
-        nightshift_token="token",
-        nightshift_model="meterless/auto",
-    )
-    pipeline = Pipeline(config)
-    if nightshift is not None:
-        pipeline.nightshift = nightshift
-    return pipeline
+def make_nightshift(tmp: str = "", token: str = "token") -> Nightshift:
+    return Nightshift(SimpleNamespace(nightshift_base_url="http://nightshift", nightshift_token=token,
+                                      nightshift_model="model", ledger_path=Path(tmp) / "ledger.jsonl" if tmp else None))
 
 
 class ProviderTests(unittest.TestCase):
-    def test_nightshift_failure_is_reported(self) -> None:
+    def test_a_failure_is_raised_and_recorded(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
-            pipeline = make_pipeline(tmp, FakeClient(error=ProviderError("nightshift", 500, "down")))
-            with self.assertRaises(ProviderError) as caught:
-                pipeline.ask("hello")
-        self.assertIn("nightshift", str(caught.exception))
+            nightshift = make_nightshift(tmp)
+            with patch.object(nightshift, "complete", side_effect=ProviderError("nightshift", 500, "down")):
+                with self.assertRaises(ProviderError):
+                    nightshift.ask_messages([{"role": "user", "content": "hello"}])
+            record = json.loads((Path(tmp) / "ledger.jsonl").read_text(encoding="utf-8"))
+        self.assertEqual((record["kind"], record["request"]), ("error", "hello"))
 
-    def test_no_provider_configured(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            pipeline = make_pipeline(tmp)
-            with self.assertRaises(ProviderError):
-                pipeline.ask("hello")
+    def test_no_runtime_token(self) -> None:
+        with self.assertRaises(ProviderError):
+            make_nightshift(token="").ask_messages([{"role": "user", "content": "hello"}])
 
     def test_find_receipt_requires_matching_shape(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -117,43 +92,39 @@ class ProviderTests(unittest.TestCase):
 
     def test_nightshift_empty_choices(self) -> None:
         with patch("urllib.request.urlopen", return_value=FakeResponse({"choices": []})):
-            client = NightshiftClient("http://nightshift", "token", "model")
             with self.assertRaises(ProviderError):
-                client.complete([{"role": "user", "content": "hi"}])
+                make_nightshift().complete([{"role": "user", "content": "hi"}])
 
     def test_nightshift_empty_answer(self) -> None:
         body = {"id": "r1", "choices": [{"message": {"content": ""}}]}
         with patch("urllib.request.urlopen", return_value=FakeResponse(body)):
-            client = NightshiftClient("http://nightshift", "token", "model")
             with self.assertRaises(ProviderError):
-                client.complete([{"role": "user", "content": "hi"}])
+                make_nightshift().complete([{"role": "user", "content": "hi"}])
 
     def test_nightshift_invalid_content_part(self) -> None:
         body = {"id": "r1", "choices": [{"message": {"content": [{"text": 123}]}}]}
         with patch("urllib.request.urlopen", return_value=FakeResponse(body)):
-            client = NightshiftClient("http://nightshift", "token", "model")
             with self.assertRaises(ProviderError):
-                client.complete([{"role": "user", "content": "hi"}])
+                make_nightshift().complete([{"role": "user", "content": "hi"}])
 
     def test_nightshift_think_block_only_is_empty(self) -> None:
         body = {"id": "r1", "choices": [{"message": {"content": "<think>hmm</think>  "}}]}
         with patch("urllib.request.urlopen", return_value=FakeResponse(body)):
-            client = NightshiftClient("http://nightshift", "token", "model")
             with self.assertRaises(ProviderError):
-                client.complete([{"role": "user", "content": "hi"}])
+                make_nightshift().complete([{"role": "user", "content": "hi"}])
 
     def test_nightshift_reasoning_only_is_empty(self) -> None:
         body = {"id": "", "choices": [{"message": {"reasoning_content": "ready"}}]}
         with patch("urllib.request.urlopen", return_value=FakeResponse(body)):
             with self.assertRaises(ProviderError):
-                NightshiftClient("http://nightshift", "token", "model").complete(
+                make_nightshift().complete(
                     [{"role": "user", "content": "hi"}]
                 )
 
     def test_nightshift_invalid_utf8(self) -> None:
         with patch("urllib.request.urlopen", return_value=RawResponse(b"\xff")):
             with self.assertRaises(ProviderError):
-                NightshiftClient("http://nightshift", "token", "model").complete(
+                make_nightshift().complete(
                     [{"role": "user", "content": "hi"}]
                 )
 
@@ -170,9 +141,7 @@ class ProviderTests(unittest.TestCase):
             body = {"id": "r1", "choices": [{"message": {"content": "ok"}}]}
             with patch.dict(os.environ, {"APPDATA": tmp}, clear=False):
                 with patch("urllib.request.urlopen", return_value=FakeResponse(body)):
-                    completion = NightshiftClient(
-                        "http://nightshift", "token", "model"
-                    ).complete([{"role": "user", "content": "hi"}])
+                    completion = make_nightshift().complete([{"role": "user", "content": "hi"}])
         self.assertTrue(completion.signed)
         self.assertEqual(completion.receipt["_proof"], {"sig": "x"})
 

@@ -137,7 +137,9 @@ WHERE s.payment_method = 'transfer'"""
 TRANSFER_CHECK = f"""SELECT COALESCE(s.sale_id, '') AS sale_id, s.sold_at, s.staff_id, s.net_ngn, s.transfer_ref, b.txn_id AS bank_txn_id
 FROM {UNMATCHED_TRANSFERS}"""
 
-# Profit tree per day: profit = net_sales - cogs - wastage - opex - leakage.
+# Profit tree per day: profit = net_sales - cogs - wastage - opex.
+# leakage_ngn (transfer sales with no bank credit) is a cash gap, not a cost: the sale happened, so it
+# stays in profit, and the agent reports the missing money separately.
 # COGS uses the unit cost on that week's supplier invoice (invoices land every Monday).
 DAILY_PNL = f"""SELECT COALESCE(d.day, DATE '1970-01-01') AS day,
   ROUND(COALESCE(sa.v, 0), 2) AS net_sales_ngn,
@@ -145,7 +147,7 @@ DAILY_PNL = f"""SELECT COALESCE(d.day, DATE '1970-01-01') AS day,
   ROUND(COALESCE(wa.v, 0), 2) AS wastage_ngn,
   ROUND(COALESCE(op.v, 0), 2) AS opex_ngn,
   ROUND(COALESCE(le.v, 0), 2) AS leakage_ngn,
-  ROUND(COALESCE(sa.v, 0) - COALESCE(co.v, 0) - COALESCE(wa.v, 0) - COALESCE(op.v, 0) - COALESCE(le.v, 0), 2) AS profit_ngn
+  ROUND(COALESCE(sa.v, 0) - COALESCE(co.v, 0) - COALESCE(wa.v, 0) - COALESCE(op.v, 0), 2) AS profit_ngn
 FROM (SELECT `date` AS day FROM context_files.fx_rates) d
 LEFT JOIN (SELECT CAST(sold_at AS DATE) AS day, SUM(net_ngn) AS v FROM pos_files.sales GROUP BY CAST(sold_at AS DATE)) sa ON sa.day = d.day
 LEFT JOIN (SELECT CAST(s.sold_at AS DATE) AS day, SUM(l.qty * i.unit_cost_ngn) AS v

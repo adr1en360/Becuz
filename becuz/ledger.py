@@ -5,7 +5,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-from .providers import redact
+from .safety import redact
 
 
 def write(path: Path | None, entry: dict) -> bool:

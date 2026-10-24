@@ -1,4 +1,4 @@
-"""The profit tree: profit = net_sales - cogs - wastage - opex - leakage.
+"""The profit tree: profit = net_sales - cogs - wastage - opex. Cash gaps are measured separately.
 
 Zetaris computes the daily figures in the becuz USL (daily_pnl). This module only
 sums a period and compares it with the baseline. All arithmetic happens in SQL or
@@ -10,7 +10,7 @@ from datetime import date, timedelta
 
 from becuz.adapters import Warehouse
 
-COMPONENTS = ("net_sales_ngn", "cogs_ngn", "wastage_ngn", "opex_ngn", "leakage_ngn", "profit_ngn")
+COMPONENTS = ("net_sales_ngn", "cogs_ngn", "wastage_ngn", "opex_ngn", "profit_ngn")
 BASELINE_WEEKS = 4
 
 # Average per week over [start, end]. {usl} is the warehouse's USL prefix.

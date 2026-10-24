@@ -3,9 +3,9 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from base import ledger
-from base.config import load
-from base.nightshift import find_receipt
+from becuz import ledger
+from becuz.adapters.nightshift import find_receipt
+from becuz.config import load
 
 
 def verify(ledger_path: Path, receipt_path: Path | None = None) -> int:

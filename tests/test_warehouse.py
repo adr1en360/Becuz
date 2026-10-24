@@ -8,10 +8,9 @@ from datetime import date
 from pathlib import Path
 from types import SimpleNamespace
 
-from base.pipeline import Pipeline
 from becuz.adapters import QueryError, warehouse
 from becuz.adapters.local_sql import LocalWarehouse
-from becuz.adapters.zetaris import ZetarisWarehouse
+from becuz.adapters.zetaris import ZetarisError, ZetarisWarehouse
 from becuz.metrics import COMPONENTS, profit_tree
 from data.generator import ROOT
 
@@ -23,11 +22,14 @@ def impact(cause: str) -> float:
     return next(c["impact_ngn"] for c in KEY["causes"] if c["cause_id"] == cause)
 
 
-class FakePipeline:
-    def __init__(self, result: dict):
-        self.result = result
+class FakeClient:
+    def __init__(self, result=None, error: ZetarisError | None = None):
+        self.result, self.error, self.sent = result, error, []
 
-    def query(self, sql: str) -> dict:
+    def run_sql(self, sql: str) -> dict:
+        self.sent.append(sql)
+        if self.error:
+            raise self.error
         return self.result
 
 
@@ -37,14 +39,14 @@ class LocalWarehouseTests(unittest.TestCase):
         cls.wh = LocalWarehouse("s01")
         cls.tree = profit_tree(cls.wh, *FINAL)
 
-    def test_leakage_and_wastage_changes_match_answer_key(self) -> None:
-        self.assertAlmostEqual(self.tree["leakage_ngn"]["change"], -impact("transfer_leakage"), delta=1)
+    def test_wastage_change_matches_answer_key(self) -> None:
         self.assertAlmostEqual(self.tree["wastage_ngn"]["change"], -impact("wastage_spike"), delta=1)
 
     def test_profit_is_the_tree_identity(self) -> None:
         for side in ("current", "baseline"):
             parts = {c: self.tree[c][side] for c in COMPONENTS}
-            expected = parts["net_sales_ngn"] - parts["cogs_ngn"] - parts["wastage_ngn"] - parts["opex_ngn"] - parts["leakage_ngn"]
+            # Missing transfers are a cash gap, not a cost, so they are not in the identity.
+            expected = parts["net_sales_ngn"] - parts["cogs_ngn"] - parts["wastage_ngn"] - parts["opex_ngn"]
             self.assertAlmostEqual(parts["profit_ngn"], expected, delta=1)
         self.assertLess(self.tree["profit_ngn"]["change"], 0)
 
@@ -81,34 +83,35 @@ class LocalWarehouseTests(unittest.TestCase):
 class ZetarisWarehouseTests(unittest.TestCase):
     def test_rows_become_dicts_with_numbers(self) -> None:
         raw = {"headers": ["day", "profit_ngn"], "data": [["2026-10-12", "-83580.0"]]}
-        wh = ZetarisWarehouse(FakePipeline({"ok": True, "rows": raw["data"], "raw": raw}))
-        self.assertEqual(wh.query("SELECT 1"), [{"day": "2026-10-12", "profit_ngn": -83580.0}])
+        client = FakeClient(raw)
+        self.assertEqual(ZetarisWarehouse(client).query("SELECT 1;;"), [{"day": "2026-10-12", "profit_ngn": -83580.0}])
+        self.assertEqual(client.sent, ["SELECT 1"])  # trailing semicolons are never sent
 
     def test_timeouts_are_transient(self) -> None:
-        wh = ZetarisWarehouse(FakePipeline({"ok": False, "error": "zetaris: HTTP 0: The read operation timed out"}))
+        wh = ZetarisWarehouse(FakeClient(error=ZetarisError(0, "The read operation timed out")))
         with self.assertRaises(QueryError) as caught:
             wh.query("SELECT 1")
         self.assertTrue(caught.exception.transient)
 
     def test_refusals_are_permanent(self) -> None:
-        wh = ZetarisWarehouse(FakePipeline({"ok": False, "error": "zetaris: HTTP 400: not permitted"}))
+        wh = ZetarisWarehouse(FakeClient(error=ZetarisError(400, "not permitted")))
         with self.assertRaises(QueryError) as caught:
             wh.query("SELECT 1")
         self.assertFalse(caught.exception.transient)
 
     def test_guard_blocks_writes_before_the_network(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
-            config = SimpleNamespace(sample_mode=False, ledger_path=Path(tmp) / "l.jsonl", nightshift_base_url="",
-                                     nightshift_token="", nightshift_model="")
+            client = FakeClient({})
             with self.assertRaises(QueryError) as caught:
-                ZetarisWarehouse(Pipeline(config)).query("DROP TABLE x")
+                ZetarisWarehouse(client, Path(tmp) / "l.jsonl").query("DROP TABLE x")
         self.assertIn("non-read-only", str(caught.exception))
+        self.assertEqual(client.sent, [])
 
 
 @unittest.skipUnless(os.getenv("BECUZ_LIVE") == "1", "set BECUZ_LIVE=1 to compare against live Zetaris")
 class LiveParityTests(unittest.TestCase):
     def test_zetaris_and_local_agree_on_the_profit_tree(self) -> None:
-        from base.config import load
+        from becuz.config import load
 
         live = profit_tree(warehouse(load()), *FINAL)
         local = profit_tree(LocalWarehouse("s01"), *FINAL)

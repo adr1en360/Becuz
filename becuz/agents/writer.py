@@ -1,8 +1,10 @@
 """Writer: builds the Investigation from the supported claims only.
 
 Every number is computed here from the profit tree and the claims; the schema's
-validators then re-check that they add up. The wording comes from fixed templates
-until the Nightshift model steps are connected.
+validators then re-check that they add up. Profit causes explain the profit change;
+cash gaps (money the till recorded that never reached the bank) are reported apart,
+because the sale still counts as profit. The owner-facing wording comes from the
+templates below; the Checker's model judgement supplies each finding's confidence and note.
 """
 from __future__ import annotations
 
@@ -12,7 +14,9 @@ from becuz.adapters import Warehouse
 from becuz.agents.planner import profit_effects
 from becuz.catalogue import CATALOGUE
 from becuz.metrics import week
-from becuz.orchestration.state import InvestigationState
+from becuz.engines.world_model import WorldModel
+from becuz.judge import Judge
+from becuz.orchestration.state import InvestigationState, period
 from becuz.schemas import MIN_EFFECT_NGN, Investigation
 from becuz.tracing import Trace
 
@@ -29,17 +33,53 @@ def node_status(effect: float, explained: float) -> str:
     return "explained" if abs(effect - explained) <= 0.1 * abs(effect) else "partly_explained"
 
 
-def assemble(state: InvestigationState, run: dict) -> Investigation:
+def naira(value: float) -> str:
+    return f"₦{abs(value):,.0f}"
+
+
+def plural(n: int, word: str) -> str:
+    return f"{n} {word}{'s' * (n != 1)}"
+
+
+def what_happened(profit: dict, direction: str) -> str:
+    if direction == "flat":
+        return f"Profit this week was {naira(profit['current'])}, about the same as a usual week."
+    side = "less" if direction == "down" else "more"
+    return (f"Profit this week was {naira(profit['current'])}, which is {naira(profit['change'])} {side} "
+            f"than a usual week ({naira(profit['baseline'])}).")
+
+
+def cash_line(claim: dict) -> str:
+    return (f"{naira(claim['effect_ngn'])} from {plural(len(claim['row_ids']), 'transfer sale')} was recorded at the till "
+            "but never reached the bank. The sales still count toward your profit, but this money is missing "
+            "from your account.")
+
+
+def recall_message(cause_id: str, held_again: bool | None) -> str:
+    title = CATALOGUE[cause_id].title
+    opening = f"You confirmed that {title[0].lower()}{title[1:]} after an earlier run, so Becuz checked it first this time."
+    if held_again is None:
+        return f"{opening} This week's records could not check it."
+    if held_again:
+        return f"{opening} It happened again this week."
+    return f"{opening} It did not happen this week, so Becuz will rely on that memory less until you confirm it again."
+
+
+def assemble(state: InvestigationState, run: dict, world: WorldModel, judge: Judge) -> Investigation:
     tree = state["tree"]
     baseline = week(state["week_start"], state["week_end"])
     profit = tree["profit_ngn"]
     change = profit["change"]
-    claims = state["claims"].values()
-    supported = sorted((c for c in claims if c["status"] == "supported"), key=lambda c: c["effect_ngn"])
+    claims = world.claims_by_cause(period(state)).values()
+    # The Writer may only use what the World Model hands it: the claims the Checker supported.
+    supported = sorted(world.context_for("writer")["claims"], key=lambda c: c["effect_ngn"])
+    cash = [c for c in supported if CATALOGUE[c["cause_id"]].component == "cash"]
+    causes_found = [c for c in supported if c not in cash]
     effects = profit_effects(tree)
-    explained_by = {name: sum(c["effect_ngn"] for c in supported if CATALOGUE[c["cause_id"]].component == name)
+    explained_by = {name: sum(c["effect_ngn"] for c in causes_found if CATALOGUE[c["cause_id"]].component == name)
                     for name in effects}
-    explained = sum(c["effect_ngn"] for c in supported)
+    explained = sum(c["effect_ngn"] for c in causes_found)
+    errors = [f"{c['cause_id']}: {c['judgement']['error']}" for c in claims if "error" in c.get("judgement", {})]
 
     def evidence(claim: dict) -> dict:
         spec = CATALOGUE[claim["cause_id"]]
@@ -47,29 +87,38 @@ def assemble(state: InvestigationState, run: dict) -> Investigation:
                 "row_ids": claim["row_ids"], "value_ngn": claim["effect_ngn"],
                 "summary": f"{spec.title}: {claim['effect_ngn']:+,.0f}", "via": run["via"],
                 "check": {"match": claim["check"]["match"], "rerun_value_ngn": claim["check"]["rerun_value_ngn"],
-                          "note": claim["reason"], "via": "rules"}}
+                          "note": f"{claim['reason']} {claim['judgement']['note']}",
+                          "model": claim["judgement"]["model"], "via": claim["judgement"]["via"],
+                          "signed": claim["judgement"]["signed"]}}
+
+    def finding(claim: dict) -> dict:
+        spec = CATALOGUE[claim["cause_id"]]
+        return {"cause_id": claim["cause_id"], "title": spec.title, "impact_ngn": claim["effect_ngn"],
+                "impact_evidence_id": f"ev-{claim['cause_id']}", "confidence": claim["judgement"]["confidence"],
+                "evidence": [evidence(claim)],
+                "falsified_by": [{"test": spec.falsified_if, "evidence_id": f"ev-{claim['cause_id']}", "survived": True}],
+                "depends_on_sources": list(spec.sources), "retries": claim["retries"]}
 
     causes = [{
-        "cause_id": c["cause_id"], "title": CATALOGUE[c["cause_id"]].title, "component": CATALOGUE[c["cause_id"]].component,
-        "impact_ngn": c["effect_ngn"], "impact_evidence_id": f"ev-{c['cause_id']}",
-        "share_of_change_pct": pct(c["effect_ngn"], change), "rank": rank,
-        "origin": CATALOGUE[c["cause_id"]].origin, "nature": CATALOGUE[c["cause_id"]].nature,
-        "confidence": 1.0, "evidence": [evidence(c)],
-        "falsified_by": [{"test": CATALOGUE[c["cause_id"]].falsified_if, "evidence_id": f"ev-{c['cause_id']}",
-                          "survived": True}],
+        **finding(c), "component": CATALOGUE[c["cause_id"]].component, "share_of_change_pct": pct(c["effect_ngn"], change),
+        "rank": rank, "origin": CATALOGUE[c["cause_id"]].origin, "nature": CATALOGUE[c["cause_id"]].nature,
         "counterfactual_ngn": round(profit["current"] - c["effect_ngn"], 2),
-        "depends_on_sources": list(CATALOGUE[c["cause_id"]].sources), "retries": c["retries"],
-    } for rank, c in enumerate(supported, start=1)]
+    } for rank, c in enumerate(causes_found, start=1)]
 
     owner_questions = [{
         "cause_id": c["cause_id"],
-        "question": f"{len(c['row_ids'])} transfer sales have no matching bank credit ({', '.join(c['row_ids'][:6])}). "
-                    "Can you check them with the staff who recorded them?",
-    } for c in supported if c["cause_id"] == "transfer_leakage"]
+        "question": f"{plural(len(c['row_ids']), 'transfer sale')} this week have no matching payment in the bank "
+                    f"({', '.join(c['row_ids'][:6])}). Can you check them with the staff who recorded them?",
+    } for c in cash]
 
-    direction = "down" if change <= -1 else "up" if change >= 1 else "flat"
+    direction = "down" if change <= -MIN_EFFECT_NGN else "up" if change >= MIN_EFFECT_NGN else "flat"
+    why = [f"{CATALOGUE[c['cause_id']].title}. This cost you {naira(c['effect_ngn'])}." for c in causes_found]
+    if not why:
+        why = [{"flat": "Nothing changed enough to need an explanation.",
+                "up": "Profit went up, and none of the problems Becuz checks for showed up this week.",
+                "down": "None of the causes Becuz checked explains this drop."}[direction]]
     data = {
-        "run_id": run["run_id"], "status": "complete", "mode": run["mode"], "synthetic": True, "scenario": run["scenario"],
+        "run_id": run["run_id"], "status": "partial" if errors else "complete", "errors": errors, "mode": run["mode"], "synthetic": True, "scenario": run["scenario"],
         "frame": {"question": state["question"], "period_start": state["week_start"], "period_end": state["week_end"],
                   "baseline_start": baseline[0], "baseline_end": baseline[1]},
         "headline": {"current_ngn": profit["current"], "baseline_ngn": profit["baseline"], "change_ngn": change,
@@ -80,6 +129,10 @@ def assemble(state: InvestigationState, run: dict) -> Investigation:
                   "profit_effect_ngn": effect, "share_of_change_pct": pct(effect, change),
                   "status": node_status(effect, explained_by[name])} for name, effect in effects.items()],
         "causes": causes,
+        "cash_gaps": [finding(c) for c in cash],
+        "memory": [{"cause_id": c["cause_id"], **{k: v for k, v in c["recall"].items() if k != "memory_id"},
+                    "message": recall_message(c["cause_id"], c["recall"]["held_again"])}
+                   for c in claims if "recall" in c],
         "ruled_out": [{"cause_id": c["cause_id"], "hypothesis": CATALOGUE[c["cause_id"]].title, "reason": c["reason"],
                        "tested_value_ngn": c["effect_ngn"], "evidence_id": None}
                       for c in claims if c["status"] == "rejected"],
@@ -87,30 +140,33 @@ def assemble(state: InvestigationState, run: dict) -> Investigation:
         "convergence": {"explained_ngn": round(explained, 2), "explained_pct": pct(explained, change),
                         "unexplained_ngn": round(change - explained, 2)},
         "summary": {
-            "what_happened": f"Profit this week was {profit['current']:,.0f} against a usual week of "
-                             f"{profit['baseline']:,.0f}, {direction} {abs(change):,.0f}.",
-            "why": [f"{CATALOGUE[c['cause_id']].title}: {c['effect_ngn']:+,.0f}" for c in supported]
-                   or ["None of the tested causes explains the change."],
-            "what_to_do": [{"cause_id": c["cause_id"], "action": CATALOGUE[c["cause_id"]].action} for c in supported],
+            "what_happened": what_happened(profit, direction),
+            "why": why,
+            "cash": [cash_line(c) for c in cash],
+            "what_to_do": [{"cause_id": c["cause_id"], "action": CATALOGUE[c["cause_id"]].action} for c in causes_found + cash],
         },
         "owner_questions": owner_questions,
         "limitations": ["Findings show correlation, not proven causation.",
                         "The shop data is synthetic.",
-                        "The report wording comes from fixed templates; every number comes from SQL."],
+                        judge.limitation],
         "stats": {"duration_s": round(time.monotonic() - run["started"], 2), "zetaris_queries": run["queries"](),
-                  "model_calls": 0, "retries": sum(c["retries"] for c in claims), "models": {},
-                  "via": {run["via"]: run["queries"](), "rules": 1}},
+                  "model_calls": judge.calls, "retries": sum(c["retries"] for c in claims),
+                  "models": dict(judge.models), "via": {run["via"]: run["queries"](), judge.via: judge.reviews}},
         "trace_file": run["trace_file"],
     }
     return Investigation.model_validate(data)
 
 
-def make_writer(wh: Warehouse, trace: Trace, run: dict):
+def make_writer(wh: Warehouse, trace: Trace, run: dict, world: WorldModel, judge: Judge):
     def writer(state: InvestigationState) -> dict:
-        report = assemble(state, run)
-        trace.emit("Writer", "write_report", f"{len(state['claims'])} claims",
-                   f"{len(report.causes)} supported, {len(report.ruled_out)} ruled out, "
-                   f"{report.convergence.explained_pct}% of the change explained")
+        efficiency = judge.finish()
+        trace.emit("Checker", "markovian_summary", f"{efficiency['chunks']} reviews",
+                   f"{efficiency['totalTokensUsed']} tokens used, {efficiency['totalTokensSaved']} saved "
+                   f"({efficiency['efficiencyPercent']}%, {efficiency['tokenLabel']})", engine="markovian")
+        report = assemble(state, run, world, judge)
+        trace.emit("Writer", "write_report", f"{len(world.claims())} claims from the World Model",
+                   f"{len(report.causes)} profit causes, {len(report.cash_gaps)} cash gaps, {len(report.ruled_out)} ruled out, "
+                   f"{report.convergence.explained_pct}% of the profit change explained")
         return {"report": report.model_dump(mode="json")}
 
     return writer

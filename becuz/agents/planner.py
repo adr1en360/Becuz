@@ -5,6 +5,8 @@ from datetime import date, timedelta
 
 from becuz.adapters import Warehouse
 from becuz.catalogue import CATALOGUE
+from becuz.engines.hmem import HMEM
+from becuz.engines.scout_intent import ContractRefused
 from becuz.metrics import profit_tree
 from becuz.orchestration.state import InvestigationState
 from becuz.tracing import Trace
@@ -22,17 +24,39 @@ def profit_effects(tree: dict) -> dict[str, float]:
     return {name: (change if name == "net_sales" else -change) for name, change in effects.items()}
 
 
-def make_planner(wh: Warehouse, trace: Trace):
+def recall_confirmed(memory: HMEM, question: str) -> dict[str, str]:
+    """Causes the owner confirmed in earlier runs, best match first: cause_id -> memory id."""
+    recalled = {}
+    for hit in memory.query(question, tags=["owner_confirmed"])["results"]:
+        cause = next(t.removeprefix("cause:") for t in hit["memory"]["tags"] if t.startswith("cause:"))
+        recalled.setdefault(cause, hit["memory"]["id"])
+    return recalled
+
+
+def make_planner(wh: Warehouse, trace: Trace, memory: HMEM):
     def planner(state: InvestigationState) -> dict:
+        # Intake: Scout Intent reads the question and signs the contract every later query must fit.
+        contract = wh.open(state["question"], trace.run_id)
+        intent = contract["intent"]
+        trace.emit("Planner", "scout_contract", state["question"],
+                   f"{intent['primary']} (confidence {intent['confidence']:.2f}), contract {contract['contractId']}, "
+                   f"{len(contract['scope']['capabilities'])} tables, {contract['scope']['budget']['queriesMax']} queries max",
+                   confidence=intent["confidence"], engine="scout_intent")
+        if intent["confidence"] == 0:
+            raise ContractRefused("out-of-scope")
         start = state.get("week_start")
         start, end = latest_week(wh) if start is None else (start, start + timedelta(days=6))
         tree = profit_tree(wh, start, end)
         effects = profit_effects(tree)
-        # Dynamic delegation: causes on the components that lost most are tested first.
-        queue = sorted(CATALOGUE, key=lambda cause: effects[CATALOGUE[cause].component])
+        # H-MEM: causes the owner confirmed before are tested first; then the components that lost most.
+        recalled = recall_confirmed(memory, state["question"])
+        trace.emit("Planner", "recall", state["question"],
+                   f"{len(recalled)} owner-confirmed causes recalled: {', '.join(recalled) or 'none'}", engine="hmem")
+        # A cash cause has no profit node, so it sorts as no profit effect.
+        queue = sorted(CATALOGUE, key=lambda cause: (cause not in recalled, effects.get(CATALOGUE[cause].component, 0.0)))
         trace.emit("Planner", "plan", state["question"],
                    f"profit change {tree['profit_ngn']['change']:+,.0f} for {start}..{end}; testing {', '.join(queue)}",
                    target_agent="Investigator")
-        return {"week_start": start, "week_end": end, "tree": tree, "queue": queue, "claims": {}, "current": None}
+        return {"week_start": start, "week_end": end, "tree": tree, "queue": queue, "current": None, "recalled": recalled}
 
     return planner

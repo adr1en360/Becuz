@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from base.tools import is_read_only
+from becuz.safety import is_read_only
 
 
 class GuardTests(unittest.TestCase):

@@ -4,7 +4,7 @@ import json
 import unittest
 from datetime import date
 
-from base.tools import is_read_only
+from becuz.safety import is_read_only
 from becuz.adapters.local_sql import LocalWarehouse
 from becuz.catalogue import CATALOGUE, measure, render
 from data.generator import ROOT, SCENARIOS

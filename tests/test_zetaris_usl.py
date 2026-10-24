@@ -7,7 +7,7 @@ from pathlib import Path
 import duckdb
 import sqlglot
 
-from base.tools import is_read_only
+from becuz.safety import is_read_only
 from data.generator import ROOT
 from becuz.usl import DDL, SOURCES, activations
 from scripts.zetaris_usl import statements
