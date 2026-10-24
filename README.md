@@ -97,6 +97,7 @@ Nightshift receipt ID.
 | Sample mode | DuckDB, with the same Spark SQL translated by sqlglot |
 | API | Standard-library HTTP server (`server.py`) |
 | Logging | JSONL in `logs/` and stdout |
+| Container | Docker, sample mode |
 
 ## 6. Setup
 
@@ -117,6 +118,17 @@ uv run python run.py --input input_examples/example_1.json
 ```
 
 This runs the whole investigation offline. See [Sample mode](#8-sample-mode).
+
+### Docker (sample mode)
+
+```powershell
+docker build -t becuz .
+docker run --rm -p 8000:8000 becuz
+curl.exe -X POST http://127.0.0.1:8000/run -H "Content-Type: application/json" -d "@input_examples/example_1.json"
+```
+
+The image runs sample mode only and never contains `.env`. Live mode needs Nightshift running on your
+machine, so run it outside Docker.
 
 ### Live mode
 
@@ -363,3 +375,7 @@ schema, the server, and the four engines. The engine tests port the Meterless co
   calls. Sample mode takes about a second.
 - The Markovian token savings are estimates (4 characters per token), not measured counts, and they are
   small or negative when a run judges only a few claims.
+
+## 16. License
+
+MIT. See `LICENSE`.
