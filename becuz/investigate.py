@@ -107,3 +107,5 @@ def investigate(request: dict, config) -> dict:
         if exc.reason == "out-of-scope":
             raise BadRequest("Becuz answers questions about why your profit changed") from None
         raise
+    finally:
+        judge.close()  # a failed run must not leave a rating running in the background

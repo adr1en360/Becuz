@@ -2,7 +2,9 @@
 
 The SQL re-check decides whether a claim is supported; the model only rates how convincing the
 evidence is and writes a one-line note for the owner. Each rating is one Markovian chunk, so every
-call carries this claim plus a short carryover of earlier verdicts, never the whole history. Live,
+call carries this claim plus a short carryover of earlier verdicts, never the whole history.
+Ratings run on one background worker, so the Checker moves on to the next cause's queries while the
+model answers; one worker keeps the chain in order. Live,
 the call goes through Nightshift.ask_messages (Nemotron). In sample mode the same rating comes from
 fixed rules, labelled "sample-rules", so no network is needed.
 """
@@ -10,6 +12,7 @@ from __future__ import annotations
 
 import json
 import re
+from concurrent.futures import Future, ThreadPoolExecutor
 
 from becuz.adapters.nightshift import Nightshift, ProviderError
 from becuz.engines.markovian import CHECKPOINT, Markovian
@@ -53,6 +56,8 @@ class Judge:
         self.chain, self.nightshift = chain, nightshift
         self.via = "nightshift" if nightshift else "sample-rules"
         self.calls, self.models = 0, {}
+        self.pool = ThreadPoolExecutor(max_workers=1)  # one worker keeps the Markovian chain in order
+        self.pending: list[tuple[str, Future]] = []
         self.limitation = ("Every number comes from SQL; the model only rates the evidence and words the notes."
                            if nightshift else
                            "Sample mode: evidence ratings come from fixed rules, not a model; every number comes from SQL.")
@@ -68,8 +73,20 @@ class Judge:
                     "via": self.via, "error": str(exc)[:200]}
         return {**judged, **self.last, "via": self.via}
 
+    def submit(self, key: str, claim: dict) -> None:
+        """Rate in the background; collect() returns the results in submission order."""
+        self.pending.append((key, self.pool.submit(self.rate, claim)))
+
+    def collect(self) -> list[tuple[str, dict]]:
+        done, self.pending = [(key, future.result()) for key, future in self.pending], []
+        return done
+
     def finish(self) -> dict:
+        self.close()
         return self.chain.finish()
+
+    def close(self) -> None:
+        self.pool.shutdown(wait=True, cancel_futures=True)
 
     @property
     def reviews(self) -> int:

@@ -54,6 +54,12 @@ def _int(name: str, default: int) -> int:
         return default
 
 
+def _value(name: str) -> str:
+    """A setting from the environment; an unfilled .env.example placeholder like <org-id> counts as missing."""
+    raw = os.getenv(name, "").strip()
+    return "" if raw.startswith("<") else raw
+
+
 def _flag(name: str, default: str = "0") -> bool:
     return os.getenv(name, default).strip().lower() in {"1", "true", "yes", "on"}
 
@@ -84,9 +90,9 @@ class Config:
 def load() -> Config:
     _load_env(ROOT / ".env")
     return Config(
-        zetaris_rest_url=os.getenv("ZETARIS_REST_URL", "").rstrip("/"),
-        zetaris_org_id=os.getenv("ZETARIS_ORG_ID", "").strip(),
-        zetaris_api_key=os.getenv("ZETARIS_API_KEY", "").strip(),
+        zetaris_rest_url=_value("ZETARIS_REST_URL").rstrip("/"),
+        zetaris_org_id=_value("ZETARIS_ORG_ID"),
+        zetaris_api_key=_value("ZETARIS_API_KEY"),
         nightshift_base_url=os.getenv("METERLESS_BASE_URL", "http://127.0.0.1:8088/v1").rstrip("/"),
         nightshift_token=_runtime_token(),
         nightshift_model=os.getenv("METERLESS_MODEL", "meterless/auto").strip(),

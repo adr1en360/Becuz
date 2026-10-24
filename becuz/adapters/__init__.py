@@ -23,6 +23,26 @@ class Warehouse(Protocol):
     def query(self, sql: str) -> list[dict]: ...
 
 
+class Retrying:
+    """Retries one query after a transient failure and reports each retry, so it shows in the trace.
+    Everything else (via, usl, the contract gate's open and used) passes through to the wrapped warehouse."""
+
+    def __init__(self, wh, on_retry, attempts: int = 3):
+        self.wh, self.on_retry, self.attempts = wh, on_retry, attempts
+
+    def __getattr__(self, name):
+        return getattr(self.wh, name)
+
+    def query(self, sql: str) -> list[dict]:
+        for attempt in range(1, self.attempts + 1):
+            try:
+                return self.wh.query(sql)
+            except QueryError as exc:
+                if not exc.transient or attempt == self.attempts:
+                    raise
+                self.on_retry(attempt, exc)
+
+
 def warehouse(config, scenario: str = "s01") -> Warehouse:
     if config.sample_mode:
         from .local_sql import LocalWarehouse

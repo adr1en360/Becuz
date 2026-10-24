@@ -44,6 +44,14 @@ class ConfigPathTests(unittest.TestCase):
                 config = load()
         self.assertEqual(config.server_port, 8000)
 
+    def test_unfilled_placeholders_count_as_missing(self) -> None:
+        values = {"ZETARIS_REST_URL": "https://api.<cluster-id>.cloud.zetaris.com/api/v1.0",
+                  "ZETARIS_ORG_ID": "<org-id>", "ZETARIS_API_KEY": "<agent-user-api-key>"}
+        with patch.dict(os.environ, values, clear=False):
+            config = load()
+        self.assertEqual(config.zetaris_org_id, "")
+        self.assertFalse(config.has_zetaris)
+
     def test_off_words_disable_a_path(self) -> None:
         for word in ("null", "off", "false", "OFF"):
             with self.subTest(word=word):

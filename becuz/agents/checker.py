@@ -51,12 +51,9 @@ def make_checker(wh: Warehouse, trace: Trace, world: WorldModel, memory: HMEM, j
                            check={"match": status != "sent_back", "rerun_value_ngn": rerun.effect_ngn, "note": reason})
         world.set_status(claim_id, status, "Checker", reason)
         if status in ("supported", "rejected"):
-            judgement = judge.rate({"title": CATALOGUE[cause].title, "status": status, "effect_ngn": rerun.effect_ngn,
+            # The model's rating runs in the background; record_judgements() files it before the report.
+            judge.submit(cause, {"title": CATALOGUE[cause].title, "status": status, "effect_ngn": rerun.effect_ngn,
                                     "row_ids": rerun.row_ids, "falsified_if": CATALOGUE[cause].falsified_if})
-            world.update_claim(claim_id, "Checker", judgement=judgement)
-            trace.emit("Checker", "judge", cause, judgement["note"], confidence=judgement["confidence"],
-                       status="success" if "error" not in judgement else "failed", engine="markovian",
-                       model=judgement["model"], via=judgement["via"])
         memory_id = state.get("recalled", {}).get(cause)
         if memory_id and status != "sent_back":
             world.update_claim(claim_id, "Checker", recall=recall_feedback(memory, memory_id, status))
@@ -67,6 +64,15 @@ def make_checker(wh: Warehouse, trace: Trace, world: WorldModel, memory: HMEM, j
         return {}
 
     return checker
+
+
+def record_judgements(judge: Judge, world: WorldModel, trace: Trace, week: str) -> None:
+    """Waits for the background ratings and files each on its claim, in the order the Checker asked."""
+    for cause, judgement in judge.collect():
+        world.update_claim(world.claim_id(cause, week), "Checker", judgement=judgement)
+        trace.emit("Checker", "judge", cause, judgement["note"],
+                   confidence=judgement["confidence"], status="success" if "error" not in judgement else "failed",
+                   engine="markovian", model=judgement["model"], via=judgement["via"])
 
 
 def recall_feedback(memory: HMEM, memory_id: str, status: str) -> dict:

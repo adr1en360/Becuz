@@ -104,6 +104,16 @@ class JudgeTests(unittest.TestCase):
         self.assertEqual((judged["confidence"], judged["model"], judge.calls), (0.8, "nemotron", 2))
         self.assertEqual(judge.chain.carryover, "one verdict")
 
+    def test_background_ratings_come_back_in_order_with_the_chain_intact(self) -> None:
+        replies = iter(['{"confidence": 0.8, "note": "First."} [STATE_CHECKPOINT] one verdict',
+                        '{"confidence": 0.6, "note": "Second."} [STATE_CHECKPOINT] two verdicts'])
+        judge = Judge(Markovian("r"), SimpleNamespace(ask_messages=lambda *a, **k: Completion(next(replies), "m", "nightshift")))
+        judge.submit("a", self.claim)
+        judge.submit("b", self.claim)
+        self.assertEqual([(key, j["note"]) for key, j in judge.collect()], [("a", "First."), ("b", "Second.")])
+        self.assertEqual(judge.chain.carryover, "two verdicts")
+        self.assertEqual(judge.finish()["chunks"], 2)
+
     def test_a_bad_model_reply_is_refused(self) -> None:
         for bad in ("no json here", json.dumps({"confidence": 3, "note": "x"}), json.dumps({"note": "x"})):
             with self.subTest(bad=bad):

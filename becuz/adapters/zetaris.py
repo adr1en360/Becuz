@@ -14,6 +14,11 @@ from becuz.usl import USL
 from . import QueryError
 
 
+# Network failures and timeouts come back as HTTP 0. Zetaris also sometimes answers a valid query with
+# HTTP 400 "Could not create ResultSet: null" and then runs the same query fine (seen 24 Oct); retry both.
+SERVER_FLAKE = "Could not create ResultSet"
+
+
 class ZetarisError(RuntimeError):
     def __init__(self, status: int, message: str):
         self.status = status
@@ -105,8 +110,7 @@ class ZetarisWarehouse:
             response = self.client.run_sql(sql)
         except ZetarisError as exc:
             self._record(sql, error=str(exc))
-            # Network failures and timeouts come back as HTTP 0 and are worth retrying.
-            raise QueryError(str(exc), transient=exc.status == 0) from exc
+            raise QueryError(str(exc), transient=exc.status == 0 or SERVER_FLAKE in exc.message) from exc
         found = rows(response)
         self._record(sql, count=len(found))
         headers = response.get("headers") or []

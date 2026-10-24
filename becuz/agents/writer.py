@@ -11,6 +11,7 @@ from __future__ import annotations
 import time
 
 from becuz.adapters import Warehouse
+from becuz.agents.checker import record_judgements
 from becuz.agents.planner import profit_effects
 from becuz.catalogue import CATALOGUE
 from becuz.metrics import week
@@ -159,6 +160,7 @@ def assemble(state: InvestigationState, run: dict, world: WorldModel, judge: Jud
 
 def make_writer(wh: Warehouse, trace: Trace, run: dict, world: WorldModel, judge: Judge):
     def writer(state: InvestigationState) -> dict:
+        record_judgements(judge, world, trace, period(state))
         efficiency = judge.finish()
         trace.emit("Checker", "markovian_summary", f"{efficiency['chunks']} reviews",
                    f"{efficiency['totalTokensUsed']} tokens used, {efficiency['totalTokensSaved']} saved "
