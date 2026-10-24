@@ -76,6 +76,10 @@ class ConfirmThenRecallTests(unittest.TestCase):
             first_test = next(l for l in trace if l["action"] == "test_cause")
             stored = json.loads((logs / "hmem.json").read_text(encoding="utf-8"))
         self.assertEqual(first_test["input_summary"], "transfer_leakage")
+        (recall,) = second["memory"]
+        self.assertEqual((recall["cause_id"], recall["held_again"]), ("transfer_leakage", True))
+        self.assertEqual((recall["confidence_before"], recall["confidence_after"]), (0.7, 0.75))
+        self.assertIn("checked it first this time. It happened again this week.", recall["message"])
         record = next(r for r in stored if r["id"] == memory_id)
         self.assertEqual((record["confidence"], record["source"], record["agentId"]), (0.75, "owner_confirm", "owner"))
 

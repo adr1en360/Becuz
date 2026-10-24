@@ -1,5 +1,5 @@
 {
-  "run_id": "inv-3796f94a4e",
+  "run_id": "inv-07f6f3464a",
   "status": "complete",
   "errors": [],
   "mode": "sample",
@@ -14,10 +14,10 @@
     "baseline_end": "2026-10-11"
   },
   "headline": {
-    "current_ngn": 213357.0,
+    "current_ngn": 241717.0,
     "baseline_ngn": 379411.75,
-    "change_ngn": -166054.75,
-    "change_pct": -43.8,
+    "change_ngn": -137694.75,
+    "change_pct": -36.3,
     "direction": "down"
   },
   "tree": [
@@ -27,7 +27,7 @@
       "baseline_ngn": 2711038.75,
       "change_ngn": -221413.75,
       "profit_effect_ngn": -221413.75,
-      "share_of_change_pct": 133.3,
+      "share_of_change_pct": 160.8,
       "status": "partly_explained"
     },
     {
@@ -36,7 +36,7 @@
       "baseline_ngn": 2151527.0,
       "change_ngn": -119667.0,
       "profit_effect_ngn": 119667.0,
-      "share_of_change_pct": -72.1,
+      "share_of_change_pct": -86.9,
       "status": "partly_explained"
     },
     {
@@ -45,7 +45,7 @@
       "baseline_ngn": 18100.0,
       "change_ngn": 35948.0,
       "profit_effect_ngn": -35948.0,
-      "share_of_change_pct": 21.6,
+      "share_of_change_pct": 26.1,
       "status": "explained"
     },
     {
@@ -56,15 +56,6 @@
       "profit_effect_ngn": -0.0,
       "share_of_change_pct": 0.0,
       "status": "no_change"
-    },
-    {
-      "component": "leakage",
-      "current_ngn": 28360.0,
-      "baseline_ngn": 0.0,
-      "change_ngn": 28360.0,
-      "profit_effect_ngn": -28360.0,
-      "share_of_change_pct": 17.1,
-      "status": "explained"
     }
   ],
   "causes": [
@@ -72,13 +63,8 @@
       "cause_id": "supplier_cost_rise",
       "title": "A supplier raised the unit cost of a product",
       "status": "supported",
-      "component": "cogs",
       "impact_ngn": -46992.0,
       "impact_evidence_id": "ev-supplier_cost_rise",
-      "share_of_change_pct": 28.3,
-      "rank": 1,
-      "origin": "external",
-      "nature": "actionable",
       "confidence": 0.7,
       "evidence": [
         {
@@ -108,24 +94,24 @@
           "survived": true
         }
       ],
-      "counterfactual_ngn": 260349.0,
       "depends_on_sources": [
         "books_files",
         "pos_files"
       ],
-      "retries": 0
+      "retries": 0,
+      "component": "cogs",
+      "share_of_change_pct": 34.1,
+      "rank": 1,
+      "origin": "external",
+      "nature": "actionable",
+      "counterfactual_ngn": 288709.0
     },
     {
       "cause_id": "sales_volume_drop",
       "title": "Fewer items sold than in a usual week",
       "status": "supported",
-      "component": "net_sales",
       "impact_ngn": -38611.0,
       "impact_evidence_id": "ev-sales_volume_drop",
-      "share_of_change_pct": 23.3,
-      "rank": 2,
-      "origin": "external",
-      "nature": "temporary",
       "confidence": 0.9,
       "evidence": [
         {
@@ -180,24 +166,24 @@
           "survived": true
         }
       ],
-      "counterfactual_ngn": 251968.0,
       "depends_on_sources": [
         "pos_files",
         "books_files"
       ],
-      "retries": 0
+      "retries": 0,
+      "component": "net_sales",
+      "share_of_change_pct": 28.0,
+      "rank": 2,
+      "origin": "external",
+      "nature": "temporary",
+      "counterfactual_ngn": 280328.0
     },
     {
       "cause_id": "wastage_spike",
       "title": "More stock expired or was damaged than usual",
       "status": "supported",
-      "component": "wastage",
       "impact_ngn": -35948.0,
       "impact_evidence_id": "ev-wastage_spike",
-      "share_of_change_pct": 21.6,
-      "rank": 3,
-      "origin": "internal",
-      "nature": "actionable",
       "confidence": 0.9,
       "evidence": [
         {
@@ -255,75 +241,23 @@
           "survived": true
         }
       ],
-      "counterfactual_ngn": 249305.0,
       "depends_on_sources": [
         "pos_files"
       ],
-      "retries": 0
-    },
-    {
-      "cause_id": "transfer_leakage",
-      "title": "Transfers recorded at the till never reached the bank",
-      "status": "supported",
-      "component": "leakage",
-      "impact_ngn": -28360.0,
-      "impact_evidence_id": "ev-transfer_leakage",
-      "share_of_change_pct": 17.1,
-      "rank": 4,
+      "retries": 0,
+      "component": "wastage",
+      "share_of_change_pct": 26.1,
+      "rank": 3,
       "origin": "internal",
       "nature": "actionable",
-      "confidence": 0.9,
-      "evidence": [
-        {
-          "evidence_id": "ev-transfer_leakage",
-          "table": "becuz.transfer_check",
-          "sql": "SELECT ROUND(-COALESCE(SUM(net_ngn), 0), 2) AS effect_ngn FROM becuz.transfer_check\nWHERE bank_txn_id IS NULL AND CAST(sold_at AS DATE) BETWEEN DATE '2026-10-12' AND DATE '2026-10-18'",
-          "row_ids": [
-            "SL-03043",
-            "SL-03067",
-            "SL-03102",
-            "SL-03112",
-            "SL-03132",
-            "SL-03192"
-          ],
-          "value_ngn": -28360.0,
-          "summary": "Transfers recorded at the till never reached the bank: -28,360",
-          "via": "local",
-          "check": {
-            "match": true,
-            "rerun_value_ngn": -28360.0,
-            "note": "The re-check matched: 28,360 naira from 6 records. 6 records back this.",
-            "model": null,
-            "via": "sample-rules",
-            "signed": false
-          }
-        }
-      ],
-      "falsified_by": [
-        {
-          "test": "every transfer sale this week has a matching bank credit",
-          "evidence_id": "ev-transfer_leakage",
-          "survived": true
-        }
-      ],
-      "counterfactual_ngn": 241717.0,
-      "depends_on_sources": [
-        "pos_files",
-        "bank_files"
-      ],
-      "retries": 0
+      "counterfactual_ngn": 277665.0
     },
     {
       "cause_id": "promo_overrun",
       "title": "A discount kept running after the promo ended",
       "status": "supported",
-      "component": "net_sales",
       "impact_ngn": -20475.0,
       "impact_evidence_id": "ev-promo_overrun",
-      "share_of_change_pct": 12.3,
-      "rank": 5,
-      "origin": "internal",
-      "nature": "actionable",
       "confidence": 0.9,
       "evidence": [
         {
@@ -371,13 +305,67 @@
           "survived": true
         }
       ],
-      "counterfactual_ngn": 233832.0,
       "depends_on_sources": [
         "pos_files"
+      ],
+      "retries": 0,
+      "component": "net_sales",
+      "share_of_change_pct": 14.9,
+      "rank": 4,
+      "origin": "internal",
+      "nature": "actionable",
+      "counterfactual_ngn": 262192.0
+    }
+  ],
+  "cash_gaps": [
+    {
+      "cause_id": "transfer_leakage",
+      "title": "Transfers recorded at the till never reached the bank",
+      "status": "supported",
+      "impact_ngn": -28360.0,
+      "impact_evidence_id": "ev-transfer_leakage",
+      "confidence": 0.9,
+      "evidence": [
+        {
+          "evidence_id": "ev-transfer_leakage",
+          "table": "becuz.transfer_check",
+          "sql": "SELECT ROUND(-COALESCE(SUM(net_ngn), 0), 2) AS effect_ngn FROM becuz.transfer_check\nWHERE bank_txn_id IS NULL AND CAST(sold_at AS DATE) BETWEEN DATE '2026-10-12' AND DATE '2026-10-18'",
+          "row_ids": [
+            "SL-03043",
+            "SL-03067",
+            "SL-03102",
+            "SL-03112",
+            "SL-03132",
+            "SL-03192"
+          ],
+          "value_ngn": -28360.0,
+          "summary": "Transfers recorded at the till never reached the bank: -28,360",
+          "via": "local",
+          "check": {
+            "match": true,
+            "rerun_value_ngn": -28360.0,
+            "note": "The re-check matched: 28,360 naira from 6 records. 6 records back this.",
+            "model": null,
+            "via": "sample-rules",
+            "signed": false
+          }
+        }
+      ],
+      "falsified_by": [
+        {
+          "test": "every transfer sale this week has a matching bank credit",
+          "evidence_id": "ev-transfer_leakage",
+          "survived": true
+        }
+      ],
+      "depends_on_sources": [
+        "pos_files",
+        "bank_files"
       ],
       "retries": 0
     }
   ],
+  "memory": [],
   "ruled_out": [
     {
       "cause_id": "pos_charge_rise",
@@ -389,18 +377,20 @@
   ],
   "not_tested": [],
   "convergence": {
-    "explained_ngn": -170386.0,
-    "explained_pct": 102.6,
+    "explained_ngn": -142026.0,
+    "explained_pct": 103.1,
     "unexplained_ngn": 4331.25
   },
   "summary": {
-    "what_happened": "Profit this week was 213,357 against a usual week of 379,412, down 166,055.",
+    "what_happened": "Profit this week was ₦241,717, which is ₦137,695 less than a usual week (₦379,412).",
     "why": [
-      "A supplier raised the unit cost of a product: -46,992",
-      "Fewer items sold than in a usual week: -38,611",
-      "More stock expired or was damaged than usual: -35,948",
-      "Transfers recorded at the till never reached the bank: -28,360",
-      "A discount kept running after the promo ended: -20,475"
+      "A supplier raised the unit cost of a product. This cost you ₦46,992.",
+      "Fewer items sold than in a usual week. This cost you ₦38,611.",
+      "More stock expired or was damaged than usual. This cost you ₦35,948.",
+      "A discount kept running after the promo ended. This cost you ₦20,475."
+    ],
+    "cash": [
+      "₦28,360 from 6 transfer sales was recorded at the till but never reached the bank. The sales still count toward your profit, but this money is missing from your account."
     ],
     "what_to_do": [
       {
@@ -416,19 +406,19 @@
         "action": "Order perishables in smaller batches and check storage for the affected items."
       },
       {
-        "cause_id": "transfer_leakage",
-        "action": "Check these transfers against the bank app with the staff who recorded them."
-      },
-      {
         "cause_id": "promo_overrun",
         "action": "Switch off the expired promo at the till and check which staff applied it."
+      },
+      {
+        "cause_id": "transfer_leakage",
+        "action": "Check these transfers against the bank app with the staff who recorded them."
       }
     ]
   },
   "owner_questions": [
     {
       "cause_id": "transfer_leakage",
-      "question": "6 transfer sales have no matching bank credit (SL-03043, SL-03067, SL-03102, SL-03112, SL-03132, SL-03192). Can you check them with the staff who recorded them?"
+      "question": "6 transfer sales this week have no matching payment in the bank (SL-03043, SL-03067, SL-03102, SL-03112, SL-03132, SL-03192). Can you check them with the staff who recorded them?"
     }
   ],
   "limitations": [
@@ -437,7 +427,7 @@
     "Sample mode: evidence ratings come from fixed rules, not a model; every number comes from SQL."
   ],
   "stats": {
-    "duration_s": 0.88,
+    "duration_s": 0.24,
     "zetaris_queries": 27,
     "model_calls": 0,
     "retries": 0,
@@ -447,5 +437,5 @@
       "sample-rules": 6
     }
   },
-  "trace_file": "logs/trace-inv-3796f94a4e.jsonl"
+  "trace_file": "logs/trace-inv-07f6f3464a.jsonl"
 }

@@ -52,7 +52,8 @@ def make_planner(wh: Warehouse, trace: Trace, memory: HMEM):
         recalled = recall_confirmed(memory, state["question"])
         trace.emit("Planner", "recall", state["question"],
                    f"{len(recalled)} owner-confirmed causes recalled: {', '.join(recalled) or 'none'}", engine="hmem")
-        queue = sorted(CATALOGUE, key=lambda cause: (cause not in recalled, effects[CATALOGUE[cause].component]))
+        # A cash cause has no profit node, so it sorts as no profit effect.
+        queue = sorted(CATALOGUE, key=lambda cause: (cause not in recalled, effects.get(CATALOGUE[cause].component, 0.0)))
         trace.emit("Planner", "plan", state["question"],
                    f"profit change {tree['profit_ngn']['change']:+,.0f} for {start}..{end}; testing {', '.join(queue)}",
                    target_agent="Investigator")

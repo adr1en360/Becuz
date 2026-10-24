@@ -18,6 +18,9 @@ Becuz joins those records through Zetaris and reports:
 - ranked causes, each with its naira impact, its receipt and a confidence rating
 - causes it tested and ruled out, with the reason
 - how much of the change it explained, and how much is left unexplained
+- cash gaps, kept apart from profit: transfers recorded at the till that never reached the bank. The
+  sale happened, so it still counts as profit, but the money is missing
+- causes the owner confirmed in earlier runs, and whether each one happened again
 - one action per cause for the owner to take this week
 
 SQL computes every naira figure. The model rates the evidence and writes a note for the owner. It
@@ -61,7 +64,8 @@ Planner ─► Investigator ─► Checker ─► next cause? ──────
 context) are CSV files in S3, registered as Lightning databases. A Unified Semantic Layer (USL) named
 `becuz` declares the shop's 12 tables and their keys. Two of them do work inside Zetaris:
 
-- `daily_pnl` computes the profit tree for each day.
+- `daily_pnl` computes the profit tree for each day: sales minus cost of goods, wastage and expenses.
+  It also keeps the day's missing transfers in their own column, outside profit.
 - `transfer_check` matches each transfer sale to a bank credit.
 
 The data-quality rule `transfer_reached_bank` runs on the same match. The agent connects as a
@@ -193,7 +197,7 @@ without it Becuz takes the latest full week in the data. `scenario` (`s01` to `s
 {
   "status": "complete",
   "mode": "sample",
-  "headline": {"current_ngn": 213357.0, "baseline_ngn": 379411.75, "change_ngn": -166054.75, "change_pct": -43.8},
+  "headline": {"current_ngn": 241717.0, "baseline_ngn": 379411.75, "change_ngn": -137694.75, "change_pct": -36.3},
   "causes": [
     {
       "rank": 1,
@@ -210,11 +214,16 @@ without it Becuz takes the latest full week in the data. `scenario` (`s01` to `s
       }]
     }
   ],
+  "cash_gaps": [
+    {"cause_id": "transfer_leakage", "title": "Transfers recorded at the till never reached the bank",
+     "impact_ngn": -28360.0, "evidence": [{"table": "becuz.transfer_check", "row_ids": ["SL-03043", "SL-03067", "..."]}]}
+  ],
   "ruled_out": [{"cause_id": "pos_charge_rise", "reason": "The records show no loss from this cause this week."}],
-  "convergence": {"explained_ngn": -170386.0, "explained_pct": 102.6, "unexplained_ngn": 4331.25},
+  "convergence": {"explained_ngn": -142026.0, "explained_pct": 103.1, "unexplained_ngn": 4331.25},
   "summary": {
-    "what_happened": "Profit this week was 213,357 against a usual week of 379,412, down 166,055.",
-    "what_to_do": [{"cause_id": "transfer_leakage", "action": "Check these transfers against the bank app with the staff who recorded them."}]
+    "what_happened": "Profit this week was ₦241,717, which is ₦137,695 less than a usual week (₦379,412).",
+    "why": ["A supplier raised the unit cost of a product. This cost you ₦46,992.", "..."],
+    "cash": ["₦28,360 from 6 transfer sales was recorded at the till but never reached the bank. The sales still count toward your profit, but this money is missing from your account."]
   },
   "stats": {"zetaris_queries": 27, "model_calls": 0, "retries": 0}
 }
@@ -231,19 +240,35 @@ uv run python run.py --confirm <run_id> transfer_leakage
 ```
 
 Only a cause the Checker supported in that run can be confirmed. H-MEM stores it, and the next run
-tests it first.
+tests it first and reports what happened in `memory`:
+
+```powershell
+$env:SAMPLE_MODE = "1"
+uv run python run.py --input input_examples/example_2.json      # note the run_id
+uv run python run.py --confirm <run_id> transfer_leakage
+uv run python run.py --input input_examples/example_1.json
+```
+
+```json
+"memory": [{
+  "cause_id": "transfer_leakage", "held_again": true, "confidence_before": 0.7, "confidence_after": 0.75,
+  "message": "You confirmed that transfers recorded at the till never reached the bank after an earlier run, so Becuz checked it first this time. It happened again this week."
+}]
+```
+
+If a remembered cause does not happen again, its memory loses confidence and is flagged for review.
 
 ### Examples
 
 | Input | Scenario | What the agent finds |
 |---|---|---|
-| `input_examples/example_1.json` | `s01`: four planted causes and natural day-to-day noise | 5 supported causes; POS charges ruled out |
-| `input_examples/example_2.json` | `s04`: missing transfers only | Transfer leakage; falling sales and POS charges ruled out |
-| `input_examples/example_3.json` | `s05`: a normal week | No cause reported |
+| `input_examples/example_1.json` | `s01`: three planted profit causes, missing transfers, and natural day-to-day noise | 4 profit causes and a ₦28,360 cash gap; POS charges ruled out |
+| `input_examples/example_2.json` | `s04`: missing transfers only | Profit did not fall, but ₦33,100 in transfers never reached the bank; falling sales and POS charges ruled out |
+| `input_examples/example_3.json` | `s05`: a normal week | Nothing to explain; every cause ruled out |
 
 Each output and its trace are in `output_examples/`, saved from real sample-mode runs. A live run of
-`s01` through Zetaris and Nightshift returns the same five causes and the same naira figures, with each
-rating from Nemotron.
+`s01` through Zetaris and Nightshift returned the same findings and naira figures as sample mode, with
+each rating from Nemotron.
 
 ## 8. Sample mode
 

@@ -97,14 +97,16 @@ Four logical sources, stored as CSV in S3 and registered in Zetaris:
 These definitions live in code as data and are tested:
 
 ```text
-profit    = net_sales − cogs − wastage − opex − leakage
+profit    = net_sales − cogs − wastage − opex
 net_sales = Σ(qty × unit_price) − discounts
 cogs      = Σ(qty sold × weighted unit cost from supplier_invoices)
 wastage   = Σ(expired or damaged qty × unit cost)
 opex      = Σ expenses by category
-leakage   = transfer sales with no bank credit matching on reference,
-            or on exact amount within 48h
+cash gap  = transfer sales with no bank credit matching on reference
 ```
+
+A cash gap is kept apart from profit. The sale happened, so it counts as profit; the missing money is
+reported as cash the shop is owed, with its own receipt.
 
 The baseline is the average of the previous 4 weeks, unless the question names another period.
 

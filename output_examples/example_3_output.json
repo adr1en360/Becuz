@@ -1,5 +1,5 @@
 {
-  "run_id": "inv-e3d2b93280",
+  "run_id": "inv-0248fea8d5",
   "status": "complete",
   "errors": [],
   "mode": "sample",
@@ -56,18 +56,11 @@
       "profit_effect_ngn": -0.0,
       "share_of_change_pct": -0.0,
       "status": "no_change"
-    },
-    {
-      "component": "leakage",
-      "current_ngn": 0.0,
-      "baseline_ngn": 0.0,
-      "change_ngn": 0.0,
-      "profit_effect_ngn": -0.0,
-      "share_of_change_pct": -0.0,
-      "status": "no_change"
     }
   ],
   "causes": [],
+  "cash_gaps": [],
+  "memory": [],
   "ruled_out": [
     {
       "cause_id": "supplier_cost_rise",
@@ -119,10 +112,11 @@
     "unexplained_ngn": 7612.5
   },
   "summary": {
-    "what_happened": "Profit this week was 344,484 against a usual week of 336,872, up 7,612.",
+    "what_happened": "Profit this week was ₦344,484, which is ₦7,612 more than a usual week (₦336,872).",
     "why": [
-      "None of the tested causes explains the change."
+      "Profit went up, and none of the problems Becuz checks for showed up this week."
     ],
+    "cash": [],
     "what_to_do": []
   },
   "owner_questions": [],
@@ -132,7 +126,7 @@
     "Sample mode: evidence ratings come from fixed rules, not a model; every number comes from SQL."
   ],
   "stats": {
-    "duration_s": 0.86,
+    "duration_s": 0.23,
     "zetaris_queries": 27,
     "model_calls": 0,
     "retries": 0,
@@ -142,5 +136,5 @@
       "sample-rules": 6
     }
   },
-  "trace_file": "logs/trace-inv-e3d2b93280.jsonl"
+  "trace_file": "logs/trace-inv-0248fea8d5.jsonl"
 }

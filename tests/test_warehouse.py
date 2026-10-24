@@ -39,14 +39,14 @@ class LocalWarehouseTests(unittest.TestCase):
         cls.wh = LocalWarehouse("s01")
         cls.tree = profit_tree(cls.wh, *FINAL)
 
-    def test_leakage_and_wastage_changes_match_answer_key(self) -> None:
-        self.assertAlmostEqual(self.tree["leakage_ngn"]["change"], -impact("transfer_leakage"), delta=1)
+    def test_wastage_change_matches_answer_key(self) -> None:
         self.assertAlmostEqual(self.tree["wastage_ngn"]["change"], -impact("wastage_spike"), delta=1)
 
     def test_profit_is_the_tree_identity(self) -> None:
         for side in ("current", "baseline"):
             parts = {c: self.tree[c][side] for c in COMPONENTS}
-            expected = parts["net_sales_ngn"] - parts["cogs_ngn"] - parts["wastage_ngn"] - parts["opex_ngn"] - parts["leakage_ngn"]
+            # Missing transfers are a cash gap, not a cost, so they are not in the identity.
+            expected = parts["net_sales_ngn"] - parts["cogs_ngn"] - parts["wastage_ngn"] - parts["opex_ngn"]
             self.assertAlmostEqual(parts["profit_ngn"], expected, delta=1)
         self.assertLess(self.tree["profit_ngn"]["change"], 0)
 

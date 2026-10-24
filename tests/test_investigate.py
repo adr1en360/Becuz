@@ -30,12 +30,25 @@ class InvestigateTests(unittest.TestCase):
     def key(self, scenario: str) -> dict:
         return json.loads((ROOT / scenario / "answer_key.json").read_text(encoding="utf-8"))
 
+    @staticmethod
+    def findings(report: dict) -> list[dict]:
+        return report["causes"] + report["cash_gaps"]
+
     def test_finds_exactly_the_planted_causes(self) -> None:
         for scenario, report in self.reports.items():
             with self.subTest(scenario=scenario):
                 planted = {c["cause_id"] for c in self.key(scenario)["causes"]}
-                found = {c["cause_id"] for c in report["causes"]}
+                found = {c["cause_id"] for c in self.findings(report)}
                 self.assertEqual(found, planted | UNPLANTED_BUT_REAL.get(scenario, set()))
+
+    def test_missing_transfers_are_cash_not_profit(self) -> None:
+        for scenario, report in self.reports.items():
+            with self.subTest(scenario=scenario):
+                self.assertNotIn("transfer_leakage", {c["cause_id"] for c in report["causes"]})
+                self.assertEqual(len(report["summary"]["cash"]), len(report["cash_gaps"]))
+        # s04's only planted problem is missing transfers, so its profit did not fall.
+        self.assertEqual([c["cause_id"] for c in self.reports["s04"]["cash_gaps"]], ["transfer_leakage"])
+        self.assertNotEqual(self.reports["s04"]["headline"]["direction"], "down")
 
     def test_red_herrings_are_ruled_out(self) -> None:
         for scenario, report in self.reports.items():
@@ -46,7 +59,7 @@ class InvestigateTests(unittest.TestCase):
 
     def test_impacts_match_the_answer_key(self) -> None:
         for scenario, report in self.reports.items():
-            found = {c["cause_id"]: c["impact_ngn"] for c in report["causes"]}
+            found = {c["cause_id"]: c["impact_ngn"] for c in self.findings(report)}
             for cause in self.key(scenario)["causes"]:
                 with self.subTest(scenario=scenario, cause=cause["cause_id"]):
                     self.assertAlmostEqual(found[cause["cause_id"]], cause["impact_ngn"], delta=1)

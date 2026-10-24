@@ -14,6 +14,7 @@ def main() -> int:
     group.add_argument("--input", help="run an investigation from a JSON request file")
     group.add_argument("--confirm", nargs=2, metavar=("RUN_ID", "CAUSE_ID"), help="confirm a cause from a past run")
     args = parser.parse_args()
+    sys.stdout.reconfigure(encoding="utf-8")  # reports carry the naira sign; Windows consoles default to cp1252
 
     if args.confirm:
         try:

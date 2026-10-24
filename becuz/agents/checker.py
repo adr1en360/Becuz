@@ -58,9 +58,8 @@ def make_checker(wh: Warehouse, trace: Trace, world: WorldModel, memory: HMEM, j
                        status="success" if "error" not in judgement else "failed", engine="markovian",
                        model=judgement["model"], via=judgement["via"])
         memory_id = state.get("recalled", {}).get(cause)
-        if memory_id and status in ("supported", "rejected"):
-            # H-MEM feedback: a remembered cause that holds again gains confidence; one that fails is flagged.
-            memory.feedback(memory_id, "helpful" if status == "supported" else "wrong")
+        if memory_id and status != "sent_back":
+            world.update_claim(claim_id, "Checker", recall=recall_feedback(memory, memory_id, status))
         target = "Investigator" if status == "sent_back" or state["queue"] else "Writer"
         trace.emit("Checker", status, cause, reason, target_agent=target, confidence=1.0 if status == "supported" else None,
                    retry_count=retries, status="needs_revision" if status == "sent_back" else "success",
@@ -68,6 +67,17 @@ def make_checker(wh: Warehouse, trace: Trace, world: WorldModel, memory: HMEM, j
         return {}
 
     return checker
+
+
+def recall_feedback(memory: HMEM, memory_id: str, status: str) -> dict:
+    """H-MEM feedback: a remembered cause that holds again gains confidence; one that fails is flagged."""
+    record = memory.get(memory_id)
+    before = record["confidence"]
+    held = {"supported": True, "rejected": False}.get(status)
+    if held is not None:
+        record = memory.feedback(memory_id, "helpful" if held else "wrong")
+    return {"memory_id": memory_id, "confirmed_at": record["timestamp"], "held_again": held,
+            "confidence_before": before, "confidence_after": record["confidence"]}
 
 
 def make_router(world: WorldModel):

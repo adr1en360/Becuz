@@ -19,9 +19,9 @@
       "title": "Action",
       "type": "object"
     },
-    "Cause": {
+    "CashGap": {
       "additionalProperties": false,
-      "description": "A supported cause. Rejected or unverified hypotheses go to ruled_out instead.",
+      "description": "Money the till recorded but the bank never received; impact_ngn is the missing amount (negative).\nIt is cash the shop is owed, so it is not part of the profit change.",
       "properties": {
         "cause_id": {
           "title": "Cause Id",
@@ -37,52 +37,14 @@
           "title": "Status",
           "type": "string"
         },
-        "component": {
-          "description": "The tree node this cause explains",
-          "enum": [
-            "net_sales",
-            "cogs",
-            "wastage",
-            "opex",
-            "leakage"
-          ],
-          "title": "Component",
-          "type": "string"
-        },
         "impact_ngn": {
-          "description": "Effect on profit this week; negative is a loss",
+          "description": "Naira this week; negative is a loss",
           "title": "Impact Ngn",
           "type": "number"
         },
         "impact_evidence_id": {
           "description": "Evidence row whose value_ngn is the impact",
           "title": "Impact Evidence Id",
-          "type": "string"
-        },
-        "share_of_change_pct": {
-          "title": "Share Of Change Pct",
-          "type": "number"
-        },
-        "rank": {
-          "description": "1 = largest effect",
-          "minimum": 1,
-          "title": "Rank",
-          "type": "integer"
-        },
-        "origin": {
-          "enum": [
-            "internal",
-            "external"
-          ],
-          "title": "Origin",
-          "type": "string"
-        },
-        "nature": {
-          "enum": [
-            "actionable",
-            "temporary"
-          ],
-          "title": "Nature",
           "type": "string"
         },
         "confidence": {
@@ -114,11 +76,6 @@
           "title": "Falsified By",
           "type": "array"
         },
-        "counterfactual_ngn": {
-          "description": "This week's profit without this cause: headline.current_ngn - impact_ngn",
-          "title": "Counterfactual Ngn",
-          "type": "number"
-        },
         "depends_on_sources": {
           "description": "Zetaris sources the evidence read",
           "items": {
@@ -142,18 +99,150 @@
       "required": [
         "cause_id",
         "title",
-        "component",
         "impact_ngn",
         "impact_evidence_id",
+        "confidence",
+        "evidence",
+        "falsified_by",
+        "depends_on_sources"
+      ],
+      "title": "CashGap",
+      "type": "object"
+    },
+    "Cause": {
+      "additionalProperties": false,
+      "description": "A supported cause of the profit change; impact_ngn is its effect on this week's profit.",
+      "properties": {
+        "cause_id": {
+          "title": "Cause Id",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "status": {
+          "const": "supported",
+          "default": "supported",
+          "title": "Status",
+          "type": "string"
+        },
+        "impact_ngn": {
+          "description": "Naira this week; negative is a loss",
+          "title": "Impact Ngn",
+          "type": "number"
+        },
+        "impact_evidence_id": {
+          "description": "Evidence row whose value_ngn is the impact",
+          "title": "Impact Evidence Id",
+          "type": "string"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "The model's rating of the evidence; None if it was unavailable",
+          "title": "Confidence"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/Evidence"
+          },
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "falsified_by": {
+          "items": {
+            "$ref": "#/$defs/FalsificationTest"
+          },
+          "title": "Falsified By",
+          "type": "array"
+        },
+        "depends_on_sources": {
+          "description": "Zetaris sources the evidence read",
+          "items": {
+            "enum": [
+              "pos_files",
+              "bank_files",
+              "books_files",
+              "context_files"
+            ],
+            "type": "string"
+          },
+          "title": "Depends On Sources",
+          "type": "array"
+        },
+        "retries": {
+          "default": 0,
+          "title": "Retries",
+          "type": "integer"
+        },
+        "component": {
+          "description": "The tree node this cause explains",
+          "enum": [
+            "net_sales",
+            "cogs",
+            "wastage",
+            "opex"
+          ],
+          "title": "Component",
+          "type": "string"
+        },
+        "share_of_change_pct": {
+          "title": "Share Of Change Pct",
+          "type": "number"
+        },
+        "rank": {
+          "description": "1 = largest effect",
+          "minimum": 1,
+          "title": "Rank",
+          "type": "integer"
+        },
+        "origin": {
+          "enum": [
+            "internal",
+            "external"
+          ],
+          "title": "Origin",
+          "type": "string"
+        },
+        "nature": {
+          "enum": [
+            "actionable",
+            "temporary"
+          ],
+          "title": "Nature",
+          "type": "string"
+        },
+        "counterfactual_ngn": {
+          "description": "This week's profit without this cause: headline.current_ngn - impact_ngn",
+          "title": "Counterfactual Ngn",
+          "type": "number"
+        }
+      },
+      "required": [
+        "cause_id",
+        "title",
+        "impact_ngn",
+        "impact_evidence_id",
+        "confidence",
+        "evidence",
+        "falsified_by",
+        "depends_on_sources",
+        "component",
         "share_of_change_pct",
         "rank",
         "origin",
         "nature",
-        "confidence",
-        "evidence",
-        "falsified_by",
-        "counterfactual_ngn",
-        "depends_on_sources"
+        "counterfactual_ngn"
       ],
       "title": "Cause",
       "type": "object"
@@ -448,6 +537,62 @@
       "title": "OwnerQuestion",
       "type": "object"
     },
+    "Recall": {
+      "additionalProperties": false,
+      "description": "A cause the owner confirmed in an earlier run, recalled from H-MEM and tested first.",
+      "properties": {
+        "cause_id": {
+          "title": "Cause Id",
+          "type": "string"
+        },
+        "confirmed_at": {
+          "description": "When the owner confirmed it (ISO timestamp)",
+          "title": "Confirmed At",
+          "type": "string"
+        },
+        "held_again": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "True if it was found again, False if not, None if this week could not test it",
+          "title": "Held Again"
+        },
+        "confidence_before": {
+          "description": "H-MEM confidence in the memory before this run",
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Confidence Before",
+          "type": "number"
+        },
+        "confidence_after": {
+          "description": "H-MEM confidence after this run's result",
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Confidence After",
+          "type": "number"
+        },
+        "message": {
+          "description": "Plain-language line for the owner",
+          "title": "Message",
+          "type": "string"
+        }
+      },
+      "required": [
+        "cause_id",
+        "confirmed_at",
+        "held_again",
+        "confidence_before",
+        "confidence_after",
+        "message"
+      ],
+      "title": "Recall",
+      "type": "object"
+    },
     "RuledOut": {
       "additionalProperties": false,
       "properties": {
@@ -557,6 +702,15 @@
           "title": "Why",
           "type": "array"
         },
+        "cash": {
+          "default": [],
+          "description": "One line per cash gap, kept apart from profit",
+          "items": {
+            "type": "string"
+          },
+          "title": "Cash",
+          "type": "array"
+        },
         "what_to_do": {
           "items": {
             "$ref": "#/$defs/Action"
@@ -581,8 +735,7 @@
             "net_sales",
             "cogs",
             "wastage",
-            "opex",
-            "leakage"
+            "opex"
           ],
           "title": "Component",
           "type": "string"
@@ -701,6 +854,23 @@
         "$ref": "#/$defs/Cause"
       },
       "title": "Causes",
+      "type": "array"
+    },
+    "cash_gaps": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/CashGap"
+      },
+      "title": "Cash Gaps",
+      "type": "array"
+    },
+    "memory": {
+      "default": [],
+      "description": "Owner-confirmed causes recalled from H-MEM for this run",
+      "items": {
+        "$ref": "#/$defs/Recall"
+      },
+      "title": "Memory",
       "type": "array"
     },
     "ruled_out": {

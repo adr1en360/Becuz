@@ -1,5 +1,5 @@
 {
-  "run_id": "inv-069249ffb6",
+  "run_id": "inv-6812ea83ec",
   "status": "complete",
   "errors": [],
   "mode": "sample",
@@ -14,11 +14,11 @@
     "baseline_end": "2026-10-11"
   },
   "headline": {
-    "current_ngn": 363072.0,
+    "current_ngn": 396172.0,
     "baseline_ngn": 389609.5,
-    "change_ngn": -26537.5,
-    "change_pct": -6.8,
-    "direction": "down"
+    "change_ngn": 6562.5,
+    "change_pct": 1.7,
+    "direction": "up"
   },
   "tree": [
     {
@@ -27,7 +27,7 @@
       "baseline_ngn": 2761457.5,
       "change_ngn": 6562.5,
       "profit_effect_ngn": 6562.5,
-      "share_of_change_pct": -24.7,
+      "share_of_change_pct": 100.0,
       "status": "unexplained"
     },
     {
@@ -36,7 +36,7 @@
       "baseline_ngn": 2191576.0,
       "change_ngn": 0.0,
       "profit_effect_ngn": -0.0,
-      "share_of_change_pct": 0.0,
+      "share_of_change_pct": -0.0,
       "status": "no_change"
     },
     {
@@ -45,7 +45,7 @@
       "baseline_ngn": 18272.0,
       "change_ngn": 0.0,
       "profit_effect_ngn": -0.0,
-      "share_of_change_pct": 0.0,
+      "share_of_change_pct": -0.0,
       "status": "no_change"
     },
     {
@@ -54,31 +54,18 @@
       "baseline_ngn": 162000.0,
       "change_ngn": 0.0,
       "profit_effect_ngn": -0.0,
-      "share_of_change_pct": 0.0,
+      "share_of_change_pct": -0.0,
       "status": "no_change"
-    },
-    {
-      "component": "leakage",
-      "current_ngn": 33100.0,
-      "baseline_ngn": 0.0,
-      "change_ngn": 33100.0,
-      "profit_effect_ngn": -33100.0,
-      "share_of_change_pct": 124.7,
-      "status": "explained"
     }
   ],
-  "causes": [
+  "causes": [],
+  "cash_gaps": [
     {
       "cause_id": "transfer_leakage",
       "title": "Transfers recorded at the till never reached the bank",
       "status": "supported",
-      "component": "leakage",
       "impact_ngn": -33100.0,
       "impact_evidence_id": "ev-transfer_leakage",
-      "share_of_change_pct": 124.7,
-      "rank": 1,
-      "origin": "internal",
-      "nature": "actionable",
       "confidence": 0.9,
       "evidence": [
         {
@@ -113,7 +100,6 @@
           "survived": true
         }
       ],
-      "counterfactual_ngn": 396172.0,
       "depends_on_sources": [
         "pos_files",
         "bank_files"
@@ -121,6 +107,7 @@
       "retries": 0
     }
   ],
+  "memory": [],
   "ruled_out": [
     {
       "cause_id": "supplier_cost_rise",
@@ -160,14 +147,17 @@
   ],
   "not_tested": [],
   "convergence": {
-    "explained_ngn": -33100.0,
-    "explained_pct": 124.7,
+    "explained_ngn": 0.0,
+    "explained_pct": 0.0,
     "unexplained_ngn": 6562.5
   },
   "summary": {
-    "what_happened": "Profit this week was 363,072 against a usual week of 389,610, down 26,538.",
+    "what_happened": "Profit this week was ₦396,172, which is ₦6,562 more than a usual week (₦389,610).",
     "why": [
-      "Transfers recorded at the till never reached the bank: -33,100"
+      "Profit went up, and none of the problems Becuz checks for showed up this week."
+    ],
+    "cash": [
+      "₦33,100 from 6 transfer sales was recorded at the till but never reached the bank. The sales still count toward your profit, but this money is missing from your account."
     ],
     "what_to_do": [
       {
@@ -179,7 +169,7 @@
   "owner_questions": [
     {
       "cause_id": "transfer_leakage",
-      "question": "6 transfer sales have no matching bank credit (SL-03208, SL-03231, SL-03302, SL-03323, SL-03333, SL-03372). Can you check them with the staff who recorded them?"
+      "question": "6 transfer sales this week have no matching payment in the bank (SL-03208, SL-03231, SL-03302, SL-03323, SL-03333, SL-03372). Can you check them with the staff who recorded them?"
     }
   ],
   "limitations": [
@@ -188,7 +178,7 @@
     "Sample mode: evidence ratings come from fixed rules, not a model; every number comes from SQL."
   ],
   "stats": {
-    "duration_s": 0.89,
+    "duration_s": 0.25,
     "zetaris_queries": 27,
     "model_calls": 0,
     "retries": 0,
@@ -198,5 +188,5 @@
       "sample-rules": 6
     }
   },
-  "trace_file": "logs/trace-inv-069249ffb6.jsonl"
+  "trace_file": "logs/trace-inv-6812ea83ec.jsonl"
 }

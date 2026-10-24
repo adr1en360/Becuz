@@ -2,7 +2,8 @@
 
 Each cause has two Spark SQL templates over the becuz USL:
 - `effect_sql` returns one row, `effect_ngn`: the cause's effect on this week's profit
-  (negative is a loss), measured against the average of the 4 weeks before.
+  (negative is a loss), measured against the average of the 4 weeks before. For a cash cause
+  (component "cash") it is the money recorded at the till that the bank never received.
 - `records_sql` returns the record IDs behind that number, so every claim has receipts.
 
 The Investigator runs them and the Checker re-runs them; the model never computes the number.
@@ -25,7 +26,7 @@ RECORD_LIMIT = 50
 class CauseSpec:
     cause_id: str
     title: str
-    component: str  # profit tree node, as in schemas.Component
+    component: str  # profit tree node, as in schemas.Component, or "cash" for a cash gap
     origin: str
     nature: str
     sources: tuple[str, ...]
@@ -88,7 +89,7 @@ ORDER BY movement_id LIMIT {RECORD_LIMIT}""",
         action="Order perishables in smaller batches and check storage for the affected items.",
     ),
     CauseSpec(
-        "transfer_leakage", "Transfers recorded at the till never reached the bank", "leakage", "internal", "actionable",
+        "transfer_leakage", "Transfers recorded at the till never reached the bank", "cash", "internal", "actionable",
         ("pos_files", "bank_files"),
         effect_sql=f"""SELECT ROUND(-COALESCE(SUM(net_ngn), 0), 2) AS effect_ngn FROM {{usl}}.transfer_check
 WHERE bank_txn_id IS NULL AND CAST(sold_at AS DATE) {WEEK}""",

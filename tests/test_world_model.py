@@ -91,7 +91,7 @@ class SharedClaimsTests(unittest.TestCase):
             events = [json.loads(line) for line in (Path(tmp) / "world.jsonl").read_text(encoding="utf-8").splitlines()]
         statuses = [e["status"] for e in events if e["kind"] == "world.status"]
         self.assertEqual(statuses.count("proposed"), 6)  # every catalogue cause was claimed
-        self.assertEqual(statuses.count("supported"), len(report["causes"]))
+        self.assertEqual(statuses.count("supported"), len(report["causes"]) + len(report["cash_gaps"]))
 
 
 if __name__ == "__main__":
