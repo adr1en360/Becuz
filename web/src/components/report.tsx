@@ -2,9 +2,11 @@ import { ArrowLeftIcon } from "@solar-icons/react/outline";
 import type { Investigation } from "@/lib/investigation";
 import { formatRange } from "@/lib/format";
 import { Breakdown } from "./breakdown";
+import { CashSection } from "./cash-section";
 import { CauseList } from "./cause-list";
 import { Convergence } from "./convergence";
 import { Headline } from "./headline";
+import { MemoryNote } from "./memory-note";
 import { NextSteps } from "./next-steps";
 import { Divider, Receipt } from "./receipt";
 import { RuledOut } from "./ruled-out";
@@ -12,6 +14,10 @@ import { RunDetails } from "./run-details";
 import { Stamp } from "./stamp";
 
 export function Report({ data, onReset }: { data: Investigation; onReset: () => void }) {
+  const gaps = data.cash_gaps ?? [];
+  const gapIds = new Set(gaps.map((g) => g.cause_id));
+  const cashQuestions = data.owner_questions.filter((q) => gapIds.has(q.cause_id));
+  const otherQuestions = data.owner_questions.filter((q) => !gapIds.has(q.cause_id));
   return (
     <main className="mx-auto w-full max-w-5xl flex-1 px-4 pb-24 pt-4 sm:px-8">
       <div className="mx-auto max-w-[40rem]">
@@ -49,6 +55,7 @@ export function Report({ data, onReset }: { data: Investigation; onReset: () => 
           </section>
         )}
 
+        {data.memory && data.memory.length > 0 && <MemoryNote entries={data.memory} />}
         <Divider />
         <Headline data={data} />
         <Divider />
@@ -56,11 +63,17 @@ export function Report({ data, onReset }: { data: Investigation; onReset: () => 
         <Divider />
         <CauseList causes={data.causes} />
         <Divider />
+        {gaps.length > 0 && (
+          <>
+            <CashSection gaps={gaps} lines={data.summary.cash ?? []} questions={cashQuestions} />
+            <Divider />
+          </>
+        )}
         <RuledOut items={data.ruled_out} />
         <Divider />
         <Convergence convergence={data.convergence} change={data.headline.change_ngn} notTested={data.not_tested} />
         <Divider />
-        <NextSteps data={data} />
+        <NextSteps data={data} questions={otherQuestions} />
         <Divider />
         <RunDetails data={data} />
       </Receipt>

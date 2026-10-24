@@ -29,7 +29,7 @@ export type ChangeNgn = number;
  */
 export type ChangePct = number | null;
 export type Direction = "down" | "up" | "flat";
-export type Component = "net_sales" | "cogs" | "wastage" | "opex" | "leakage";
+export type Component = "net_sales" | "cogs" | "wastage" | "opex";
 export type CurrentNgn1 = number;
 export type BaselineNgn1 = number;
 /**
@@ -50,25 +50,17 @@ export type CauseId = string;
 export type Title = string;
 export type Status2 = "supported";
 /**
- * The tree node this cause explains
- */
-export type Component1 = "net_sales" | "cogs" | "wastage" | "opex" | "leakage";
-/**
- * Effect on profit this week; negative is a loss
+ * Naira this week; negative is a loss
  */
 export type ImpactNgn = number;
 /**
  * Evidence row whose value_ngn is the impact
  */
 export type ImpactEvidenceId = string;
-export type ShareOfChangePct1 = number;
 /**
- * 1 = largest effect
+ * The model's rating of the evidence; None if it was unavailable
  */
-export type Rank = number;
-export type Origin = "internal" | "external";
-export type Nature = "actionable" | "temporary";
-export type Confidence = number;
+export type Confidence = number | null;
 /**
  * @minItems 1
  */
@@ -109,16 +101,78 @@ export type EvidenceId1 = string;
 export type Survived = boolean;
 export type FalsifiedBy = FalsificationTest[];
 /**
- * This week's profit without this cause: headline.current_ngn - impact_ngn
- */
-export type CounterfactualNgn = number;
-/**
  * Zetaris sources the evidence read
  */
 export type DependsOnSources = ("pos_files" | "bank_files" | "books_files" | "context_files")[];
 export type Retries = number;
+/**
+ * The tree node this cause explains
+ */
+export type Component1 = "net_sales" | "cogs" | "wastage" | "opex";
+export type ShareOfChangePct1 = number;
+/**
+ * 1 = largest effect
+ */
+export type Rank = number;
+export type Origin = "internal" | "external";
+export type Nature = "actionable" | "temporary";
+/**
+ * This week's profit without this cause: headline.current_ngn - impact_ngn
+ */
+export type CounterfactualNgn = number;
 export type Causes = Cause[];
 export type CauseId1 = string;
+export type Title1 = string;
+export type Status3 = "supported";
+/**
+ * Naira this week; negative is a loss
+ */
+export type ImpactNgn1 = number;
+/**
+ * Evidence row whose value_ngn is the impact
+ */
+export type ImpactEvidenceId1 = string;
+/**
+ * The model's rating of the evidence; None if it was unavailable
+ */
+export type Confidence1 = number | null;
+/**
+ * @minItems 1
+ */
+export type Evidence2 = [Evidence1, ...Evidence1[]];
+export type FalsifiedBy1 = FalsificationTest[];
+/**
+ * Zetaris sources the evidence read
+ */
+export type DependsOnSources1 = ("pos_files" | "bank_files" | "books_files" | "context_files")[];
+export type Retries1 = number;
+export type CashGaps = CashGap[];
+export type CauseId2 = string;
+/**
+ * When the owner confirmed it (ISO timestamp)
+ */
+export type ConfirmedAt = string;
+/**
+ * True if it was found again, False if not, None if this week could not test it
+ */
+export type HeldAgain = boolean | null;
+/**
+ * H-MEM confidence in the memory before this run
+ */
+export type ConfidenceBefore = number;
+/**
+ * H-MEM confidence after this run's result
+ */
+export type ConfidenceAfter = number;
+/**
+ * Plain-language line for the owner
+ */
+export type Message = string;
+/**
+ * Owner-confirmed causes recalled from H-MEM for this run
+ */
+export type Memory = Recall[];
+export type CauseId3 = string;
 export type Hypothesis = string;
 export type Reason = string;
 export type TestedValueNgn = number | null;
@@ -139,17 +193,21 @@ export type ExplainedPct = number;
 export type UnexplainedNgn = number;
 export type WhatHappened = string;
 export type Why = string[];
-export type CauseId2 = string;
+/**
+ * One line per cash gap, kept apart from profit
+ */
+export type Cash = string[];
+export type CauseId4 = string;
 export type Action1 = string;
 export type WhatToDo = Action[];
-export type CauseId3 = string;
+export type CauseId5 = string;
 export type Question1 = string;
 export type OwnerQuestions = OwnerQuestion[];
 export type Limitations = string[];
 export type DurationS = number;
 export type ZetarisQueries = number;
 export type ModelCalls = number;
-export type Retries1 = number;
+export type Retries2 = number;
 export type TraceFile = string;
 
 export interface Investigation {
@@ -163,6 +221,8 @@ export interface Investigation {
   headline: Headline;
   tree: Tree;
   causes: Causes;
+  cash_gaps?: CashGaps;
+  memory?: Memory;
   ruled_out: RuledOut;
   not_tested: NotTested;
   convergence: Convergence;
@@ -197,25 +257,25 @@ export interface TreeNode {
   status: Status1;
 }
 /**
- * A supported cause. Rejected or unverified hypotheses go to ruled_out instead.
+ * A supported cause of the profit change; impact_ngn is its effect on this week's profit.
  */
 export interface Cause {
   cause_id: CauseId;
   title: Title;
   status?: Status2;
-  component: Component1;
   impact_ngn: ImpactNgn;
   impact_evidence_id: ImpactEvidenceId;
+  confidence: Confidence;
+  evidence: Evidence;
+  falsified_by: FalsifiedBy;
+  depends_on_sources: DependsOnSources;
+  retries?: Retries;
+  component: Component1;
   share_of_change_pct: ShareOfChangePct1;
   rank: Rank;
   origin: Origin;
   nature: Nature;
-  confidence: Confidence;
-  evidence: Evidence;
-  falsified_by: FalsifiedBy;
   counterfactual_ngn: CounterfactualNgn;
-  depends_on_sources: DependsOnSources;
-  retries?: Retries;
 }
 export interface Evidence1 {
   evidence_id: EvidenceId;
@@ -243,8 +303,35 @@ export interface FalsificationTest {
   evidence_id: EvidenceId1;
   survived: Survived;
 }
-export interface RuledOut1 {
+/**
+ * Money the till recorded but the bank never received; impact_ngn is the missing amount (negative).
+ * It is cash the shop is owed, so it is not part of the profit change.
+ */
+export interface CashGap {
   cause_id: CauseId1;
+  title: Title1;
+  status?: Status3;
+  impact_ngn: ImpactNgn1;
+  impact_evidence_id: ImpactEvidenceId1;
+  confidence: Confidence1;
+  evidence: Evidence2;
+  falsified_by: FalsifiedBy1;
+  depends_on_sources: DependsOnSources1;
+  retries?: Retries1;
+}
+/**
+ * A cause the owner confirmed in an earlier run, recalled from H-MEM and tested first.
+ */
+export interface Recall {
+  cause_id: CauseId2;
+  confirmed_at: ConfirmedAt;
+  held_again: HeldAgain;
+  confidence_before: ConfidenceBefore;
+  confidence_after: ConfidenceAfter;
+  message: Message;
+}
+export interface RuledOut1 {
+  cause_id: CauseId3;
   hypothesis: Hypothesis;
   reason: Reason;
   tested_value_ngn?: TestedValueNgn;
@@ -258,21 +345,22 @@ export interface Convergence {
 export interface Summary1 {
   what_happened: WhatHappened;
   why: Why;
+  cash?: Cash;
   what_to_do: WhatToDo;
 }
 export interface Action {
-  cause_id: CauseId2;
+  cause_id: CauseId4;
   action: Action1;
 }
 export interface OwnerQuestion {
-  cause_id: CauseId3;
+  cause_id: CauseId5;
   question: Question1;
 }
 export interface Stats {
   duration_s: DurationS;
   zetaris_queries: ZetarisQueries;
   model_calls: ModelCalls;
-  retries: Retries1;
+  retries: Retries2;
   models: Models;
   via: Via2;
 }

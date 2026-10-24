@@ -10,7 +10,6 @@ export const componentLabel: Record<Component, string> = {
   cogs: "Cost of stock sold",
   wastage: "Wasted stock",
   opex: "Running costs",
-  leakage: "Money that did not reach the bank",
 };
 
 export const sourceLabel: Record<Source, string> = {

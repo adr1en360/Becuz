@@ -2,7 +2,7 @@ import { CheckSquareIcon, ScissorsIcon } from "@solar-icons/react/outline";
 import type { Investigation } from "@/lib/investigation";
 import { SectionTitle } from "./receipt";
 
-export function NextSteps({ data }: { data: Investigation }) {
+export function NextSteps({ data, questions }: { data: Investigation; questions: Investigation["owner_questions"] }) {
   const title = new Map(data.causes.map((c) => [c.cause_id, c.title]));
   return (
     <section aria-labelledby="next">
@@ -26,11 +26,11 @@ export function NextSteps({ data }: { data: Investigation }) {
           </li>
         ))}
       </ul>
-      {data.owner_questions.length > 0 && (
+      {questions.length > 0 && (
         <div className="mt-8 rounded-2xl border-2 border-dashed border-ink/40 bg-paper-2 p-4 sm:p-5">
           <h3 className="font-mono text-xs font-medium uppercase tracking-[0.16em]">Questions only you can answer</h3>
           <ul className="mt-3 list-disc space-y-2 pl-5">
-            {data.owner_questions.map((q) => <li key={q.question}>{q.question}</li>)}
+            {questions.map((q) => <li key={q.question}>{q.question}</li>)}
           </ul>
           <p className="mt-3 text-sm text-muted">Becuz points to the records. What happened to them is for you to decide.</p>
         </div>

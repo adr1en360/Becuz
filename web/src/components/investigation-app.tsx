@@ -45,9 +45,12 @@ export function InvestigationApp() {
   if (phase.kind === "done") return <Report data={phase.data} onReset={() => setPhase({ kind: "idle" })} />;
 
   const sample = typeof health === "object" && health !== null && health.sample;
+  const live = typeof health === "object" && health !== null && !health.sample;
   const note =
     phase.kind === "running"
-      ? "Running the investigation. The agent queries your records and checks each cause."
+      ? live
+        ? "A live run takes several minutes. Becuz queries your records and has a model check each cause. Please keep this page open."
+        : "Running the investigation. The agent queries your records and checks each cause."
       : health === "unreachable"
         ? `The agent is not reachable at ${apiBase}. Start the server, then reload.`
         : sample
