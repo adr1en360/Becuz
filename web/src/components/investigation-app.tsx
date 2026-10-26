@@ -39,7 +39,9 @@ export function InvestigationApp() {
   }, []);
 
   useEffect(() => {
-    if (phase.kind === "done") document.getElementById("headline")?.focus();
+    if (phase.kind === "done") {
+      window.scrollTo({ top: 320, behavior: "smooth" });
+    }
   }, [phase.kind]);
 
   async function run(question: string, scenario?: string) {
@@ -74,11 +76,12 @@ export function InvestigationApp() {
       }
     } catch (error) {
       if (controller.signal.aborted) return;
-      setPhase({ kind: "error", message: error instanceof Error ? error.message : "Something went wrong." });
+      setPhase({
+        kind: "error",
+        message: error instanceof Error ? error.message : "Something went wrong.",
+      });
     }
   }
-
-  if (phase.kind === "done") return <Report data={phase.data} events={phase.events} onReset={() => setPhase({ kind: "idle" })} />;
 
   const sample = typeof health === "object" && health !== null && health.sample;
   const live = typeof health === "object" && health !== null && !health.sample;
@@ -94,16 +97,42 @@ export function InvestigationApp() {
           : "Becuz reads your records and never changes them.";
 
   return (
-    <EmptyState
-      live={phase.kind === "running" ? <LiveTrace events={phase.events} /> : null}
-      alert={
-        phase.kind === "error" ? (
-          <p role="alert" className="rounded-2xl border border-flare px-4 py-3 text-sm">
-            {phase.message}
-          </p>
-        ) : null
-      }
-      composer={<Composer running={phase.kind === "running"} showScenario={sample} note={note} onSubmit={run} />}
-    />
+    <div className="flex flex-1 flex-col">
+      {/* A. The Ask (Stays fixed / sticky at top) */}
+      <section
+        aria-label="Investigation setup"
+        className="sticky top-0 z-30 border-b border-desk-line bg-desk/95 px-4 py-4 backdrop-blur-md sm:px-8 print:hidden"
+      >
+        <div className="mx-auto w-full max-w-4xl">
+          <Composer
+            running={phase.kind === "running"}
+            showScenario={sample}
+            sampleMode={sample}
+            alert={phase.kind === "error" ? phase.message : null}
+            note={note}
+            onSubmit={run}
+          />
+        </div>
+      </section>
+
+      {/* Main scrolling investigation pane */}
+      <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8 sm:px-8">
+        {phase.kind === "idle" && <EmptyState />}
+
+        {phase.kind === "running" && (
+          <div className="mx-auto w-full max-w-2xl py-4">
+            <LiveTrace events={phase.events} busy />
+          </div>
+        )}
+
+        {phase.kind === "done" && (
+          <Report
+            data={phase.data}
+            events={phase.events}
+            onReset={() => setPhase({ kind: "idle" })}
+          />
+        )}
+      </main>
+    </div>
   );
 }

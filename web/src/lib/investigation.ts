@@ -197,6 +197,10 @@ export type Why = string[];
  * One line per cash gap, kept apart from profit
  */
 export type Cash = string[];
+/**
+ * What acting on the findings is worth, from the measured figures only; never a forecast
+ */
+export type Outcome = string;
 export type CauseId4 = string;
 export type Action1 = string;
 export type WhatToDo = Action[];
@@ -346,6 +350,7 @@ export interface Summary1 {
   what_happened: WhatHappened;
   why: Why;
   cash?: Cash;
+  outcome?: Outcome;
   what_to_do: WhatToDo;
 }
 export interface Action {

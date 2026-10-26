@@ -37,6 +37,7 @@ export type TraceEvent = {
   engine?: string;
   model?: string;
   via?: string;
+  plain?: string;
 };
 
 // "finished" is a run started from the command line: it has a trace but no job on the server.

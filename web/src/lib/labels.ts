@@ -35,3 +35,29 @@ export const natureLabel: Record<Cause["nature"], string> = {
   actionable: "You can act on it",
   temporary: "Likely to pass",
 };
+
+export function tableChipName(table: string): string {
+  const clean = table.replace(/^becuz\./, "").toLowerCase();
+  switch (clean) {
+    case "supplier_invoices":
+      return "Supplier invoices";
+    case "sales":
+    case "sale_lines":
+      return "Till sales";
+    case "stock_movements":
+      return "Stock records";
+    case "bank_statement":
+      return "Bank statement";
+    case "transfer_check":
+      return "Till transfers vs bank";
+    case "promos":
+      return "Promotions";
+    case "expenses":
+      return "Expense book";
+    case "products":
+      return "Product list";
+    default:
+      return clean.replace(/_/g, " ");
+  }
+}
+

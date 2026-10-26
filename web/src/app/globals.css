@@ -369,3 +369,45 @@
     transition: none;
   }
 }
+
+/* Print stylesheet for Export PDF / printing the receipt */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #14213d !important;
+  }
+
+  header,
+  footer,
+  section[aria-label="Investigation setup"],
+  button,
+  .print\:hidden {
+    display: none !important;
+  }
+
+  details summary {
+    display: none !important;
+  }
+
+  .receipt {
+    background: #ffffff !important;
+    color: #14213d !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .receipt::before,
+  .receipt::after {
+    display: none !important;
+  }
+
+  .print,
+  .draw,
+  .stamp {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
