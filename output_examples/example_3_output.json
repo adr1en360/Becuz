@@ -1,5 +1,5 @@
 {
-  "run_id": "inv-49fbcb3796",
+  "run_id": "inv-502b9f7bc5",
   "status": "complete",
   "errors": [],
   "mode": "sample",
@@ -112,7 +112,7 @@
     "unexplained_ngn": 7612.5
   },
   "summary": {
-    "what_happened": "Profit this week was ₦344,484, which is ₦7,612 more than a usual week (₦336,872).",
+    "what_happened": "Profit this week was ₦344,484, which is ₦7,613 more than a usual week (₦336,872).",
     "why": [
       "Profit went up, and none of the problems Becuz checks for showed up this week."
     ],
@@ -126,7 +126,7 @@
     "Sample mode: evidence ratings come from fixed rules, not a model; every number comes from SQL."
   ],
   "stats": {
-    "duration_s": 0.23,
+    "duration_s": 0.28,
     "zetaris_queries": 27,
     "model_calls": 0,
     "retries": 0,
@@ -136,5 +136,5 @@
       "sample-rules": 6
     }
   },
-  "trace_file": "logs/trace-inv-49fbcb3796.jsonl"
+  "trace_file": "logs/trace-inv-502b9f7bc5.jsonl"
 }

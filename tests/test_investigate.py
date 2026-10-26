@@ -41,6 +41,12 @@ class InvestigateTests(unittest.TestCase):
                 found = {c["cause_id"] for c in self.findings(report)}
                 self.assertEqual(found, planted | UNPLANTED_BUT_REAL.get(scenario, set()))
 
+    def test_naira_rounds_halves_up_like_the_web_ui(self) -> None:
+        from becuz.agents.writer import naira
+
+        self.assertEqual((naira(6562.5), naira(-137694.75), naira(0.4)), ("₦6,563", "₦137,695", "₦0"))
+        self.assertIn("₦6,563 more", self.reports["s04"]["summary"]["what_happened"])
+
     def test_missing_transfers_are_cash_not_profit(self) -> None:
         for scenario, report in self.reports.items():
             with self.subTest(scenario=scenario):

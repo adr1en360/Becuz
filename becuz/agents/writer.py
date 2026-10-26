@@ -9,6 +9,7 @@ templates below; the Checker's model judgement supplies each finding's confidenc
 from __future__ import annotations
 
 import time
+from decimal import ROUND_HALF_UP, Decimal
 
 from becuz.adapters import Warehouse
 from becuz.agents.checker import record_judgements
@@ -35,7 +36,8 @@ def node_status(effect: float, explained: float) -> str:
 
 
 def naira(value: float) -> str:
-    return f"₦{abs(value):,.0f}"
+    # Round halves up (6,562.50 -> 6,563), as the web UI does, so the same figure never shows two ways.
+    return f"₦{Decimal(str(abs(value))).quantize(Decimal(1), ROUND_HALF_UP):,}"
 
 
 def plural(n: int, word: str) -> str:
