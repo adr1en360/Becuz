@@ -35,8 +35,14 @@ def messages(carryover: str, claim: dict) -> list[dict]:
 
 
 def parse(text: str) -> dict:
-    found = re.search(r"\{.*?\}", text, re.S)
-    data = json.loads(found.group(0)) if found else {}
+    """The reply's JSON. Models often reason first and quote the template, so take the last object that parses."""
+    data = {}
+    for found in reversed(re.findall(r"\{[^{}]*\}", text)):
+        try:
+            data = json.loads(found)
+            break
+        except json.JSONDecodeError:
+            continue
     confidence = float(data["confidence"])
     if not 0 <= confidence <= 1 or not isinstance(data.get("note"), str):
         raise ValueError("judgement out of range")

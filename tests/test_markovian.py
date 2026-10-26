@@ -114,6 +114,11 @@ class JudgeTests(unittest.TestCase):
         self.assertEqual(judge.chain.carryover, "two verdicts")
         self.assertEqual(judge.finish()["chunks"], 2)
 
+    def test_the_answer_after_the_models_reasoning_is_used(self) -> None:
+        reply = ('I must output JSON only: {"confidence": <0 to 1>, "note": "<one sentence>"} then a checkpoint.\n'
+                 '{"confidence": 0.85, "note": "The invoices show the rise."}\n[STATE_CHECKPOINT] one verdict')
+        self.assertEqual(parse(reply), {"confidence": 0.85, "note": "The invoices show the rise."})
+
     def test_a_bad_model_reply_is_refused(self) -> None:
         for bad in ("no json here", json.dumps({"confidence": 3, "note": "x"}), json.dumps({"note": "x"})):
             with self.subTest(bad=bad):
