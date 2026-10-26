@@ -1,5 +1,5 @@
 {
-  "run_id": "inv-d83c152279",
+  "run_id": "inv-39270d2859",
   "status": "complete",
   "errors": [],
   "mode": "sample",
@@ -392,6 +392,7 @@
     "cash": [
       "₦28,360 from 6 transfer sales was recorded at the till but never reached the bank. The sales still count toward your profit, but this money is missing from your account."
     ],
+    "outcome": "Without these 4 causes, this week would have made about ₦383,743, against ₦379,412 in a usual week, and chasing the 6 missing transfers brings ₦28,360 back into your account.",
     "what_to_do": [
       {
         "cause_id": "supplier_cost_rise",
@@ -427,7 +428,7 @@
     "Sample mode: evidence ratings come from fixed rules, not a model; every number comes from SQL."
   ],
   "stats": {
-    "duration_s": 0.31,
+    "duration_s": 1.23,
     "zetaris_queries": 27,
     "model_calls": 0,
     "retries": 0,
@@ -437,5 +438,5 @@
       "sample-rules": 6
     }
   },
-  "trace_file": "logs/trace-inv-d83c152279.jsonl"
+  "trace_file": "logs/trace-inv-39270d2859.jsonl"
 }

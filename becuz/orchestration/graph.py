@@ -26,7 +26,7 @@ def build_graph(wh: Warehouse, trace: Trace, run: dict, world: WorldModel, memor
     def retrying(agent: str) -> Retrying:
         return Retrying(wh, lambda attempt, exc: trace.emit(
             agent, "retry_query", f"attempt {attempt} failed", str(exc)[:160], retry_count=attempt,
-            status="retrying", via=wh.via))
+            status="retrying", via=wh.via, plain="The data source was busy, so Becuz is trying again."))
 
     graph = StateGraph(InvestigationState)
     graph.add_node("planner", make_planner(retrying("Planner"), trace, memory))

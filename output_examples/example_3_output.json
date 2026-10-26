@@ -1,5 +1,5 @@
 {
-  "run_id": "inv-502b9f7bc5",
+  "run_id": "inv-579e2aa57b",
   "status": "complete",
   "errors": [],
   "mode": "sample",
@@ -117,6 +117,7 @@
       "Profit went up, and none of the problems Becuz checks for showed up this week."
     ],
     "cash": [],
+    "outcome": "Nothing to fix this week.",
     "what_to_do": []
   },
   "owner_questions": [],
@@ -126,7 +127,7 @@
     "Sample mode: evidence ratings come from fixed rules, not a model; every number comes from SQL."
   ],
   "stats": {
-    "duration_s": 0.28,
+    "duration_s": 1.83,
     "zetaris_queries": 27,
     "model_calls": 0,
     "retries": 0,
@@ -136,5 +137,5 @@
       "sample-rules": 6
     }
   },
-  "trace_file": "logs/trace-inv-502b9f7bc5.jsonl"
+  "trace_file": "logs/trace-inv-579e2aa57b.jsonl"
 }

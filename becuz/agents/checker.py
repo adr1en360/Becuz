@@ -39,6 +39,15 @@ def verdict(claim: dict, rerun_effect: float | None, rerun_rows: list[str]) -> t
     return "supported", f"The re-check matched: {abs(rerun_effect):,.0f} naira from {len(rerun_rows)} record{'s' * (len(rerun_rows) != 1)}."
 
 
+# What the owner reads for each verdict while the run is going.
+PLAIN = {
+    "supported": lambda reason: "Double-checked: the second check matches, so it counts.",
+    "rejected": lambda reason: f"Ruled out. {reason}",
+    "sent_back": lambda reason: "The second check gave a different number, so it is being tested again.",
+    "not_tested": lambda reason: "This week's records cannot test this one.",
+}
+
+
 def make_checker(wh: Warehouse, trace: Trace, world: WorldModel, memory: HMEM, judge: Judge):
     def checker(state: InvestigationState) -> dict:
         cause = state["current"]
@@ -60,6 +69,7 @@ def make_checker(wh: Warehouse, trace: Trace, world: WorldModel, memory: HMEM, j
             world.update_claim(claim_id, "Checker", recall=recall_feedback(memory, memory_id, status))
         target = "Investigator" if status == "sent_back" or state["queue"] else "Writer"
         trace.emit("Checker", status, cause, reason, target_agent=target, confidence=1.0 if status == "supported" else None,
+                   plain=PLAIN[status](reason),
                    retry_count=retries, status="needs_revision" if status == "sent_back" else "success",
                    engine="world_model")
         return {}
@@ -71,7 +81,7 @@ def record_judgements(judge: Judge, world: WorldModel, trace: Trace, week: str) 
     """Waits for the background ratings and files each on its claim, in the order the Checker asked."""
     for cause, judgement in judge.collect():
         world.update_claim(world.claim_id(cause, week), "Checker", judgement=judgement)
-        trace.emit("Checker", "judge", cause, judgement["note"],
+        trace.emit("Checker", "judge", cause, judgement["note"], plain="Rated how strong the evidence is.",
                    confidence=judgement["confidence"], status="success" if "error" not in judgement else "failed",
                    engine="markovian", model=judgement["model"], via=judgement["via"])
 

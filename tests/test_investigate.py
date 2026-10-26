@@ -41,8 +41,29 @@ class InvestigateTests(unittest.TestCase):
                 found = {c["cause_id"] for c in self.findings(report)}
                 self.assertEqual(found, planted | UNPLANTED_BUT_REAL.get(scenario, set()))
 
+    def test_owner_facing_steps_carry_a_plain_sentence(self) -> None:
+        lines = [json.loads(l) for l in (Path(self.tmp.name) / self.reports["s01"]["trace_file"]).read_text(encoding="utf-8").splitlines()]
+        internal = {"markovian_summary"}
+        for line in lines:
+            with self.subTest(action=line["action"]):
+                if line["action"] in internal:
+                    self.assertNotIn("plain", line)
+                else:
+                    self.assertTrue(line["plain"].endswith("."))
+                    self.assertNotIn("_", line["plain"])  # never a code name like supplier_cost_rise
+        plain = [l["plain"] for l in lines if "plain" in l]
+        self.assertIn("Checking: a supplier raised the unit cost of a product. The records show ₦46,992 lost.", plain)
+        self.assertIn("Checking: transfers recorded at the till never reached the bank. The records show ₦28,360 missing.", plain)
+
+    def test_the_outcome_line_uses_only_measured_figures(self) -> None:
+        s01, s04, s05 = (self.reports[s]["summary"]["outcome"] for s in ("s01", "s04", "s05"))
+        self.assertIn("would have made about ₦383,743, against ₦379,412", s01)  # 241,717 + 142,026 explained
+        self.assertIn("₦28,360 back into your account", s01)
+        self.assertEqual(s04, "Profit is on track; chasing the 6 missing transfers brings ₦33,100 back into your account.")
+        self.assertEqual(s05, "Nothing to fix this week.")
+
     def test_naira_rounds_halves_up_like_the_web_ui(self) -> None:
-        from becuz.agents.writer import naira
+        from becuz.words import naira
 
         self.assertEqual((naira(6562.5), naira(-137694.75), naira(0.4)), ("₦6,563", "₦137,695", "₦0"))
         self.assertIn("₦6,563 more", self.reports["s04"]["summary"]["what_happened"])

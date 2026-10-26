@@ -1,5 +1,5 @@
 {
-  "run_id": "inv-9a3795ba35",
+  "run_id": "inv-632d2a3552",
   "status": "complete",
   "errors": [],
   "mode": "sample",
@@ -159,6 +159,7 @@
     "cash": [
       "₦33,100 from 6 transfer sales was recorded at the till but never reached the bank. The sales still count toward your profit, but this money is missing from your account."
     ],
+    "outcome": "Profit is on track; chasing the 6 missing transfers brings ₦33,100 back into your account.",
     "what_to_do": [
       {
         "cause_id": "transfer_leakage",
@@ -178,7 +179,7 @@
     "Sample mode: evidence ratings come from fixed rules, not a model; every number comes from SQL."
   ],
   "stats": {
-    "duration_s": 0.23,
+    "duration_s": 3.11,
     "zetaris_queries": 27,
     "model_calls": 0,
     "retries": 0,
@@ -188,5 +189,5 @@
       "sample-rules": 6
     }
   },
-  "trace_file": "logs/trace-inv-9a3795ba35.jsonl"
+  "trace_file": "logs/trace-inv-632d2a3552.jsonl"
 }

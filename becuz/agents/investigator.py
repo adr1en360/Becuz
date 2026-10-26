@@ -2,10 +2,11 @@
 from __future__ import annotations
 
 from becuz.adapters import Warehouse
-from becuz.catalogue import measure
+from becuz.catalogue import CATALOGUE, measure
 from becuz.engines.world_model import WorldModel
 from becuz.orchestration.state import InvestigationState, period
 from becuz.tracing import Trace
+from becuz.words import lower_first, naira
 
 
 def make_investigator(wh: Warehouse, trace: Trace, world: WorldModel):
@@ -18,7 +19,11 @@ def make_investigator(wh: Warehouse, trace: Trace, world: WorldModel):
         world.propose_claim(cause, period(state), "Investigator", trace.run_id, effect_ngn=m.effect_ngn,
                             row_ids=m.row_ids, effect_sql=m.effect_sql, records_sql=m.records_sql, retries=retries)
         effect = "not measurable" if m.effect_ngn is None else f"{m.effect_ngn:+,.0f}"
+        found = ("the records cannot measure this one" if m.effect_ngn is None
+                 else f"the records show {naira(m.effect_ngn)} {'missing' if CATALOGUE[cause].component == 'cash' else 'lost'}"
+                 if m.effect_ngn < 0 else "the records show no loss")
         trace.emit("Investigator", "test_cause", cause, f"effect {effect} from {len(m.row_ids)} records",
+                   plain=f"Checking: {lower_first(CATALOGUE[cause].title)}. {found[:1].upper() + found[1:]}.",
                    target_agent="Checker", retry_count=retries, via=wh.via, engine="world_model")
         return {"queue": queue, "current": cause}
 

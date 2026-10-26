@@ -711,6 +711,12 @@
           "title": "Cash",
           "type": "array"
         },
+        "outcome": {
+          "default": "",
+          "description": "What acting on the findings is worth, from the measured figures only; never a forecast",
+          "title": "Outcome",
+          "type": "string"
+        },
         "what_to_do": {
           "items": {
             "$ref": "#/$defs/Action"

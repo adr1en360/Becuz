@@ -168,6 +168,7 @@ class Summary(Model):
     what_happened: str
     why: list[str]
     cash: list[str] = Field(default=[], description="One line per cash gap, kept apart from profit")
+    outcome: str = Field(default="", description="What acting on the findings is worth, from the measured figures only; never a forecast")
     what_to_do: list[Action]
 
 

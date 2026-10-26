@@ -9,7 +9,6 @@ templates below; the Checker's model judgement supplies each finding's confidenc
 from __future__ import annotations
 
 import time
-from decimal import ROUND_HALF_UP, Decimal
 
 from becuz.adapters import Warehouse
 from becuz.agents.checker import record_judgements
@@ -21,6 +20,7 @@ from becuz.judge import Judge
 from becuz.orchestration.state import InvestigationState, period
 from becuz.schemas import MIN_EFFECT_NGN, Investigation
 from becuz.tracing import Trace
+from becuz.words import naira, plural
 
 
 def pct(part: float, whole: float) -> float:
@@ -35,21 +35,27 @@ def node_status(effect: float, explained: float) -> str:
     return "explained" if abs(effect - explained) <= 0.1 * abs(effect) else "partly_explained"
 
 
-def naira(value: float) -> str:
-    # Round halves up (6,562.50 -> 6,563), as the web UI does, so the same figure never shows two ways.
-    return f"₦{Decimal(str(abs(value))).quantize(Decimal(1), ROUND_HALF_UP):,}"
-
-
-def plural(n: int, word: str) -> str:
-    return f"{n} {word}{'s' * (n != 1)}"
-
-
 def what_happened(profit: dict, direction: str) -> str:
     if direction == "flat":
         return f"Profit this week was {naira(profit['current'])}, about the same as a usual week."
     side = "less" if direction == "down" else "more"
     return (f"Profit this week was {naira(profit['current'])}, which is {naira(profit['change'])} {side} "
             f"than a usual week ({naira(profit['baseline'])}).")
+
+
+def outcome_line(profit: dict, causes: list[dict], cash: list[dict]) -> str:
+    """What acting on the findings is worth, from the measured figures only: no forecast, no new number."""
+    missing = sum(c["effect_ngn"] for c in cash)
+    chase = (f"chasing the {plural(sum(len(c['row_ids']) for c in cash), 'missing transfer')} brings "
+             f"{naira(missing)} back into your account") if cash else ""
+    if causes:
+        fixed = profit["current"] - sum(c["effect_ngn"] for c in causes)
+        line = (f"Without these {plural(len(causes), 'cause')}, this week would have made about {naira(fixed)}, "
+                f"against {naira(profit['baseline'])} in a usual week")
+        return f"{line}, and {chase}." if chase else f"{line}."
+    if chase:
+        return f"Profit is on track; {chase}."
+    return "Nothing to fix this week."
 
 
 def cash_line(claim: dict) -> str:
@@ -146,6 +152,7 @@ def assemble(state: InvestigationState, run: dict, world: WorldModel, judge: Jud
             "what_happened": what_happened(profit, direction),
             "why": why,
             "cash": [cash_line(c) for c in cash],
+            "outcome": outcome_line(profit, causes_found, cash),
             "what_to_do": [{"cause_id": c["cause_id"], "action": CATALOGUE[c["cause_id"]].action} for c in causes_found + cash],
         },
         "owner_questions": owner_questions,
@@ -170,7 +177,7 @@ def make_writer(wh: Warehouse, trace: Trace, run: dict, world: WorldModel, judge
         report = assemble(state, run, world, judge)
         trace.emit("Writer", "write_report", f"{len(world.claims())} claims from the World Model",
                    f"{plural(len(report.causes), 'profit cause')}, {plural(len(report.cash_gaps), 'cash gap')}, {len(report.ruled_out)} ruled out, "
-                   f"{report.convergence.explained_pct}% of the profit change explained")
+                   f"{report.convergence.explained_pct}% of the profit change explained", plain="Writing your answer.")
         return {"report": report.model_dump(mode="json")}
 
     return writer

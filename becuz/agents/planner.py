@@ -10,6 +10,7 @@ from becuz.engines.scout_intent import ContractRefused
 from becuz.metrics import profit_tree
 from becuz.orchestration.state import InvestigationState
 from becuz.tracing import Trace
+from becuz.words import naira, plural
 
 
 def latest_week(wh: Warehouse) -> tuple[date, date]:
@@ -41,7 +42,7 @@ def make_planner(wh: Warehouse, trace: Trace, memory: HMEM):
         trace.emit("Planner", "scout_contract", state["question"],
                    f"{intent['primary']} (confidence {intent['confidence']:.2f}), contract {contract['contractId']}, "
                    f"{len(contract['scope']['capabilities'])} tables, {contract['scope']['budget']['queriesMax']} queries max",
-                   confidence=intent["confidence"], engine="scout_intent")
+                   confidence=intent["confidence"], engine="scout_intent", plain="Reading your question.")
         if intent["confidence"] == 0:
             raise ContractRefused("out-of-scope")
         start = state.get("week_start")
@@ -51,12 +52,17 @@ def make_planner(wh: Warehouse, trace: Trace, memory: HMEM):
         # H-MEM: causes the owner confirmed before are tested first; then the components that lost most.
         recalled = recall_confirmed(memory, state["question"])
         trace.emit("Planner", "recall", state["question"],
-                   f"{len(recalled)} owner-confirmed causes recalled: {', '.join(recalled) or 'none'}", engine="hmem")
+                   f"{len(recalled)} owner-confirmed causes recalled: {', '.join(recalled) or 'none'}", engine="hmem",
+                   plain=f"Remembered {plural(len(recalled), 'cause')} you confirmed before; checking first." if recalled
+                   else "Nothing confirmed before, so every cause gets a fresh look.")
         # A cash cause has no profit node, so it sorts as no profit effect.
         queue = sorted(CATALOGUE, key=lambda cause: (cause not in recalled, effects.get(CATALOGUE[cause].component, 0.0)))
         trace.emit("Planner", "plan", state["question"],
                    f"profit change {tree['profit_ngn']['change']:+,.0f} for {start}..{end}; testing {', '.join(queue)}",
-                   target_agent="Investigator")
+                   target_agent="Investigator",
+                   plain=f"Profit this week is {naira(tree['profit_ngn']['change'])} "
+                         f"{'below' if tree['profit_ngn']['change'] < 0 else 'above'} a usual week. "
+                         f"Checking {plural(len(queue), 'possible cause')}.")
         return {"week_start": start, "week_end": end, "tree": tree, "queue": queue, "current": None, "recalled": recalled}
 
     return planner
