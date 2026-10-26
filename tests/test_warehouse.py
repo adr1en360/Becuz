@@ -99,11 +99,12 @@ class ZetarisWarehouseTests(unittest.TestCase):
             wh.query("SELECT 1")
         self.assertFalse(caught.exception.transient)
 
-    def test_a_failed_result_set_is_retried_like_a_timeout(self) -> None:
-        wh = ZetarisWarehouse(FakeClient(error=ZetarisError(400, '{"msg":"Could not create ResultSet: null"}')))
-        with self.assertRaises(QueryError) as caught:
-            wh.query("SELECT 1")
-        self.assertTrue(caught.exception.transient)
+    def test_zetaris_internal_faults_are_retried_like_a_timeout(self) -> None:
+        for message in ('{"msg":"Could not create ResultSet: null"}', '{"msg":"org.apache.thrift.transport.TTransportException"}'):
+            with self.subTest(message=message):
+                with self.assertRaises(QueryError) as caught:
+                    ZetarisWarehouse(FakeClient(error=ZetarisError(400, message))).query("SELECT 1")
+                self.assertTrue(caught.exception.transient)
 
     def test_guard_blocks_writes_before_the_network(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
