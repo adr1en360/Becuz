@@ -131,5 +131,18 @@ class S05Tests(GeneratorTests):
         self.assertEqual(self.key["causes"], [])
 
 
+
+class ScorecardTests(unittest.TestCase):
+    def test_the_scorecard_finds_every_planted_cause_and_rules_out_every_red_herring(self) -> None:
+        from becuz.eval import score
+
+        for scenario in ("s01", "s04", "s05"):
+            with self.subTest(scenario=scenario):
+                row = score(scenario)
+                self.assertEqual((row["found"], row["missed"]), (row["planted"], []))
+                self.assertEqual(row["red_herrings_ruled_out"], row["red_herrings"])
+                self.assertEqual(row["impact_within_tolerance"], row["found"])
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -101,6 +101,11 @@ class ZetarisWarehouseTests(unittest.TestCase):
             wh.query("SELECT 1")
         self.assertTrue(caught.exception.transient)
 
+    def test_server_errors_are_retried(self) -> None:
+        with self.assertRaises(QueryError) as caught:
+            ZetarisWarehouse(FakeClient(error=ZetarisError(503, "unavailable"))).query("SELECT 1")
+        self.assertTrue(caught.exception.transient)
+
     def test_refusals_are_permanent(self) -> None:
         wh = ZetarisWarehouse(FakeClient(error=ZetarisError(400, "not permitted")))
         with self.assertRaises(QueryError) as caught:

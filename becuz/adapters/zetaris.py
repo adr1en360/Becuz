@@ -34,7 +34,7 @@ class ZetarisClient:
         self.org_id = org_id
         self.api_key = api_key
 
-    def run_sql(self, sql: str, limit: int = 100, timeout: int = 120, query_id: str | None = None) -> dict:
+    def run_sql(self, sql: str, limit: int = 100, timeout: int = 180, query_id: str | None = None) -> dict:
         """One statement. queryId and X-Request-ID carry the same id, so Zetaris can find the call in its logs."""
         query_id = query_id or str(uuid.uuid4())
         if not (self.rest_url and self.org_id and self.api_key):
@@ -120,7 +120,8 @@ class ZetarisWarehouse:
                 response = self.client.run_sql(sql, query_id=query_id)
         except ZetarisError as exc:
             self._record(sql, query_id, started, error=str(exc))
-            raise QueryError(str(exc), transient=exc.status == 0 or any(fault in exc.message for fault in SERVER_FAULTS)) from exc
+            transient = exc.status == 0 or exc.status >= 500 or any(fault in exc.message for fault in SERVER_FAULTS)
+            raise QueryError(str(exc), transient=transient) from exc
         found = rows(response)
         self._record(sql, query_id, started, count=len(found))
         headers = response.get("headers") or []

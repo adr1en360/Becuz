@@ -54,8 +54,9 @@ Planner ─► Investigator ─► Checker ─► next cause? ──────
 - A claim is rejected when its loss is below ₦1,000, when no records back it, or when it is not a loss.
 - A cause the owner confirmed in an earlier run is tested first next time. If it fails, its memory
   loses confidence and is flagged for review.
-- A Zetaris timeout, network error or Zetaris internal fault retries only the query that failed, up to 4
-  attempts with waits of 10, 20 and 40 seconds, and each retry is written to the trace by the agent that hit it.
+- A Zetaris timeout, network error, server error or Zetaris internal fault retries only the query that
+  failed, up to 5 attempts with waits of 10, 20, 40 and 40 seconds (about two minutes, enough for the Zetaris
+  Spark session to restart), and each retry is written to the trace by the agent that hit it.
 - The Checker hands each model rating to a background worker and moves on to the next cause. One
   worker keeps the Markovian chain in order, and the Writer waits for every rating before the report.
 - A run stops after 60 steps.
@@ -337,7 +338,7 @@ instead of a model, and the report and trace label it `sample-rules`. Nothing is
 
 | Failure | Behaviour |
 |---|---|
-| Zetaris timeout, network error, or Zetaris internal fault (`Could not create ResultSet`, `TTransportException`) | That query is retried, up to 4 attempts with waits of 10, 20 and 40 seconds, with a `retry_query` line in the trace. The ledger records each query's `query_id` and `duration_ms` |
+| Zetaris timeout, network error, HTTP 5xx, or Zetaris internal fault (`Could not create ResultSet`, `TTransportException`, which Zetaris engineering traced to the Spark session restarting on a small cluster) | That query is retried, up to 5 attempts over about two minutes, with a `retry_query` line in the trace. Queries run one at a time with a 180 s timeout. The ledger records each query's `query_id` and `duration_ms` |
 | Zetaris refuses a query | The run stops with an error. It is not retried |
 | A re-check does not match the claim | The Checker sends it back. After 2 retries it is rejected |
 | Data missing for a cause | The cause is listed as not tested, never read as zero |
@@ -411,16 +412,44 @@ schema, the server, and the four engines. The H-MEM, World Model and Markovian t
 conformance cases by ID; the Scout Intent tests check the rules in its spec, which has no conformance suite.
 `BECUZ_LIVE=1` adds a test that compares the profit tree from live Zetaris with sample mode.
 
+The scorecard runs all five test weeks in sample mode and checks the findings against each answer key:
+
+```powershell
+uv run python -m becuz.eval
+```
+
+```text
+week       found  impact ok  herrings out  not planted
+s01       4 of 4       4 of 4         1 of 1   sales_volume_drop
+s02       1 of 1       1 of 1         1 of 1   -
+s03       2 of 2       2 of 2         1 of 1   -
+s04       1 of 1       1 of 1         2 of 2   -
+s05       0 of 0       0 of 0         1 of 1   -
+total  8 of 8 planted causes found; 6 of 6 red herrings ruled out; 1 finding(s) not planted
+```
+
+"Impact ok" means within the key's 10% tolerance. The one finding that was not planted, fewer items sold in
+`s01`, is real: `s01` keeps natural day-to-day variation, and units sold did dip that week.
+
 ## 15. Limitations
 
-- Findings show correlation, not proven causation.
-- The shop data is synthetic.
-- A live run is slow: the `s01` run took about 7 minutes (the report records 411 seconds). The Zetaris work finishes in about 3
-  minutes; the rest is the six Nemotron ratings, which take 40 to 75 seconds each through Nightshift and
-  run one after another because each carries the earlier verdicts (Markovian). Sample mode takes about a
-  second.
-- The Markovian token savings are estimates (4 characters per token), not measured counts, and they are
-  small or negative when a run judges only a few claims.
+Each limit, and what Becuz does about it:
+
+- **Findings show correlation, not proven causation.** Every cause carries the test that could disprove it,
+  and the report says what is still unexplained. The owner confirms causes; confirmed ones are tested first
+  next time.
+- **The shop data is synthetic.** The generator plants known causes and red herrings, so the scorecard can
+  check the agent against an answer key (8 of 8 planted causes found, 6 of 6 red herrings ruled out). A real
+  shop's records need the same four sources in Zetaris.
+- **A live run takes about 7 minutes** (the `s01` report records 411 seconds). The Zetaris work finishes in
+  about 3 minutes; the six Nemotron ratings take 40 to 75 seconds each through Nightshift and run one after
+  another because each carries the earlier verdicts (Markovian). Becuz rates claims in the background while
+  the next cause is tested, and the web UI uses `POST /runs` to show each step as it happens. Sample mode
+  takes about a second.
+- **The Zetaris cluster is small** (one Spark executor). Under memory pressure its session restarts for 15 to
+  60 seconds. Becuz keeps queries aggregated and one at a time, and retries through the restart.
+- **Markovian token savings are estimates** (4 characters per token), not measured counts, and they are
+  small at six calls. The log labels them as estimates.
 
 ## 16. License
 

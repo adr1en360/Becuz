@@ -26,12 +26,13 @@ class Warehouse(Protocol):
 
 class Retrying:
     """Retries one query after a transient failure and reports each retry, so it shows in the trace.
-    It waits 10, 20, then 40 seconds between attempts: when Zetaris loses its link to its Spark engine the
-    fault lasts tens of seconds (seen 26 Oct), and a short network drop is covered too.
+    It waits 10, 20, 40 and 40 seconds between attempts, about two minutes in all: Zetaris engineering
+    confirmed that a small cluster's Spark session restarts under memory pressure and stays down 15 to 60 s.
     Everything else (via, usl, the contract gate's open and used) passes through to the wrapped warehouse."""
 
-    def __init__(self, wh, on_retry, attempts: int = 4, wait_s: float = 10.0):
-        self.wh, self.on_retry, self.attempts, self.wait_s = wh, on_retry, attempts, wait_s
+    def __init__(self, wh, on_retry, attempts: int = 5, wait_s: float = 10.0, max_wait_s: float = 40.0):
+        self.wh, self.on_retry, self.attempts = wh, on_retry, attempts
+        self.wait_s, self.max_wait_s = wait_s, max_wait_s
 
     def __getattr__(self, name):
         return getattr(self.wh, name)
@@ -44,7 +45,7 @@ class Retrying:
                 if not exc.transient or attempt == self.attempts:
                     raise
                 self.on_retry(attempt, exc)
-                time.sleep(self.wait_s * 2 ** (attempt - 1))
+                time.sleep(min(self.wait_s * 2 ** (attempt - 1), self.max_wait_s))
 
 
 def warehouse(config, scenario: str = "s01") -> Warehouse:
