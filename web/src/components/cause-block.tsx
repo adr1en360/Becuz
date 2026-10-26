@@ -2,6 +2,7 @@ import { AltArrowDownIcon } from "@solar-icons/react/bold";
 import type { Investigation } from "@/lib/investigation";
 import { formatNaira, formatPct } from "@/lib/format";
 import { natureLabel, originLabel } from "@/lib/labels";
+import { ConfirmButton } from "./confirm-button";
 import { EvidencePanel } from "./evidence-panel";
 import { Stamp } from "./stamp";
 
@@ -15,7 +16,7 @@ export const confidenceLabel = (value: number | null | undefined) =>
 export const detailsButton =
   "inline-flex h-10 cursor-pointer list-none items-center gap-2 rounded-full border-2 border-ink px-4 text-sm font-bold hover:bg-ink hover:text-paper [&::-webkit-details-marker]:hidden";
 
-export function CauseBlock({ cause, defaultOpen = false }: { cause: Cause; defaultOpen?: boolean }) {
+export function CauseBlock({ cause, runId, defaultOpen = false }: { cause: Cause; runId: string; defaultOpen?: boolean }) {
   const loss = cause.impact_ngn < 0;
   const verified = cause.evidence.every((e) => e.check?.match);
   return (
@@ -54,6 +55,7 @@ export function CauseBlock({ cause, defaultOpen = false }: { cause: Cause; defau
           </summary>
           <EvidencePanel evidence={cause.evidence} falsifiedBy={cause.falsified_by} sources={cause.depends_on_sources} />
         </details>
+        <ConfirmButton runId={runId} causeId={cause.cause_id} />
       </div>
     </article>
   );

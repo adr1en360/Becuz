@@ -3,13 +3,13 @@
 @theme {
   --color-desk: #0b1328;
   --color-desk-2: #141f3d;
-  --color-desk-line: rgb(247 245 239 / 0.24);
+  --color-desk-line: rgb(247 245 239 / 0.45);
   --color-desk-muted: #a3aec7;
   --color-flare: #ff7a3d;
   --color-paper: #f7f5ef;
   --color-paper-2: #eeeadc;
   --color-ink: #14213d;
-  --color-accent: #c2410c;
+  --color-accent: #b03a09;
   --color-muted: #4a5468;
   --color-rule: rgb(20 33 61 / 0.2);
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;

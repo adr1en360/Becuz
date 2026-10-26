@@ -21,7 +21,10 @@ function Row({ node }: { node: Investigation["tree"][number] }) {
       </div>
       <p className="num mt-2 font-mono text-xs leading-relaxed text-muted">
         avg {formatNaira(node.baseline_ngn)} to {formatNaira(node.current_ngn)}
-        {node.share_of_change_pct !== 0 && ` / ${formatPct(node.share_of_change_pct)} of the change`}
+        {node.share_of_change_pct !== 0 &&
+          (node.share_of_change_pct < 0
+            ? ` / offset by ${formatPct(Math.abs(node.share_of_change_pct))}`
+            : ` / ${formatPct(node.share_of_change_pct)} of the change`)}
         {" / "}
         {treeStatusLabel[node.status].toLowerCase()}
       </p>

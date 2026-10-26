@@ -1,3 +1,4 @@
+import type { TraceEvent } from "@/lib/api";
 import { ArrowLeftIcon } from "@solar-icons/react/outline";
 import type { Investigation } from "@/lib/investigation";
 import { formatRange } from "@/lib/format";
@@ -11,9 +12,10 @@ import { NextSteps } from "./next-steps";
 import { Divider, Receipt } from "./receipt";
 import { RuledOut } from "./ruled-out";
 import { RunDetails } from "./run-details";
+import { TraceSection } from "./trace-section";
 import { Stamp } from "./stamp";
 
-export function Report({ data, onReset }: { data: Investigation; onReset: () => void }) {
+export function Report({ data, events, onReset }: { data: Investigation; events: TraceEvent[]; onReset: () => void }) {
   const gaps = data.cash_gaps ?? [];
   const gapIds = new Set(gaps.map((g) => g.cause_id));
   const cashQuestions = data.owner_questions.filter((q) => gapIds.has(q.cause_id));
@@ -61,11 +63,11 @@ export function Report({ data, onReset }: { data: Investigation; onReset: () => 
         <Divider />
         <Breakdown tree={data.tree} />
         <Divider />
-        <CauseList causes={data.causes} />
+        <CauseList causes={data.causes} runId={data.run_id} />
         <Divider />
         {gaps.length > 0 && (
           <>
-            <CashSection gaps={gaps} lines={data.summary.cash ?? []} questions={cashQuestions} />
+            <CashSection runId={data.run_id} gaps={gaps} lines={data.summary.cash ?? []} questions={cashQuestions} />
             <Divider />
           </>
         )}
@@ -75,6 +77,12 @@ export function Report({ data, onReset }: { data: Investigation; onReset: () => 
         <Divider />
         <NextSteps data={data} questions={otherQuestions} />
         <Divider />
+        {events.length > 0 && (
+          <>
+            <TraceSection events={events} traceFile={data.trace_file} />
+            <Divider />
+          </>
+        )}
         <RunDetails data={data} />
       </Receipt>
     </main>

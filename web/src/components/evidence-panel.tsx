@@ -41,7 +41,7 @@ export function EvidencePanel({ evidence, falsifiedBy, sources }: Props) {
             Table <code className="font-mono text-ink">{item.table}</code>. Records{" "}
             <span className="break-words font-mono text-ink">{item.row_ids.join(", ")}</span>.
           </p>
-          <pre className="mt-3 overflow-x-auto rounded-xl bg-ink p-4 font-mono text-[13px] leading-relaxed text-paper">
+          <pre tabIndex={0} role="group" aria-label="SQL query" className="mt-3 overflow-x-auto rounded-xl bg-ink p-4 font-mono text-[13px] leading-relaxed text-paper">
             {item.sql}
           </pre>
           {item.check && (

@@ -2,13 +2,14 @@ import { AltArrowDownIcon } from "@solar-icons/react/bold";
 import type { Investigation } from "@/lib/investigation";
 import { formatNaira } from "@/lib/format";
 import { confidenceLabel, detailsButton, pill } from "./cause-block";
+import { ConfirmButton } from "./confirm-button";
 import { EvidencePanel } from "./evidence-panel";
 import { SectionTitle } from "./receipt";
 import { Stamp } from "./stamp";
 
-type Props = { gaps: NonNullable<Investigation["cash_gaps"]>; lines: string[]; questions: Investigation["owner_questions"] };
+type Props = { runId: string; gaps: NonNullable<Investigation["cash_gaps"]>; lines: string[]; questions: Investigation["owner_questions"] };
 
-export function CashSection({ gaps, lines, questions }: Props) {
+export function CashSection({ runId, gaps, lines, questions }: Props) {
   return (
     <section aria-labelledby="cash">
       <SectionTitle id="cash">Money missing from your account</SectionTitle>
@@ -38,6 +39,7 @@ export function CashSection({ gaps, lines, questions }: Props) {
                 </summary>
                 <EvidencePanel evidence={gap.evidence} falsifiedBy={gap.falsified_by} sources={gap.depends_on_sources} />
               </details>
+              <ConfirmButton runId={runId} causeId={gap.cause_id} />
             </article>
           );
         })}

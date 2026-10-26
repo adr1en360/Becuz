@@ -9,20 +9,20 @@ const parts = [
   ["What to do this week", "Checks and actions, and the questions only you can answer."],
 ] as const;
 
-export function ReportOutline({ busy = false }: { busy?: boolean }) {
+export function ReportOutline() {
   return (
     <Receipt>
       <SectionTitle id="outline-heading">What you get back</SectionTitle>
       <ol className="mt-6 flex flex-col gap-5">
-        {parts.map(([title, body], i) => (
-          <li key={title} className={busy ? "line-busy" : ""} style={{ "--i": i } as React.CSSProperties}>
+        {parts.map(([title, body]) => (
+          <li key={title}>
             <Leader label={title} value="--" valueClass="text-muted" />
             <p className="mt-1 max-w-prose text-sm leading-relaxed text-muted">{body}</p>
           </li>
         ))}
       </ol>
       <p className="mt-8 font-mono text-xs uppercase tracking-[0.16em] text-muted">
-        {busy ? "Printing your receipt..." : "Every figure comes from a query you can read."}
+        Every figure comes from a query you can read.
       </p>
     </Receipt>
   );

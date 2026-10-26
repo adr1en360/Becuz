@@ -16,8 +16,6 @@ export function RunDetails({ data }: { data: Investigation }) {
         <Leader label="Model calls" value={stats.model_calls} />
         <Leader label="Models" value={models.length ? models.map(([m, n]) => `${m} (${n})`).join(", ") : "none used"} />
       </div>
-      <p className="mt-4 break-all font-mono text-xs text-muted">Trace file: {data.trace_file}</p>
-      <p className="mt-1 text-xs text-muted">The step-by-step trace will show here once the server serves it.</p>
 
       <h3 className="mt-8 font-mono text-xs font-medium uppercase tracking-[0.16em]">Keep in mind</h3>
       <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-muted">
