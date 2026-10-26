@@ -9,12 +9,6 @@ import { Tilt } from "./tilt";
 const delay = (ms: number) => ({ "--d": `${ms}ms` }) as React.CSSProperties;
 const words = ["Know", "why", "your", "profit", "moved", "this", "week."];
 
-const EXAMPLE_PROMPTS = [
-  "Why is my profit down?",
-  "Where did my money go?",
-  "How is my shop doing?",
-] as const;
-
 export function Hero() {
   return (
     <section aria-labelledby="hero" className="mx-auto w-full max-w-5xl px-4 pb-20 pt-24 sm:px-8 lg:pb-28 lg:pt-32">
@@ -60,34 +54,16 @@ export function Hero() {
             </a>
           </div>
 
-          {/* Quick example chips */}
-          <div style={delay(340)} className="rise flex flex-wrap items-center gap-2 pt-1 text-xs text-desk-muted">
-            <span>Try:</span>
-            {EXAMPLE_PROMPTS.map((prompt) => (
-              <Link
-                key={prompt}
-                href="/investigate"
-                className="rounded-full border border-desk-line bg-desk-2/60 px-3 py-1 text-xs text-desk-muted transition-colors hover:border-flare hover:text-paper active:scale-95"
-              >
-                {prompt}
-              </Link>
-            ))}
-          </div>
-
           {/* Sponsor attribution */}
-          <div style={delay(400)} className="rise flex flex-wrap items-center gap-2 border-t border-desk-line/50 pt-5 text-xs font-mono text-desk-muted">
+          <div style={delay(340)} className="rise flex flex-wrap items-center gap-2 border-t border-desk-line/50 pt-5 text-xs font-mono text-desk-muted">
             <DatabaseIcon size={14} className="text-flare" aria-hidden />
             <span>Zetaris data layer · Meterless Nightshift · NVIDIA Nemotron</span>
           </div>
         </div>
 
-        {/* Right Column: Interactive tilted receipt with s01 sample figures */}
+        {/* Right Column: Clean receipt with s01 sample figures */}
         <div className="hero-receipt mx-auto w-full max-w-[28rem] lg:col-start-2 lg:row-start-1 lg:mx-0 lg:self-start">
           <Tilt className="relative">
-            <div
-              aria-hidden
-              className="absolute inset-x-3 top-6 bottom-[-14px] -rotate-[3deg] rounded-sm bg-paper/20 lg:-left-3"
-            />
             <div aria-hidden className="relative z-10 h-4 rounded-full border border-desk-line bg-desk-2" />
             <div style={delay(150)} className="receipt slot paper print-fast relative -mt-2 px-6 pb-8 pt-8 sm:px-7">
               <div className="flex flex-wrap items-center justify-between gap-2">
