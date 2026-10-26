@@ -167,7 +167,7 @@ def make_writer(wh: Warehouse, trace: Trace, run: dict, world: WorldModel, judge
                    f"({efficiency['efficiencyPercent']}%, {efficiency['tokenLabel']})", engine="markovian")
         report = assemble(state, run, world, judge)
         trace.emit("Writer", "write_report", f"{len(world.claims())} claims from the World Model",
-                   f"{len(report.causes)} profit causes, {len(report.cash_gaps)} cash gaps, {len(report.ruled_out)} ruled out, "
+                   f"{plural(len(report.causes), 'profit cause')}, {plural(len(report.cash_gaps), 'cash gap')}, {len(report.ruled_out)} ruled out, "
                    f"{report.convergence.explained_pct}% of the profit change explained")
         return {"report": report.model_dump(mode="json")}
 
