@@ -63,20 +63,34 @@ def open_memory(logs: Path | None) -> HMEM:
     return HMEM(path=logs / "hmem.json" if logs else None, ledger_path=logs / "hmem.jsonl" if logs else None)
 
 
+def new_run_id() -> str:
+    return f"inv-{uuid.uuid4().hex[:10]}"
+
+
+def trace_events(run_id: str, config) -> list[dict] | None:
+    """A run's trace events so far, or None if there is no such run. The run ID format is checked first,
+    so a request can never name another file."""
+    logs = config.trace_path.parent if config.trace_path else None
+    if not (logs and isinstance(run_id, str) and re.fullmatch(r"inv-[0-9a-f]{10}", run_id)):
+        return None
+    path = logs / f"trace-{run_id}.jsonl"
+    if not path.exists():
+        return None
+    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+
+
 def confirm(run_id: str, cause_id: str, config) -> str:
     """The owner confirms a cause from an earlier run; H-MEM stores it so later runs test it first.
 
     Only a cause the Checker supported in that run can be confirmed.
     """
-    logs = config.trace_path.parent if config.trace_path else None
-    trace_file = logs / f"trace-{run_id}.jsonl" if logs and re.fullmatch(r"inv-[0-9a-f]{10}", run_id) else None
-    if not trace_file or not trace_file.exists():
+    lines = trace_events(run_id, config)
+    if lines is None:
         raise BadRequest(f"no trace found for run {run_id}")
-    lines = [json.loads(line) for line in trace_file.read_text(encoding="utf-8").splitlines()]
     if not any(l["agent_name"] == "Checker" and l["action"] == "supported" and l["input_summary"] == cause_id for l in lines):
         raise BadRequest(f"{cause_id} was not a supported cause in run {run_id}")
     spec = CATALOGUE[cause_id]
-    memory = open_memory(logs)
+    memory = open_memory(config.trace_path.parent)  # a trace exists, so the logs folder does
     fact = memory.add(f"{spec.title}. The owner confirmed this cause after run {run_id}.", "owner_confirm",
                       tags=["owner_confirmed", f"cause:{cause_id}", spec.component], agent_id="owner", run_id=run_id)
     memory.add(f"How it was found: {spec.falsified_if} was tested against the records.", "owner_confirm",
@@ -85,9 +99,9 @@ def confirm(run_id: str, cause_id: str, config) -> str:
     return fact
 
 
-def investigate(request: dict, config) -> dict:
+def investigate(request: dict, config, run_id: str | None = None) -> dict:
     question, week_start, scenario = parse(request, config.sample_mode)
-    run_id = f"inv-{uuid.uuid4().hex[:10]}"
+    run_id = run_id or new_run_id()
     logs = config.trace_path.parent if config.trace_path else None
     trace = Trace(run_id, logs)
     # Every query passes the Scout Intent contract gate; it also counts queries for the report.

@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import unittest
 from types import SimpleNamespace
+from unittest.mock import patch
 
 from becuz.engines.markovian import COMPLETE, CHECKPOINT, ChunkConfig, ConfigError, Markovian, model_totals, run_efficiency
 from becuz.adapters.nightshift import Completion, ProviderError
@@ -95,6 +96,21 @@ class JudgeTests(unittest.TestCase):
         self.assertIsNone(judged["confidence"])
         self.assertIn("down", judged["error"])
         self.assertEqual(judge.calls, 2)  # one retry, then give up
+
+    def test_a_rate_limit_waits_before_the_retry(self) -> None:
+        replies = iter([ProviderError("nightshift", 429, "slow down"),
+                        Completion('{"confidence": 0.8, "note": "Clear."}', "m", "nightshift")])
+
+        def ask(*args, **kwargs):
+            reply = next(replies)
+            if isinstance(reply, Exception):
+                raise reply
+            return reply
+
+        with patch("becuz.judge.time.sleep") as wait:
+            judged = Judge(Markovian("r"), SimpleNamespace(ask_messages=ask)).rate(self.claim)
+        wait.assert_called_once_with(5)
+        self.assertEqual(judged["confidence"], 0.8)
 
     def test_an_unusable_reply_is_retried_then_accepted(self) -> None:
         replies = iter(["not json", '{"confidence": 0.8, "note": "Clear."} [STATE_CHECKPOINT] one verdict'])

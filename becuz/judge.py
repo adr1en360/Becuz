@@ -12,12 +12,14 @@ from __future__ import annotations
 
 import json
 import re
+import time
 from concurrent.futures import Future, ThreadPoolExecutor
 
 from becuz.adapters.nightshift import Nightshift, ProviderError
 from becuz.engines.markovian import CHECKPOINT, Markovian
 
 JUDGE_MODEL = "meterless/judge"
+RATE_LIMIT_WAIT_S = 5  # NVIDIA answers 429 when called too fast; the organizers advise a short pause
 FRAMING = ("You are the Checker in Becuz, which explains why a small shop's profit changed. "
            "SQL has already measured every number; never compute or change a number. "
            "Rate how convincing the evidence is for the shop owner and write one plain sentence. "
@@ -108,6 +110,8 @@ class Judge:
                 completion = self.nightshift.ask_messages(msgs, label="checker judgement", model=JUDGE_MODEL)
             except ProviderError as exc:
                 last_error = exc
+                if exc.status == 429:
+                    time.sleep(RATE_LIMIT_WAIT_S)
                 continue
             self.models[completion.model] = self.models.get(completion.model, 0) + 1
             self.last = {"model": completion.model, "signed": completion.signed}
