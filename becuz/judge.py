@@ -29,8 +29,11 @@ FRAMING = ("You are the Checker in Becuz, which explains why a small shop's prof
 
 
 def messages(carryover: str, claim: dict) -> list[dict]:
+    # A cash gap is money the bank never received; the sale still counts as profit, so never call it a profit loss.
+    effect = (f"Cash recorded at the till but missing from the bank: {claim['effect_ngn']} naira (not a profit loss)"
+              if claim.get("cash") else f"Effect on profit: {claim['effect_ngn']} naira")
     facts = (f"Cause: {claim['title']}. Status from SQL re-check: {claim['status']}. "
-             f"Effect on profit: {claim['effect_ngn']} naira. Records behind it: {len(claim['row_ids'])}. "
+             f"{effect}. Records behind it: {len(claim['row_ids'])}. "
              f"Test that could disprove it: {claim['falsified_if']}.")
     context = f"Earlier verdicts: {carryover}" if carryover else "This is the first verdict."
     return [{"role": "system", "content": FRAMING}, {"role": "user", "content": f"{context}\n{facts}"}]

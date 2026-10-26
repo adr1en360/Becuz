@@ -388,14 +388,15 @@ uv run python -m unittest discover -s tests -p "test_*.py"
 ```
 
 They cover the generator, the SQL templates against the answer keys, the read-only guard, the report
-schema, the server, and the four engines. The engine tests port the Meterless conformance cases by ID.
+schema, the server, and the four engines. The H-MEM, World Model and Markovian tests port the Meterless
+conformance cases by ID; the Scout Intent tests check the rules in its spec, which has no conformance suite.
 `BECUZ_LIVE=1` adds a test that compares the profit tree from live Zetaris with sample mode.
 
 ## 15. Limitations
 
 - Findings show correlation, not proven causation.
 - The shop data is synthetic.
-- A live run is slow: the `s01` run took 6 minutes 57 seconds. The Zetaris work finishes in about 3
+- A live run is slow: the `s01` run took about 7 minutes (the report records 411 seconds). The Zetaris work finishes in about 3
   minutes; the rest is the six Nemotron ratings, which take 40 to 75 seconds each through Nightshift and
   run one after another because each carries the earlier verdicts (Markovian). Sample mode takes about a
   second.

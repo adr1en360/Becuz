@@ -135,6 +135,11 @@ class JudgeTests(unittest.TestCase):
                  '{"confidence": 0.85, "note": "The invoices show the rise."}\n[STATE_CHECKPOINT] one verdict')
         self.assertEqual(parse(reply), {"confidence": 0.85, "note": "The invoices show the rise."})
 
+    def test_a_cash_gap_is_never_described_to_the_model_as_a_profit_loss(self) -> None:
+        user = messages("", {**self.claim, "cash": True})[1]["content"]
+        self.assertIn("missing from the bank", user)
+        self.assertNotIn("Effect on profit", user)
+
     def test_a_bad_model_reply_is_refused(self) -> None:
         for bad in ("no json here", json.dumps({"confidence": 3, "note": "x"}), json.dumps({"note": "x"})):
             with self.subTest(bad=bad):

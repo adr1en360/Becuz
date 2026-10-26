@@ -53,7 +53,8 @@ def make_checker(wh: Warehouse, trace: Trace, world: WorldModel, memory: HMEM, j
         if status in ("supported", "rejected"):
             # The model's rating runs in the background; record_judgements() files it before the report.
             judge.submit(cause, {"title": CATALOGUE[cause].title, "status": status, "effect_ngn": rerun.effect_ngn,
-                                    "row_ids": rerun.row_ids, "falsified_if": CATALOGUE[cause].falsified_if})
+                                    "row_ids": rerun.row_ids, "falsified_if": CATALOGUE[cause].falsified_if,
+                                    "cash": CATALOGUE[cause].component == "cash"})
         memory_id = state.get("recalled", {}).get(cause)
         if memory_id and status != "sent_back":
             world.update_claim(claim_id, "Checker", recall=recall_feedback(memory, memory_id, status))
