@@ -109,6 +109,13 @@ class ScoutIntentTests(unittest.TestCase):
 
     def test_off_topic_question_scores_zero(self) -> None:
         self.assertEqual(self.scout.classify("What is the weather in Lagos tomorrow?")[1], 0)
+        self.assertEqual(self.scout.classify("How is my day going?")[1], 0)  # helper words alone are not enough
+
+    def test_everyday_questions_about_the_shop_are_in_scope(self) -> None:
+        for question in ("How is my shop doing?", "What happened to my business this week?", "Where did my money go?",
+                         "Why are my sales down?", "Why is my cash low?", "Why is my profit down this week?"):
+            with self.subTest(question=question):
+                self.assertGreater(self.scout.classify(question)[1], 0)
 
     def test_events_are_written_as_jsonl(self) -> None:
         self.assertEqual(self.events()[0], "contract.issued")

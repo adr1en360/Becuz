@@ -32,12 +32,18 @@ class BadRequest(ValueError):
     pass
 
 
+OUT_OF_SCOPE = ("Becuz explains what happened to your shop's money this week. Try \"Why is my profit down this "
+                "week?\", \"How is my shop doing?\" or \"Where did my money go?\"")
+
+
 def parse(request: dict, sample_mode: bool) -> tuple[str, date | None, str | None]:
     if not isinstance(request, dict):
         raise BadRequest("request must be a JSON object")
     question = request.get("question")
     if not isinstance(question, str) or not question.strip() or len(question) > MAX_QUESTION:
         raise BadRequest(f"question must be text of 1 to {MAX_QUESTION} characters")
+    if Scout(key=b"scope-check").classify(question)[1] == 0:  # refuse off-topic before any run starts
+        raise BadRequest(OUT_OF_SCOPE)
     week_start = request.get("week_start")
     try:
         week_start = date.fromisoformat(week_start) if week_start else None
@@ -119,7 +125,7 @@ def investigate(request: dict, config, run_id: str | None = None) -> dict:
         return graph.invoke(state, {"recursion_limit": STEP_LIMIT})["report"]
     except ContractRefused as exc:
         if exc.reason == "out-of-scope":
-            raise BadRequest("Becuz answers questions about why your profit changed") from None
+            raise BadRequest(OUT_OF_SCOPE) from None
         raise
     finally:
         judge.close()  # a failed run must not leave a rating running in the background

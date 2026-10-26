@@ -34,8 +34,18 @@ QUERIES_MAX = 80  # planner + 6 causes x (investigate + check) x up to 3 attempt
 INTENTS = {
     "profit.explain_change": {
         "examples": ["Why is my profit down this week?", "What made my profit drop?",
-                     "Why did I make less money this week?", "Explain my profit change"],
-        "keywords": ("profit", "money", "loss", "lost", "drop", "down", "less", "margin", "earn", "why"),
+                     "Why did I make less money this week?", "Explain my profit change",
+                     "How is my shop doing?", "What happened to my business this week?",
+                     "Where did my money go?", "Why are my sales down?", "Why is my cash low?"],
+        # A question is in scope only if it names the shop's business; helper words only add confidence.
+        "domain": ("profit", "profits", "money", "loss", "losses", "lost", "margin", "earn", "earned", "earnings",
+                   "income", "revenue", "sales", "sale", "sell", "sold", "selling", "cash", "costs", "cost",
+                   "expense", "expenses", "spend", "spent", "stock", "wastage", "waste", "supplier", "suppliers",
+                   "price", "prices", "bank", "transfer", "transfers", "till", "pos", "promo", "discount",
+                   "customers", "shop", "store", "business"),
+        "keywords": ("why", "how", "what", "where", "happened", "doing", "going", "week", "weekly", "down",
+                     "drop", "dropped", "fell", "falling", "less", "low", "lower", "worse", "change", "changed",
+                     "go", "went", "missing"),
     },
 }
 # The only tables an investigation may read; anything else is refused.
@@ -76,7 +86,9 @@ class Scout:
 
     def classify(self, question: str) -> tuple[str, float]:
         words = set(re.findall(r"[a-z]+", question.lower()))
-        scores = {name: len(words & set(spec["keywords"])) / 3 for name, spec in INTENTS.items()}
+        # No word about the shop's business means out of scope (confidence 0), whatever else it says.
+        scores = {name: (len(words & set(spec["domain"])) + len(words & set(spec["keywords"]))) / 3
+                  if words & set(spec["domain"]) else 0.0 for name, spec in INTENTS.items()}
         best = max(scores, key=scores.get)
         return best, min(1.0, scores[best])
 

@@ -119,6 +119,9 @@ class JobRouteTests(unittest.TestCase):
     def test_a_bad_request_is_refused_before_the_run_starts(self) -> None:
         status, data = self.call("POST", "/runs", {"question": ""})
         self.assertEqual(status, 400)
+        status, data = self.call("POST", "/runs", {"question": "What is the weather in Lagos?"})
+        self.assertEqual(status, 400)
+        self.assertIn("How is my shop doing?", json.loads(data)["error"])  # a friendly reply with examples
         self.assertEqual(self.server.jobs, {})
 
     def test_confirm_stores_a_supported_cause_and_refuses_others(self) -> None:
