@@ -4,6 +4,8 @@ import argparse
 import json
 import sys
 
+from becuz.adapters import QueryError
+from becuz.adapters.nightshift import ProviderError
 from becuz.config import load
 from becuz.investigate import BadRequest, confirm, investigate
 
@@ -29,6 +31,10 @@ def main() -> int:
     except (OSError, json.JSONDecodeError, BadRequest) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
+    except (QueryError, ProviderError) as exc:
+        print(f"error: {exc}\nCheck .env and the connections with `uv run python smoke.py`, "
+              "or run offline with SAMPLE_MODE=1.", file=sys.stderr)
+        return 1
     print(json.dumps(report, indent=2, ensure_ascii=False))
     return 0
 

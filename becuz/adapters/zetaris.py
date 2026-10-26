@@ -34,7 +34,7 @@ class ZetarisClient:
 
     def run_sql(self, sql: str, limit: int = 100, timeout: int = 60) -> dict:
         if not (self.rest_url and self.org_id and self.api_key):
-            raise ZetarisError(0, "missing ZETARIS_REST_URL, ZETARIS_ORG_ID, or ZETARIS_API_KEY")
+            raise ZetarisError(401, "missing ZETARIS_REST_URL, ZETARIS_ORG_ID, or ZETARIS_API_KEY")  # a setup problem: never retried
         payload = {
             "queryId": str(uuid.uuid4()),
             "sql": sql,

@@ -90,7 +90,8 @@ Nightshift also has a Judge lane (`nvidia/nemotron-3-ultra-550b-a55b`) for its o
 from a real live run: one `model` line per call with the model that answered and its request ID, and one
 `model_receipt` line per call once Nightshift signed it. The report and trace from the same run are
 [`live_s01_output.json`](output_examples/live_s01_output.json) and
-[`live_s01_trace.jsonl`](output_examples/live_s01_trace.jsonl). Your own runs write the same log to
+[`live_s01_trace.jsonl`](output_examples/live_s01_trace.jsonl), and its 27 Zetaris queries against the
+`becuz` USL are in [`live_s01_queries.jsonl`](output_examples/live_s01_queries.jsonl). Your own runs write the same log to
 `logs/ledger.jsonl`; run `uv run python verify_receipts.py` to add the signed receipts.
 
 **Four Meterless engines, implemented in `becuz/engines/`:**
@@ -154,7 +155,12 @@ Fill in `.env`, which is in `.gitignore`.
 
 1. **Nightshift.** Install and start Meterless Nightshift, then add your NVIDIA key in its Providers
    tab. The NVIDIA key never goes in `.env`. Becuz reads the Nightshift token from
-   `%LOCALAPPDATA%\ai.meterless.runtime\proxy-token`.
+   `%LOCALAPPDATA%\ai.meterless.runtime\proxy-token`. Then seat two cloud lanes in **Lanes**:
+   - a **Race** lane with `nvidia/nemotron-3.5-lightning-30b-a3b` (for example the job "Extract structured
+     data"). It answers the Checker's ratings. Without any lane, Nightshift falls back to its own routing
+     and ignores the model Becuz asks for.
+   - a **Judge** lane with `nvidia/nemotron-3-ultra-550b-a55b` ("Score different answers"). Nightshift
+     keeps one non-racing judge in every setup.
 2. **Shop data in S3.** Upload one scenario's CSVs to `s3://<bucket>/becuz/<scenario>/`, without
    `answer_key.json`:
 
@@ -186,7 +192,7 @@ uv run python smoke.py
 config   PASS  zetaris=ok nightshift=ok
 zetaris  PASS  daily_pnl up to 2026-10-18 via=zetaris
 model    PASS  via=nightshift model=nvidia/nemotron-3-ultra-550b-a55b
-agent    PASS  sample s01: 5 cause(s) supported
+agent    PASS  sample s01: 4 cause(s) supported
 ```
 
 ## 7. Usage
@@ -263,6 +269,19 @@ without it Becuz takes the latest full week in the data. `scenario` (`s01` to `s
 ```
 
 The full contract is in `docs/investigation.schema.json`.
+
+### Web UI
+
+`web/` holds the owner-facing report, a Next.js app that renders the Investigation JSON and computes
+nothing itself. With the server running (sample or live), start it in a second terminal:
+
+```powershell
+cd web
+npm install
+npm run dev      # http://localhost:3000
+```
+
+See `web/README.md` for building and regenerating its types from the schema.
 
 ### Confirming a cause
 
