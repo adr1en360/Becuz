@@ -23,11 +23,42 @@ async function call<T>(path: string, init?: RequestInit): Promise<T> {
 
 export const getHealth = (signal?: AbortSignal) => call<Health>("/health", { signal });
 
-export function runInvestigation(request: { question: string; scenario?: string }, signal?: AbortSignal) {
-  return call<Investigation>("/run", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(request),
-    signal,
-  });
-}
+export type TraceEvent = {
+  timestamp: string;
+  run_id: string;
+  agent_name: string;
+  action: string;
+  input_summary: string;
+  output_summary: string;
+  target_agent: string | null;
+  confidence: number | null;
+  retry_count: number;
+  status: string;
+  engine?: string;
+  model?: string;
+  via?: string;
+};
+
+// "finished" is a run started from the command line: it has a trace but no job on the server.
+export type RunState = {
+  run_id: string;
+  status: "running" | "complete" | "failed" | "finished";
+  events: TraceEvent[];
+  report?: Investigation;
+  error?: string;
+};
+
+const json = (body: unknown, signal?: AbortSignal): RequestInit => ({
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(body),
+  signal,
+});
+
+export const startRun = (request: { question: string; scenario?: string }, signal?: AbortSignal) =>
+  call<{ run_id: string }>("/runs", json(request, signal));
+
+export const getRun = (runId: string, signal?: AbortSignal) => call<RunState>(`/runs/${runId}`, { signal });
+
+export const confirmCause = (runId: string, causeId: string) =>
+  call<{ ok: boolean; memory_id: string }>("/confirm", json({ run_id: runId, cause_id: causeId }));

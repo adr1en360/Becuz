@@ -1,13 +1,27 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { apiBase, getHealth, runInvestigation, type Health } from "@/lib/api";
+import { apiBase, getHealth, getRun, startRun, type Health, type TraceEvent } from "@/lib/api";
 import type { Investigation } from "@/lib/investigation";
 import { Composer } from "./composer";
 import { EmptyState } from "./empty-state";
+import { LiveTrace } from "./live-trace";
 import { Report } from "./report";
 
-type Phase = { kind: "idle" } | { kind: "running" } | { kind: "done"; data: Investigation } | { kind: "error"; message: string };
+type Phase =
+  | { kind: "idle" }
+  | { kind: "running"; events: TraceEvent[] }
+  | { kind: "done"; data: Investigation; events: TraceEvent[] }
+  | { kind: "error"; message: string };
+
+const POLL_MS = 2000;
+const MAX_MISSED_POLLS = 4;
+
+const sleep = (ms: number, signal: AbortSignal) =>
+  new Promise<void>((resolve) => {
+    const id = setTimeout(resolve, ms);
+    signal.addEventListener("abort", () => (clearTimeout(id), resolve()), { once: true });
+  });
 
 export function InvestigationApp() {
   const [health, setHealth] = useState<Health | null | "unreachable">(null);
@@ -32,17 +46,39 @@ export function InvestigationApp() {
     abort.current?.abort();
     const controller = new AbortController();
     abort.current = controller;
-    setPhase({ kind: "running" });
+    setPhase({ kind: "running", events: [] });
+    let missed = 0;
     try {
-      const data = await runInvestigation({ question, scenario }, controller.signal);
-      setPhase({ kind: "done", data });
+      const { run_id } = await startRun({ question, scenario }, controller.signal);
+      while (!controller.signal.aborted) {
+        await sleep(POLL_MS, controller.signal);
+        if (controller.signal.aborted) return;
+        let state;
+        try {
+          state = await getRun(run_id, controller.signal);
+          missed = 0;
+        } catch (error) {
+          if (controller.signal.aborted) return;
+          if (++missed >= MAX_MISSED_POLLS) throw error;
+          continue;
+        }
+        if (state.status === "failed") throw new Error(state.error ?? "The investigation failed.");
+        if (state.status === "running") {
+          setPhase({ kind: "running", events: state.events });
+        } else if (state.report) {
+          setPhase({ kind: "done", data: state.report, events: state.events });
+          return;
+        } else {
+          throw new Error("The run ended without a report.");
+        }
+      }
     } catch (error) {
       if (controller.signal.aborted) return;
       setPhase({ kind: "error", message: error instanceof Error ? error.message : "Something went wrong." });
     }
   }
 
-  if (phase.kind === "done") return <Report data={phase.data} onReset={() => setPhase({ kind: "idle" })} />;
+  if (phase.kind === "done") return <Report data={phase.data} events={phase.events} onReset={() => setPhase({ kind: "idle" })} />;
 
   const sample = typeof health === "object" && health !== null && health.sample;
   const live = typeof health === "object" && health !== null && !health.sample;
@@ -59,7 +95,7 @@ export function InvestigationApp() {
 
   return (
     <EmptyState
-      busy={phase.kind === "running"}
+      live={phase.kind === "running" ? <LiveTrace events={phase.events} /> : null}
       alert={
         phase.kind === "error" ? (
           <p role="alert" className="rounded-2xl border border-flare px-4 py-3 text-sm">

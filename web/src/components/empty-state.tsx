@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { ReportOutline } from "./report-outline";
 
-export function EmptyState({ composer, alert, busy }: { composer: ReactNode; alert?: ReactNode; busy: boolean }) {
+export function EmptyState({ composer, alert, live }: { composer: ReactNode; alert?: ReactNode; live?: ReactNode }) {
   return (
     <main className="mx-auto grid w-full max-w-5xl flex-1 gap-14 px-4 pb-20 pt-8 sm:px-8 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:gap-16 lg:pt-14">
       <div className="flex flex-col gap-9">
@@ -17,7 +17,7 @@ export function EmptyState({ composer, alert, busy }: { composer: ReactNode; ale
         {composer}
       </div>
       <div className="lg:pt-3">
-        <ReportOutline busy={busy} />
+        {live ?? <ReportOutline />}
       </div>
     </main>
   );
