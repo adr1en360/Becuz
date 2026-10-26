@@ -5,6 +5,7 @@ Templates name USL tables as `{usl}.<table>`; each warehouse fills in its own pr
 """
 from __future__ import annotations
 
+import time
 from typing import Protocol
 
 
@@ -25,10 +26,11 @@ class Warehouse(Protocol):
 
 class Retrying:
     """Retries one query after a transient failure and reports each retry, so it shows in the trace.
+    It waits 2, 4, then 8 seconds between attempts, so a short network drop does not end the run.
     Everything else (via, usl, the contract gate's open and used) passes through to the wrapped warehouse."""
 
-    def __init__(self, wh, on_retry, attempts: int = 3):
-        self.wh, self.on_retry, self.attempts = wh, on_retry, attempts
+    def __init__(self, wh, on_retry, attempts: int = 4, wait_s: float = 2.0):
+        self.wh, self.on_retry, self.attempts, self.wait_s = wh, on_retry, attempts, wait_s
 
     def __getattr__(self, name):
         return getattr(self.wh, name)
@@ -41,6 +43,7 @@ class Retrying:
                 if not exc.transient or attempt == self.attempts:
                     raise
                 self.on_retry(attempt, exc)
+                time.sleep(self.wait_s * 2 ** (attempt - 1))
 
 
 def warehouse(config, scenario: str = "s01") -> Warehouse:
