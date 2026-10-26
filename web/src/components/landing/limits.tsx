@@ -13,7 +13,7 @@ export function Limits() {
           "It does not guess a cause without records. If the records do not support it, it says so.",
           "It does not move money or file anything for you. It recommends the next action and you decide.",
         ].map((text, i) => (
-          <Reveal key={text} as="li" delay={i * 90} className="rounded-2xl border-2 border-dashed border-desk-line p-6 sm:p-8">
+          <Reveal key={text} as="li" delay={i * 70} className="rounded-2xl border-2 border-dashed border-desk-line p-6 sm:p-8">
             <p className="text-balance text-xl leading-snug sm:text-2xl">{text}</p>
           </Reveal>
         ))}

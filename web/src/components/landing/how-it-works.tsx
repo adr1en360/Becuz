@@ -15,12 +15,15 @@ export function HowItWorks() {
           How it works
         </h2>
       </Reveal>
-      <ol className="mt-12 grid gap-10 lg:grid-cols-4 lg:gap-8">
+      <div aria-hidden className="relative mt-12 hidden h-1 rounded-full bg-ink/15 lg:block">
+        <div className="scrub absolute inset-0 origin-left rounded-full bg-accent" />
+      </div>
+      <ol className="mt-10 grid gap-10 lg:grid-cols-4 lg:gap-8">
         {steps.map((text, i) => (
-          <Reveal key={text} as="li" delay={i * 90} className="flex gap-5 lg:flex-col lg:gap-4">
+          <Reveal key={text} as="li" delay={i * 70} className="flex gap-5 lg:flex-col lg:gap-4">
             <span
               aria-hidden
-              className="num font-display text-6xl font-extrabold leading-none text-accent [font-stretch:125%] sm:text-7xl"
+              className="num numeral font-display text-6xl font-extrabold leading-none text-accent [font-stretch:125%] sm:text-7xl"
             >
               {i + 1}
             </span>

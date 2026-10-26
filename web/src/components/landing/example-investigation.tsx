@@ -1,4 +1,5 @@
 import { Stamp } from "@/components/stamp";
+import { Figure } from "./figure";
 import { Reveal } from "./reveal";
 
 export function ExampleInvestigation() {
@@ -19,17 +20,17 @@ export function ExampleInvestigation() {
           <h3 className="max-w-2xl text-balance font-display text-2xl font-bold leading-tight [font-stretch:110%] sm:text-3xl">
             A supplier raised the unit cost of a product.
           </h3>
-          <p className="num mt-4 font-mono text-2xl font-medium text-accent sm:text-3xl">Cost: ₦46,992.</p>
+          <p className="num mt-4 font-mono text-2xl font-medium text-accent sm:text-3xl">Cost: <Figure value={46992} kind="naira" />.</p>
         </Reveal>
-        <Reveal as="li" delay={90} className="cut-line py-8">
+        <Reveal as="li" delay={70} className="cut-line py-8">
           <h3 className="max-w-3xl text-balance font-display text-2xl font-bold leading-tight [font-stretch:110%] sm:text-3xl">
-            ₦28,360 from 6 transfer sales was recorded at the till but never reached the bank.
+            <Figure value={28360} kind="naira" /> from 6 transfer sales was recorded at the till but never reached the bank.
           </h3>
           <p className="mt-4 max-w-xl text-lg leading-snug text-muted">
             The sales still count toward profit, but this money is missing from your account.
           </p>
         </Reveal>
-        <Reveal as="li" delay={180} className="cut-line flex flex-wrap items-center justify-between gap-4 py-8">
+        <Reveal as="li" delay={140} className="cut-line flex flex-wrap items-center justify-between gap-4 py-8">
           <h3 className="max-w-2xl text-balance font-display text-2xl font-bold leading-tight [font-stretch:110%] sm:text-3xl">
             Some causes were tested and ruled out, so you do not chase the wrong fix.
           </h3>

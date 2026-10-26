@@ -12,6 +12,7 @@
   --color-accent: #b03a09;
   --color-muted: #4a5468;
   --color-rule: rgb(20 33 61 / 0.2);
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-archivo), var(--font-inter), ui-sans-serif, sans-serif;
   --font-mono: var(--font-dm-mono), ui-monospace, "SFMono-Regular", monospace;
@@ -179,9 +180,121 @@
   font-variant-numeric: tabular-nums;
 }
 
+.mask {
+  display: inline-block;
+  overflow: hidden;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+  vertical-align: top;
+}
+
+.word {
+  display: inline-block;
+  animation: word 500ms var(--ease-out) both;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes word {
+  from {
+    transform: translateY(105%);
+  }
+}
+
+.hero-receipt {
+  transform: rotate(1.5deg);
+}
+
+/* Scroll-linked effects use CSS scroll timelines, so no scroll listener runs. Browsers without support show the static page. */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .progress {
+      animation: grow linear both;
+      animation-timeline: scroll(root);
+    }
+
+    .hero-title {
+      animation: drift linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 90vh;
+    }
+
+    .hero-receipt {
+      animation: recede linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 100vh;
+    }
+
+    .scrub {
+      transform: scaleX(0);
+      animation: grow linear both;
+      animation-timeline: view();
+      animation-range: entry 30% cover 55%;
+    }
+
+    .numeral {
+      animation: light linear both;
+      animation-timeline: view();
+      animation-range: entry 5% entry 95%;
+    }
+  }
+}
+
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .landing-header {
+      border-bottom-color: transparent;
+      animation: edge linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 80px;
+    }
+  }
+}
+
+@keyframes edge {
+  to {
+    border-bottom-color: var(--color-desk-line);
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes grow {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes drift {
+  to {
+    transform: translateY(-36px);
+    opacity: 0.35;
+  }
+}
+
+@keyframes recede {
+  from {
+    transform: rotate(1.5deg);
+  }
+  to {
+    transform: translateY(-48px) rotate(6deg);
+    opacity: 0.4;
+  }
+}
+
+@keyframes light {
+  from {
+    opacity: 0.2;
+    transform: scale(0.82);
+  }
+}
+
 /* Landing page: a short load sequence, one-shot scroll reveals, and a lift on hover-capable devices. */
 .rise {
-  animation: rise 450ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: rise 450ms var(--ease-out) both;
   animation-delay: var(--d, 0ms);
 }
 
@@ -199,14 +312,14 @@
 
 [data-reveal="shown"] {
   transition:
-    opacity 500ms cubic-bezier(0.16, 1, 0.3, 1),
-    transform 500ms cubic-bezier(0.16, 1, 0.3, 1);
+    opacity 500ms var(--ease-out),
+    transform 500ms var(--ease-out);
   transition-delay: var(--d, 0ms);
 }
 
 .lift {
   transition:
-    transform 250ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 250ms var(--ease-out),
     border-color 250ms;
 }
 
@@ -218,14 +331,18 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .rise {
-    animation: none;
+  .rise,
+  .word {
+    animation: fade 250ms ease both;
+    animation-delay: var(--d, 0ms);
   }
 
-  [data-reveal] {
-    opacity: 1;
+  [data-reveal="hidden"] {
     transform: none;
-    transition: none;
+  }
+
+  [data-reveal="shown"] {
+    transition: opacity 250ms ease;
   }
 
   .lift {
