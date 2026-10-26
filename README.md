@@ -431,7 +431,32 @@ total  8 of 8 planted causes found; 6 of 6 red herrings ruled out; 1 finding(s) 
 "Impact ok" means within the key's 10% tolerance. The one finding that was not planted, fewer items sold in
 `s01`, is real: `s01` keeps natural day-to-day variation, and units sold did dip that week.
 
-## 15. Limitations
+## 15. AI and model usage
+
+Models (through Meterless Nightshift):
+- `nvidia/nemotron-3.5-lightning-30b-a3b`: the Checker's rating of each tested claim and its note for the
+  owner. Every call and its signed receipt is logged (`output_examples/live_s01_receipts.jsonl`).
+- No model computes a number, chooses SQL or writes the summary. SQL computes every figure.
+
+Agent framework: LangGraph (four agents in one graph).
+
+Sponsor technology: see [section 4](#4-sponsor-technology) for Zetaris, the four Meterless engines (each
+with its tests in `tests/`), Nightshift and NVIDIA Nemotron.
+
+Development tools:
+- Built with Claude Code and Antigravity. AI-assisted coding was used for scaffolding, debugging, tests and
+  documentation.
+- All generated code was reviewed and tested by the team.
+
+External libraries: LangGraph, Pydantic, DuckDB and sqlglot (sample mode), and Next.js for the web UI
+(`web/package.json`). No open-source code or templates were materially adapted beyond these libraries.
+
+Data: synthetic shop data from `data/generator.py`, labelled as synthetic in every report.
+
+Sample mode: `SAMPLE_MODE=1` runs the full investigation on the bundled data with no calls to Zetaris,
+Nightshift or other services. See [section 8](#8-sample-mode).
+
+## 16. Limitations
 
 Each limit, and what Becuz does about it:
 
@@ -451,6 +476,6 @@ Each limit, and what Becuz does about it:
 - **Markovian token savings are estimates** (4 characters per token), not measured counts, and they are
   small at six calls. The log labels them as estimates.
 
-## 16. License
+## 17. License
 
 MIT. See `LICENSE`.
