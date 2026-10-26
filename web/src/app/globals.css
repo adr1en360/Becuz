@@ -1,0 +1,181 @@
+@import "tailwindcss";
+
+@theme {
+  --color-desk: #0b1328;
+  --color-desk-2: #141f3d;
+  --color-desk-line: rgb(247 245 239 / 0.24);
+  --color-desk-muted: #a3aec7;
+  --color-flare: #ff7a3d;
+  --color-paper: #f7f5ef;
+  --color-paper-2: #eeeadc;
+  --color-ink: #14213d;
+  --color-accent: #c2410c;
+  --color-muted: #4a5468;
+  --color-rule: rgb(20 33 61 / 0.2);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-archivo), var(--font-inter), ui-sans-serif, sans-serif;
+  --font-mono: var(--font-dm-mono), ui-monospace, "SFMono-Regular", monospace;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(247 245 239 / 0.3) transparent;
+  }
+
+  body {
+    background: var(--color-desk);
+    color: var(--color-paper);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background: var(--color-flare);
+    color: var(--color-desk);
+  }
+
+  textarea,
+  input {
+    caret-color: var(--color-flare);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-flare);
+    outline-offset: 3px;
+  }
+
+  .paper :focus-visible {
+    outline-color: var(--color-accent);
+  }
+}
+
+/* The report is a till receipt: paper strip, torn edges, dotted leaders, rubber stamps. */
+.receipt {
+  position: relative;
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+.receipt::before,
+.receipt::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 10px;
+  background-repeat: repeat-x;
+  background-size: 20px 10px;
+}
+
+.receipt::before {
+  top: -9px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='10'%3E%3Cpath d='M0 10h20L10 0z' fill='%23F7F5EF'/%3E%3C/svg%3E");
+}
+
+.receipt::after {
+  bottom: -9px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='10'%3E%3Cpath d='M0 0h20L10 10z' fill='%23F7F5EF'/%3E%3C/svg%3E");
+}
+
+.print {
+  animation: print 1.5s cubic-bezier(0.22, 0.8, 0.24, 1) both;
+}
+
+@keyframes print {
+  from {
+    clip-path: inset(-12px 0 100% 0);
+  }
+  to {
+    clip-path: inset(-12px 0 -12px 0);
+  }
+}
+
+.leader {
+  flex: 1;
+  min-width: 1rem;
+  border-bottom: 2px dotted rgb(20 33 61 / 0.42);
+  transform: translateY(-0.28em);
+}
+
+.cut-line {
+  border-top: 2px dashed rgb(20 33 61 / 0.5);
+}
+
+.stamp {
+  display: inline-block;
+  padding: 0.12rem 0.6rem;
+  border: 2.5px solid currentColor;
+  border-radius: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0;
+  transform: rotate(var(--r, -5deg));
+}
+
+.stamp[data-seen="true"] {
+  opacity: 0.9;
+  animation: thump 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes thump {
+  0% {
+    opacity: 0;
+    transform: scale(1.8) rotate(var(--r, -5deg));
+  }
+  60% {
+    opacity: 0.95;
+    transform: scale(0.94) rotate(var(--r, -5deg));
+  }
+  100% {
+    opacity: 0.9;
+    transform: scale(1) rotate(var(--r, -5deg));
+  }
+}
+
+.draw {
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform 1000ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.draw[data-seen="true"] {
+  transform: scaleX(1);
+}
+
+.line-busy {
+  animation: busy 1.3s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * 130ms);
+}
+
+@keyframes busy {
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .print,
+  .line-busy,
+  .stamp[data-seen="true"] {
+    animation: none;
+  }
+
+  .stamp {
+    opacity: 0.9;
+  }
+
+  .draw {
+    transform: none;
+    transition: none;
+  }
+}
