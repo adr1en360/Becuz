@@ -1,0 +1,443 @@
+{
+  "run_id": "inv-c8a35fe146",
+  "status": "complete",
+  "errors": [],
+  "mode": "live",
+  "synthetic": true,
+  "scenario": null,
+  "frame": {
+    "question": "Why is my profit down this week?",
+    "metric": "profit",
+    "period_start": "2026-10-12",
+    "period_end": "2026-10-18",
+    "baseline_start": "2026-09-14",
+    "baseline_end": "2026-10-11"
+  },
+  "headline": {
+    "current_ngn": 241717.0,
+    "baseline_ngn": 379411.75,
+    "change_ngn": -137694.75,
+    "change_pct": -36.3,
+    "direction": "down"
+  },
+  "tree": [
+    {
+      "component": "net_sales",
+      "current_ngn": 2489625.0,
+      "baseline_ngn": 2711038.75,
+      "change_ngn": -221413.75,
+      "profit_effect_ngn": -221413.75,
+      "share_of_change_pct": 160.8,
+      "status": "partly_explained"
+    },
+    {
+      "component": "cogs",
+      "current_ngn": 2031860.0,
+      "baseline_ngn": 2151527.0,
+      "change_ngn": -119667.0,
+      "profit_effect_ngn": 119667.0,
+      "share_of_change_pct": -86.9,
+      "status": "partly_explained"
+    },
+    {
+      "component": "wastage",
+      "current_ngn": 54048.0,
+      "baseline_ngn": 18100.0,
+      "change_ngn": 35948.0,
+      "profit_effect_ngn": -35948.0,
+      "share_of_change_pct": 26.1,
+      "status": "explained"
+    },
+    {
+      "component": "opex",
+      "current_ngn": 162000.0,
+      "baseline_ngn": 162000.0,
+      "change_ngn": 0.0,
+      "profit_effect_ngn": -0.0,
+      "share_of_change_pct": 0.0,
+      "status": "no_change"
+    }
+  ],
+  "causes": [
+    {
+      "cause_id": "supplier_cost_rise",
+      "title": "A supplier raised the unit cost of a product",
+      "status": "supported",
+      "impact_ngn": -46992.0,
+      "impact_evidence_id": "ev-supplier_cost_rise",
+      "confidence": 0.9,
+      "evidence": [
+        {
+          "evidence_id": "ev-supplier_cost_rise",
+          "table": "becuz.supplier_invoices",
+          "sql": "SELECT ROUND(-COALESCE(SUM(q.qty * (c.final_cost - c.base_cost)), 0), 2) AS effect_ngn\nFROM (SELECT product_id,\n             AVG(CASE WHEN invoice_date BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN unit_cost_ngn END) AS final_cost,\n             AVG(CASE WHEN invoice_date BETWEEN DATE '2026-09-14' AND DATE '2026-10-11' THEN unit_cost_ngn END) AS base_cost\n      FROM lightning.metastore.becuz.becuz.supplier_invoices GROUP BY product_id) c\nJOIN (SELECT l.product_id, SUM(l.qty) AS qty FROM lightning.metastore.becuz.becuz.sale_lines l\n      JOIN lightning.metastore.becuz.becuz.sales s ON s.sale_id = l.sale_id\n      WHERE CAST(s.sold_at AS DATE) BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' GROUP BY l.product_id) q ON q.product_id = c.product_id\nWHERE c.final_cost > c.base_cost",
+          "row_ids": [
+            "INV-0281"
+          ],
+          "value_ngn": -46992.0,
+          "summary": "A supplier raised the unit cost of a product: -46,992",
+          "via": "zetaris",
+          "check": {
+            "match": true,
+            "rerun_value_ngn": -46992.0,
+            "note": "The re-check matched: 46,992 naira from 1 record. The SQL re-check supports a supplier unit cost increase, reducing profit by 46,992 naira for 1 record, and the test that unit costs match baseline weeks did not hold.",
+            "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+            "via": "nightshift",
+            "signed": false
+          }
+        }
+      ],
+      "falsified_by": [
+        {
+          "test": "unit costs on this week's invoices match the baseline weeks",
+          "evidence_id": "ev-supplier_cost_rise",
+          "survived": true
+        }
+      ],
+      "depends_on_sources": [
+        "books_files",
+        "pos_files"
+      ],
+      "retries": 0,
+      "component": "cogs",
+      "share_of_change_pct": 34.1,
+      "rank": 1,
+      "origin": "external",
+      "nature": "actionable",
+      "counterfactual_ngn": 288709.0
+    },
+    {
+      "cause_id": "sales_volume_drop",
+      "title": "Fewer items sold than in a usual week",
+      "status": "supported",
+      "impact_ngn": -38611.0,
+      "impact_evidence_id": "ev-sales_volume_drop",
+      "confidence": 0.9,
+      "evidence": [
+        {
+          "evidence_id": "ev-sales_volume_drop",
+          "table": "becuz.sale_lines",
+          "sql": "SELECT ROUND(SUM((COALESCE(f.qty, 0) - COALESCE(b.qty, 0) / 4) * (p.list_price_ngn - c.base_cost)), 2)\n       AS effect_ngn\nFROM lightning.metastore.becuz.becuz.products p\nJOIN (SELECT product_id, AVG(unit_cost_ngn) AS base_cost FROM lightning.metastore.becuz.becuz.supplier_invoices\n      WHERE invoice_date BETWEEN DATE '2026-09-14' AND DATE '2026-10-11' GROUP BY product_id) c ON c.product_id = p.product_id\nLEFT JOIN (SELECT l.product_id, SUM(l.qty) AS qty FROM lightning.metastore.becuz.becuz.sale_lines l JOIN lightning.metastore.becuz.becuz.sales s ON s.sale_id = l.sale_id\n           WHERE CAST(s.sold_at AS DATE) BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' GROUP BY l.product_id) f ON f.product_id = p.product_id\nLEFT JOIN (SELECT l.product_id, SUM(l.qty) AS qty FROM lightning.metastore.becuz.becuz.sale_lines l JOIN lightning.metastore.becuz.becuz.sales s ON s.sale_id = l.sale_id\n           WHERE CAST(s.sold_at AS DATE) BETWEEN DATE '2026-09-14' AND DATE '2026-10-11' GROUP BY l.product_id) b ON b.product_id = p.product_id",
+          "row_ids": [
+            "P001",
+            "P002",
+            "P005",
+            "P006",
+            "P007",
+            "P008",
+            "P009",
+            "P010",
+            "P012",
+            "P013",
+            "P014",
+            "P018",
+            "P019",
+            "P020",
+            "P021",
+            "P026",
+            "P028",
+            "P029",
+            "P031",
+            "P032",
+            "P034",
+            "P035",
+            "P036",
+            "P037",
+            "P038",
+            "P040"
+          ],
+          "value_ngn": -38611.0,
+          "summary": "Fewer items sold than in a usual week: -38,611",
+          "via": "zetaris",
+          "check": {
+            "match": true,
+            "rerun_value_ngn": -38611.0,
+            "note": "The re-check matched: 38,611 naira from 26 records. The SQL re-check confirms fewer items sold than in a usual week, reducing profit by 38,611 naira across 26 records, and the at-or-above-usual-units test did not hold.",
+            "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+            "via": "nightshift",
+            "signed": false
+          }
+        }
+      ],
+      "falsified_by": [
+        {
+          "test": "this week's units sold are at or above a usual week",
+          "evidence_id": "ev-sales_volume_drop",
+          "survived": true
+        }
+      ],
+      "depends_on_sources": [
+        "pos_files",
+        "books_files"
+      ],
+      "retries": 0,
+      "component": "net_sales",
+      "share_of_change_pct": 28.0,
+      "rank": 2,
+      "origin": "external",
+      "nature": "temporary",
+      "counterfactual_ngn": 280328.0
+    },
+    {
+      "cause_id": "wastage_spike",
+      "title": "More stock expired or was damaged than usual",
+      "status": "supported",
+      "impact_ngn": -35948.0,
+      "impact_evidence_id": "ev-wastage_spike",
+      "confidence": 0.9,
+      "evidence": [
+        {
+          "evidence_id": "ev-wastage_spike",
+          "table": "becuz.stock_movements",
+          "sql": "SELECT ROUND(-(COALESCE(SUM(CASE WHEN CAST(moved_at AS DATE) BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN qty * unit_cost_ngn END), 0)\n                  - COALESCE(SUM(CASE WHEN CAST(moved_at AS DATE) BETWEEN DATE '2026-09-14' AND DATE '2026-10-11' THEN qty * unit_cost_ngn END), 0) / 4), 2)\n       AS effect_ngn\nFROM lightning.metastore.becuz.becuz.stock_movements WHERE type IN ('expired', 'damaged')",
+          "row_ids": [
+            "MV-00078",
+            "MV-00079",
+            "MV-00080",
+            "MV-00081",
+            "MV-00082",
+            "MV-00083",
+            "MV-00084",
+            "MV-00085",
+            "MV-00086",
+            "MV-00087",
+            "MV-00088",
+            "MV-00089",
+            "MV-00090",
+            "MV-00091",
+            "MV-00092",
+            "MV-00093",
+            "MV-00094",
+            "MV-00095",
+            "MV-00096",
+            "MV-00097",
+            "MV-00098",
+            "MV-00099",
+            "MV-00100",
+            "MV-00101",
+            "MV-00102",
+            "MV-00103",
+            "MV-00104",
+            "MV-00105",
+            "MV-00106"
+          ],
+          "value_ngn": -35948.0,
+          "summary": "More stock expired or was damaged than usual: -35,948",
+          "via": "zetaris",
+          "check": {
+            "match": true,
+            "rerun_value_ngn": -35948.0,
+            "note": "The re-check matched: 35,948 naira from 29 records. The SQL re-check confirms more stock expired or was damaged than usual, reducing profit by 35,948 naira across 29 records, and the no-higher-than-usual test did not hold.",
+            "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+            "via": "nightshift",
+            "signed": false
+          }
+        }
+      ],
+      "falsified_by": [
+        {
+          "test": "this week's expired and damaged stock is no higher than a usual week",
+          "evidence_id": "ev-wastage_spike",
+          "survived": true
+        }
+      ],
+      "depends_on_sources": [
+        "pos_files"
+      ],
+      "retries": 0,
+      "component": "wastage",
+      "share_of_change_pct": 26.1,
+      "rank": 3,
+      "origin": "internal",
+      "nature": "actionable",
+      "counterfactual_ngn": 277665.0
+    },
+    {
+      "cause_id": "promo_overrun",
+      "title": "A discount kept running after the promo ended",
+      "status": "supported",
+      "impact_ngn": -20475.0,
+      "impact_evidence_id": "ev-promo_overrun",
+      "confidence": 0.9,
+      "evidence": [
+        {
+          "evidence_id": "ev-promo_overrun",
+          "table": "becuz.sale_lines",
+          "sql": "SELECT ROUND(-COALESCE(SUM(l.discount_ngn), 0), 2) AS effect_ngn\nFROM lightning.metastore.becuz.becuz.sale_lines l JOIN lightning.metastore.becuz.becuz.sales s ON s.sale_id = l.sale_id\nJOIN lightning.metastore.becuz.becuz.promos p ON p.promo_id = l.promo_id\nWHERE CAST(s.sold_at AS DATE) BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' AND CAST(s.sold_at AS DATE) > p.end_date",
+          "row_ids": [
+            "LN-007402",
+            "LN-007421",
+            "LN-007439",
+            "LN-007465",
+            "LN-007496",
+            "LN-007526",
+            "LN-007574",
+            "LN-007603",
+            "LN-007689",
+            "LN-007699",
+            "LN-007717",
+            "LN-007924",
+            "LN-007968",
+            "LN-008008",
+            "LN-008131",
+            "LN-008163",
+            "LN-008190",
+            "LN-008208",
+            "LN-008309"
+          ],
+          "value_ngn": -20475.0,
+          "summary": "A discount kept running after the promo ended: -20,475",
+          "via": "zetaris",
+          "check": {
+            "match": true,
+            "rerun_value_ngn": -20475.0,
+            "note": "The re-check matched: 20,475 naira from 19 records. The SQL re-check confirms a discount persisted after the promo ended, cutting profit by 20,475.0 naira across 19 records, and the test to disprove it failed.",
+            "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+            "via": "nightshift",
+            "signed": false
+          }
+        }
+      ],
+      "falsified_by": [
+        {
+          "test": "no promo discount was given after the promo's end date",
+          "evidence_id": "ev-promo_overrun",
+          "survived": true
+        }
+      ],
+      "depends_on_sources": [
+        "pos_files"
+      ],
+      "retries": 0,
+      "component": "net_sales",
+      "share_of_change_pct": 14.9,
+      "rank": 4,
+      "origin": "internal",
+      "nature": "actionable",
+      "counterfactual_ngn": 262192.0
+    }
+  ],
+  "cash_gaps": [
+    {
+      "cause_id": "transfer_leakage",
+      "title": "Transfers recorded at the till never reached the bank",
+      "status": "supported",
+      "impact_ngn": -28360.0,
+      "impact_evidence_id": "ev-transfer_leakage",
+      "confidence": 0.9,
+      "evidence": [
+        {
+          "evidence_id": "ev-transfer_leakage",
+          "table": "becuz.transfer_check",
+          "sql": "SELECT ROUND(-COALESCE(SUM(net_ngn), 0), 2) AS effect_ngn FROM lightning.metastore.becuz.becuz.transfer_check\nWHERE bank_txn_id IS NULL AND CAST(sold_at AS DATE) BETWEEN DATE '2026-10-12' AND DATE '2026-10-18'",
+          "row_ids": [
+            "SL-03043",
+            "SL-03067",
+            "SL-03102",
+            "SL-03112",
+            "SL-03132",
+            "SL-03192"
+          ],
+          "value_ngn": -28360.0,
+          "summary": "Transfers recorded at the till never reached the bank: -28,360",
+          "via": "zetaris",
+          "check": {
+            "match": true,
+            "rerun_value_ngn": -28360.0,
+            "note": "The re-check matched: 28,360 naira from 6 records. The SQL re-check confirms till-recorded transfers never reached the bank, cutting profit by 28,360 naira across 6 records, and the matching-bank-credit test did not hold.",
+            "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+            "via": "nightshift",
+            "signed": false
+          }
+        }
+      ],
+      "falsified_by": [
+        {
+          "test": "every transfer sale this week has a matching bank credit",
+          "evidence_id": "ev-transfer_leakage",
+          "survived": true
+        }
+      ],
+      "depends_on_sources": [
+        "pos_files",
+        "bank_files"
+      ],
+      "retries": 0
+    }
+  ],
+  "memory": [],
+  "ruled_out": [
+    {
+      "cause_id": "pos_charge_rise",
+      "hypothesis": "The POS terminal charged a higher fee",
+      "reason": "The records show no loss from this cause this week.",
+      "tested_value_ngn": 0.0,
+      "evidence_id": null
+    }
+  ],
+  "not_tested": [],
+  "convergence": {
+    "explained_ngn": -142026.0,
+    "explained_pct": 103.1,
+    "unexplained_ngn": 4331.25
+  },
+  "summary": {
+    "what_happened": "Profit this week was ₦241,717, which is ₦137,695 less than a usual week (₦379,412).",
+    "why": [
+      "A supplier raised the unit cost of a product. This cost you ₦46,992.",
+      "Fewer items sold than in a usual week. This cost you ₦38,611.",
+      "More stock expired or was damaged than usual. This cost you ₦35,948.",
+      "A discount kept running after the promo ended. This cost you ₦20,475."
+    ],
+    "cash": [
+      "₦28,360 from 6 transfer sales was recorded at the till but never reached the bank. The sales still count toward your profit, but this money is missing from your account."
+    ],
+    "what_to_do": [
+      {
+        "cause_id": "supplier_cost_rise",
+        "action": "Compare prices from other suppliers for the affected product and review its shelf price."
+      },
+      {
+        "cause_id": "sales_volume_drop",
+        "action": "Check stock levels and opening hours for the products that sold less."
+      },
+      {
+        "cause_id": "wastage_spike",
+        "action": "Order perishables in smaller batches and check storage for the affected items."
+      },
+      {
+        "cause_id": "promo_overrun",
+        "action": "Switch off the expired promo at the till and check which staff applied it."
+      },
+      {
+        "cause_id": "transfer_leakage",
+        "action": "Check these transfers against the bank app with the staff who recorded them."
+      }
+    ]
+  },
+  "owner_questions": [
+    {
+      "cause_id": "transfer_leakage",
+      "question": "6 transfer sales this week have no matching payment in the bank (SL-03043, SL-03067, SL-03102, SL-03112, SL-03132, SL-03192). Can you check them with the staff who recorded them?"
+    }
+  ],
+  "limitations": [
+    "Findings show correlation, not proven causation.",
+    "The shop data is synthetic.",
+    "Every number comes from SQL; the model only rates the evidence and words the notes."
+  ],
+  "stats": {
+    "duration_s": 410.61,
+    "zetaris_queries": 27,
+    "model_calls": 6,
+    "retries": 0,
+    "models": {
+      "nvidia/nemotron-3.5-lightning-30b-a3b": 6
+    },
+    "via": {
+      "zetaris": 27,
+      "nightshift": 6
+    }
+  },
+  "trace_file": "logs/trace-inv-c8a35fe146.jsonl"
+}

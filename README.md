@@ -78,6 +78,21 @@ non-admin user with `SELECT` on the USL only, so Zetaris itself refuses any writ
 routes it to an NVIDIA Nemotron model. Each call is recorded with the model that answered it and its
 Nightshift receipt ID.
 
+**Which agent uses which Nemotron model:**
+
+| Agent | Nemotron model | What it does | Calls per run |
+|---|---|---|---|
+| Checker | `nvidia/nemotron-3.5-lightning-30b-a3b` (Nightshift Race lane) | Rates the evidence for each supported or rejected claim and writes a note for the owner | One per tested cause (6 on `s01`) |
+| Planner, Investigator, Writer | none | SQL only; they never call a model | 0 |
+
+Nightshift also has a Judge lane (`nvidia/nemotron-3-ultra-550b-a55b`) for its own scoring. **Receipts:**
+[`output_examples/live_s01_receipts.jsonl`](output_examples/live_s01_receipts.jsonl) is the receipt log
+from a real live run: one `model` line per call with the model that answered and its request ID, and one
+`model_receipt` line per call once Nightshift signed it. The report and trace from the same run are
+[`live_s01_output.json`](output_examples/live_s01_output.json) and
+[`live_s01_trace.jsonl`](output_examples/live_s01_trace.jsonl). Your own runs write the same log to
+`logs/ledger.jsonl`; run `uv run python verify_receipts.py` to add the signed receipts.
+
 **Four Meterless engines, implemented in `becuz/engines/`:**
 
 | Engine | What it does in Becuz | Log |
@@ -191,7 +206,10 @@ curl.exe -X POST http://127.0.0.1:8000/run -H "Content-Type: application/json" -
 
 | Route | Returns |
 |---|---|
-| `POST /run` | The investigation report as JSON. `400` with a message for a bad request |
+| `POST /run` | Runs the investigation and returns the report as JSON. `400` with a message for a bad request |
+| `POST /runs` | Starts the investigation in the background and returns `202` with its `run_id` at once. Use this for a live run, which takes minutes |
+| `GET /runs/<run_id>` | The run's `status` (`running`, `complete` or `failed`), its trace `events` so far, and the `report` once complete |
+| `POST /confirm` | `{"run_id": "...", "cause_id": "..."}`: the owner confirms a supported cause, and H-MEM stores it for the next run |
 | `GET /health` | Whether sample mode is on and which providers are configured |
 
 **Request:**
@@ -281,11 +299,14 @@ If a remembered cause does not happen again, its memory loses confidence and is 
 | `input_examples/example_2.json` | `s04`: missing transfers only | Profit did not fall, but ₦33,100 in transfers never reached the bank; falling sales and POS charges ruled out |
 | `input_examples/example_3.json` | `s05`: a normal week | Nothing to explain; every cause ruled out |
 
-Each output and its trace are in `output_examples/`, saved from real sample-mode runs. A live run of
-`s01` through Zetaris and Nightshift returned the same findings and naira figures as sample mode, with
-each rating from Nemotron.
+Each output and its trace are in `output_examples/`, saved from real sample-mode runs. The live run of
+`s01` through Zetaris and Nightshift is saved too (`live_s01_*`): it returned the same findings and naira
+figures as sample mode, with each rating from Nemotron 3.5 Lightning.
 
 ## 8. Sample mode
+
+**Judges can run all of Becuz in sample mode, with no accounts, keys or network.** Every sample-mode
+run does the real work again; nothing is replayed.
 
 `SAMPLE_MODE=1` runs the full investigation with an empty `.env` and no network. The same Spark SQL runs
 on DuckDB over the scenario's CSVs: the USL tables, including `daily_pnl` and `transfer_check`, are
@@ -374,8 +395,10 @@ schema, the server, and the four engines. The engine tests port the Meterless co
 
 - Findings show correlation, not proven causation.
 - The shop data is synthetic.
-- A live run is slow. The `s01` run took 7 minutes 43 seconds for 27 Zetaris queries and 6 Nemotron
-  calls. Sample mode takes about a second.
+- A live run is slow: the `s01` run took 6 minutes 57 seconds. The Zetaris work finishes in about 3
+  minutes; the rest is the six Nemotron ratings, which take 40 to 75 seconds each through Nightshift and
+  run one after another because each carries the earlier verdicts (Markovian). Sample mode takes about a
+  second.
 - The Markovian token savings are estimates (4 characters per token), not measured counts, and they are
   small or negative when a run judges only a few claims.
 
