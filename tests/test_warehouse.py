@@ -26,7 +26,7 @@ class FakeClient:
     def __init__(self, result=None, error: ZetarisError | None = None):
         self.result, self.error, self.sent = result, error, []
 
-    def run_sql(self, sql: str) -> dict:
+    def run_sql(self, sql: str, query_id: str | None = None) -> dict:
         self.sent.append(sql)
         if self.error:
             raise self.error
@@ -86,6 +86,14 @@ class ZetarisWarehouseTests(unittest.TestCase):
         client = FakeClient(raw)
         self.assertEqual(ZetarisWarehouse(client).query("SELECT 1;;"), [{"day": "2026-10-12", "profit_ngn": -83580.0}])
         self.assertEqual(client.sent, ["SELECT 1"])  # trailing semicolons are never sent
+
+    def test_each_query_is_logged_with_its_id_and_duration(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "ledger.jsonl"
+            ZetarisWarehouse(FakeClient({"headers": ["one"], "data": [["1"]]}), path).query("SELECT 1 AS one")
+            entry = json.loads(path.read_text(encoding="utf-8"))
+        self.assertEqual(len(entry["query_id"]), 36)
+        self.assertGreaterEqual(entry["duration_ms"], 0)
 
     def test_timeouts_are_transient(self) -> None:
         wh = ZetarisWarehouse(FakeClient(error=ZetarisError(0, "The read operation timed out")))

@@ -3,6 +3,8 @@ and is recorded in the ledger. The admin setup scripts reuse ZetarisClient with 
 from __future__ import annotations
 
 import json
+import threading
+import time
 import urllib.error
 import urllib.request
 import uuid
@@ -32,11 +34,13 @@ class ZetarisClient:
         self.org_id = org_id
         self.api_key = api_key
 
-    def run_sql(self, sql: str, limit: int = 100, timeout: int = 60) -> dict:
+    def run_sql(self, sql: str, limit: int = 100, timeout: int = 120, query_id: str | None = None) -> dict:
+        """One statement. queryId and X-Request-ID carry the same id, so Zetaris can find the call in its logs."""
+        query_id = query_id or str(uuid.uuid4())
         if not (self.rest_url and self.org_id and self.api_key):
             raise ZetarisError(401, "missing ZETARIS_REST_URL, ZETARIS_ORG_ID, or ZETARIS_API_KEY")  # a setup problem: never retried
         payload = {
-            "queryId": str(uuid.uuid4()),
+            "queryId": query_id,
             "sql": sql,
             "source": "SqlEditor",
             "limit": limit,
@@ -48,7 +52,7 @@ class ZetarisClient:
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {self.api_key}",
                 "X-Org-ID": self.org_id,
-                "X-Request-ID": str(uuid.uuid4()),
+                "X-Request-ID": query_id,
             },
             method="POST",
         )
@@ -89,6 +93,10 @@ def _value(cell):
     return cell
 
 
+# One Zetaris query at a time across the process, so runs started from the server never overlap.
+ONE_AT_A_TIME = threading.Lock()
+
+
 class ZetarisWarehouse:
     via = "zetaris"
     usl = USL
@@ -106,16 +114,19 @@ class ZetarisWarehouse:
         if not is_read_only(sql):
             self._record(sql, error="refusing non-read-only SQL")
             raise QueryError("refusing non-read-only SQL")
+        query_id, started = str(uuid.uuid4()), time.monotonic()
         try:
-            response = self.client.run_sql(sql)
+            with ONE_AT_A_TIME:
+                response = self.client.run_sql(sql, query_id=query_id)
         except ZetarisError as exc:
-            self._record(sql, error=str(exc))
+            self._record(sql, query_id, started, error=str(exc))
             raise QueryError(str(exc), transient=exc.status == 0 or any(fault in exc.message for fault in SERVER_FAULTS)) from exc
         found = rows(response)
-        self._record(sql, count=len(found))
+        self._record(sql, query_id, started, count=len(found))
         headers = response.get("headers") or []
         return [dict(zip(headers, map(_value, row))) for row in found]
 
-    def _record(self, sql: str, count: int = 0, error: str = "") -> None:
+    def _record(self, sql: str, query_id: str = "", started: float | None = None, count: int = 0, error: str = "") -> None:
         entry = {"kind": "error", "ok": False, "error": error} if error else {"kind": "query", "ok": True, "row_count": count}
-        ledger.write(self.ledger_path, {**entry, "tool": "query_data", "via": self.via, "sql": sql[:500]})
+        timing = {"query_id": query_id, "duration_ms": round((time.monotonic() - started) * 1000)} if started else {}
+        ledger.write(self.ledger_path, {**entry, **timing, "tool": "query_data", "via": self.via, "sql": sql[:500]})

@@ -54,8 +54,8 @@ Planner ─► Investigator ─► Checker ─► next cause? ──────
 - A claim is rejected when its loss is below ₦1,000, when no records back it, or when it is not a loss.
 - A cause the owner confirmed in an earlier run is tested first next time. If it fails, its memory
   loses confidence and is flagged for review.
-- A Zetaris timeout or network error retries only the query that failed, up to 4 attempts with waits of
-  2, 4 and 8 seconds, and each retry is written to the trace by the agent that hit it.
+- A Zetaris timeout, network error or Zetaris internal fault retries only the query that failed, up to 4
+  attempts with waits of 10, 20 and 40 seconds, and each retry is written to the trace by the agent that hit it.
 - The Checker hands each model rating to a background worker and moves on to the next cause. One
   worker keeps the Markovian chain in order, and the Writer waits for every rating before the report.
 - A run stops after 60 steps.
@@ -337,7 +337,7 @@ instead of a model, and the report and trace label it `sample-rules`. Nothing is
 
 | Failure | Behaviour |
 |---|---|
-| Zetaris timeout or network error | That query is retried, up to 4 attempts with waits of 2, 4 and 8 seconds, with a `retry_query` line in the trace |
+| Zetaris timeout, network error, or Zetaris internal fault (`Could not create ResultSet`, `TTransportException`) | That query is retried, up to 4 attempts with waits of 10, 20 and 40 seconds, with a `retry_query` line in the trace. The ledger records each query's `query_id` and `duration_ms` |
 | Zetaris refuses a query | The run stops with an error. It is not retried |
 | A re-check does not match the claim | The Checker sends it back. After 2 retries it is rejected |
 | Data missing for a cause | The cause is listed as not tested, never read as zero |

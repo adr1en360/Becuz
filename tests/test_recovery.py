@@ -56,7 +56,9 @@ class RecoveryTests(unittest.TestCase):
         def timeout(rows):
             raise QueryError("zetaris: HTTP 0: The read operation timed out", transient=True)
 
-        report, trace = run(OnceWrong("s01", "transfer_check", timeout))
+        with patch("becuz.adapters.time.sleep") as wait:
+            report, trace = run(OnceWrong("s01", "transfer_check", timeout))
+        wait.assert_called_once_with(10.0)
         (retry,) = [l for l in trace if l["action"] == "retry_query"]
         self.assertEqual((retry["agent_name"], retry["retry_count"], retry["status"]), ("Investigator", 1, "retrying"))
         self.assertEqual([c["cause_id"] for c in report["cash_gaps"]], ["transfer_leakage"])
