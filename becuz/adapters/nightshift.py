@@ -94,7 +94,7 @@ class Nightshift:
             "model": model or self.model,
             "messages": messages,
             "temperature": 0.2,
-            "max_tokens": 1024,
+            "max_tokens": 4096,  # thinking models (Nemotron 3.5 Lightning) reason before answering; 1024 left the answer empty
         }
         request = urllib.request.Request(
             f"{self.base_url}/chat/completions",
