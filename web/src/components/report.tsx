@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { TraceEvent } from "@/lib/api";
-import { ArrowLeftIcon, PlayIcon, StopIcon } from "@solar-icons/react/outline";
+import { PlayIcon } from "@solar-icons/react/outline";
 import type { Investigation } from "@/lib/investigation";
 import { formatNaira, formatPct, formatRange } from "@/lib/format";
 import { AnswerCard } from "./answer-card";
@@ -18,15 +18,7 @@ import { RuledOut } from "./ruled-out";
 import { Stamp } from "./stamp";
 import { StepQuestion } from "./step-question";
 
-export function Report({
-  data,
-  events,
-  onReset,
-}: {
-  data: Investigation;
-  events: TraceEvent[];
-  onReset: () => void;
-}) {
+export function Report({ data, events }: { data: Investigation; events: TraceEvent[] }) {
   const [replaying, setReplaying] = useState(false);
   const [replayIdx, setReplayIdx] = useState(0);
 
@@ -63,41 +55,7 @@ export function Report({
       : "";
 
   return (
-    <div className="mx-auto w-full max-w-4xl flex-1 pb-24 pt-4">
-      {/* Top action row */}
-      <div className="mb-6 flex items-center justify-between gap-4 print:hidden">
-        <button
-          type="button"
-          onClick={onReset}
-          className="inline-flex h-9 items-center gap-2 rounded-full border border-desk-line px-4 text-xs font-semibold text-paper transition-colors hover:bg-paper hover:text-ink active:scale-95"
-        >
-          <ArrowLeftIcon size={14} aria-hidden />
-          Ask another question
-        </button>
-
-        {replaying ? (
-          <button
-            type="button"
-            onClick={stopReplay}
-            className="inline-flex h-9 items-center gap-2 rounded-full bg-accent px-4 text-xs font-bold text-paper transition-colors hover:bg-paper hover:text-ink active:scale-95"
-          >
-            <StopIcon size={14} aria-hidden />
-            Stop replay
-          </button>
-        ) : (
-          events.length > 0 && (
-            <button
-              type="button"
-              onClick={startReplay}
-              className="inline-flex h-9 items-center gap-2 rounded-full border border-desk-line bg-desk-2 px-4 text-xs font-bold text-paper transition-colors hover:bg-paper hover:text-ink active:scale-95"
-            >
-              <PlayIcon size={14} aria-hidden />
-              Play investigation
-            </button>
-          )
-        )}
-      </div>
-
+    <div className="w-full pb-16">
       {replaying ? (
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between rounded-2xl border border-flare bg-flare/10 px-4 py-2.5 text-xs font-mono text-paper">

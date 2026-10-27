@@ -38,9 +38,16 @@ export function InvestigationApp() {
     return () => controller.abort();
   }, []);
 
+  const pane = useRef<HTMLElement>(null);
+
+  // The receipt pane scrolls on its own on wide screens; on phones it sits under the form, so bring it into view.
   useEffect(() => {
-    if (phase.kind === "done") {
-      window.scrollTo({ top: 320, behavior: "smooth" });
+    const el = pane.current;
+    if (!el || phase.kind === "idle" || phase.kind === "error") return;
+    if (window.matchMedia("(min-width: 1024px)").matches) {
+      if (phase.kind === "done") el.scrollTo({ top: 0 });
+    } else {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, [phase.kind]);
 
@@ -97,13 +104,20 @@ export function InvestigationApp() {
           : "Becuz reads your records and never changes them.";
 
   return (
-    <div className="flex flex-1 flex-col">
-      {/* A. The Ask (Stays fixed / sticky at top) */}
-      <section
+    <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(0,27rem)_minmax(0,1fr)] xl:grid-cols-[minmax(0,30rem)_minmax(0,1fr)]">
+      <aside
         aria-label="Investigation setup"
-        className="sticky top-0 z-30 border-b border-desk-line bg-desk px-4 py-4 sm:px-8 print:hidden"
+        className="border-b border-desk-line px-4 py-8 sm:px-8 lg:overflow-y-auto lg:border-b-0 lg:border-r lg:py-10 print:hidden"
       >
-        <div className="mx-auto w-full max-w-4xl">
+        <div className="mx-auto flex h-full max-w-xl flex-col gap-8 lg:max-w-none">
+          <div className="flex flex-col gap-4">
+            <h1 className="text-balance font-display text-[2.6rem] font-extrabold leading-[0.95] tracking-[-0.02em] [font-stretch:125%] sm:text-5xl">
+              Ask why your profit <span className="text-flare">moved.</span>
+            </h1>
+            <p className="text-lg leading-relaxed text-desk-muted">
+              Becuz checks your till, bank, supplier invoices and expenses, and prints the receipts behind every cause.
+            </p>
+          </div>
           <Composer
             running={phase.kind === "running"}
             showScenario={sample}
@@ -112,26 +126,18 @@ export function InvestigationApp() {
             note={note}
             onSubmit={run}
           />
+          <p className="mt-auto border-t border-desk-line pt-5 text-sm text-desk-muted">
+            Synthetic data. Findings show correlation, not proven causation.
+          </p>
         </div>
-      </section>
+      </aside>
 
-      {/* Main scrolling investigation pane */}
-      <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8 sm:px-8">
-        {phase.kind === "idle" && <EmptyState />}
-
-        {phase.kind === "running" && (
-          <div className="mx-auto w-full max-w-2xl py-4">
-            <LiveTrace events={phase.events} busy />
-          </div>
-        )}
-
-        {phase.kind === "done" && (
-          <Report
-            data={phase.data}
-            events={phase.events}
-            onReset={() => setPhase({ kind: "idle" })}
-          />
-        )}
+      <main ref={pane} aria-label="Receipt" className="dot-bg scroll-mt-2 lg:overflow-y-auto">
+        <div className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-8 lg:py-10">
+          {(phase.kind === "idle" || phase.kind === "error") && <EmptyState />}
+          {phase.kind === "running" && <LiveTrace events={phase.events} busy />}
+          {phase.kind === "done" && <Report data={phase.data} events={phase.events} />}
+        </div>
       </main>
     </div>
   );

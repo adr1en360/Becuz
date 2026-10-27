@@ -400,6 +400,13 @@
 }
 
 
+/* The investigate page's receipt pane: the ledger dot grid, scrolling with the receipt. */
+.dot-bg {
+  background-image: radial-gradient(rgb(247 245 239 / 0.07) 1px, transparent 1.4px);
+  background-size: 26px 26px;
+  background-attachment: local;
+}
+
 /* Landing backdrop: a ledger dot grid with naira flowing along a few lines. */
 .ledger-grid {
   background-image: radial-gradient(rgb(247 245 239 / 0.1) 1px, transparent 1.4px);
