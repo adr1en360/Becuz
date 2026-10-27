@@ -104,17 +104,17 @@ export function InvestigationApp() {
           : "Becuz reads your records and never changes them.";
 
   return (
-    <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(0,27rem)_minmax(0,1fr)] xl:grid-cols-[minmax(0,30rem)_minmax(0,1fr)]">
+    <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(0,27rem)_minmax(0,1fr)] xl:grid-cols-[minmax(0,32rem)_minmax(0,1fr)] 2xl:grid-cols-[minmax(0,34rem)_minmax(0,1fr)]">
       <aside
         aria-label="Investigation setup"
         className="border-b border-desk-line px-4 py-6 sm:px-8 lg:overflow-y-auto lg:border-b-0 lg:border-r lg:py-8 lg:[@media(max-height:760px)]:py-4 print:hidden"
       >
-        <div className="mx-auto flex max-w-xl flex-col gap-6 lg:max-w-none lg:[@media(max-height:760px)]:gap-4">
+        <div className="mx-auto flex max-w-xl flex-col gap-6 lg:max-w-none lg:gap-[clamp(0.9rem,2.4vh,2rem)]">
           <div className="flex flex-col gap-2">
-            <h1 className="text-balance font-display text-4xl font-extrabold leading-[0.95] tracking-[-0.02em] [font-stretch:125%] lg:[@media(max-height:760px)]:text-3xl">
+            <h1 className="text-balance font-display text-4xl font-extrabold leading-[0.95] tracking-[-0.02em] [font-stretch:125%] lg:[@media(max-height:760px)]:text-3xl lg:[@media(min-height:930px)]:text-[2.75rem]">
               Ask why your profit <span className="text-flare">moved.</span>
             </h1>
-            <p className="text-desk-muted [@media(max-height:700px)]:hidden">
+            <p className="text-desk-muted [@media(max-height:700px)]:hidden lg:[@media(min-height:930px)]:mt-2 lg:[@media(min-height:930px)]:text-lg">
               Answers from your till, bank, invoices and expenses, with the records behind them.
             </p>
           </div>
