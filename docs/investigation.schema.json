@@ -313,7 +313,7 @@
           "type": "string"
         },
         "counterfactual_ngn": {
-          "description": "This week's profit without this cause: headline.current_ngn - impact_ngn",
+          "description": "This period's profit without this cause: headline.current_ngn - impact_ngn",
           "title": "Counterfactual Ngn",
           "type": "number"
         }

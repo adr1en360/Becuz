@@ -42,6 +42,9 @@ never computes or changes a number.
 
 ## 2. Agents
 
+![How Becuz answers a question](docs/diagrams/architecture-plain.svg)
+
+
 Four agents share one LangGraph state. The claims themselves live in a shared World Model, so every
 agent sees the same claims and every status change is kept.
 
@@ -97,7 +100,7 @@ Nightshift receipt ID.
 
 | Agent | Nemotron model | What it does | Calls per run |
 |---|---|---|---|
-| Checker | `nvidia/nemotron-3.5-lightning-30b-a3b` (Nightshift Race lane) | Rates the evidence for each supported or rejected claim and writes a note for the owner | One per tested cause (6 on `s01`) |
+| Checker | `nvidia/nemotron-3.5-lightning-30b-a3b` (asked for as `meterless/judge`; both Nightshift lanes run it) | Rates the evidence for each supported or rejected claim and writes a note for the owner | One per tested cause on why-questions (6 on `s01`), plus retries; none on direct answers |
 | Planner, Investigator, Writer | none | SQL only; they never call a model | 0 |
 
 Both Nightshift lanes (Race and Judge) run Nemotron 3.5 Lightning. **Receipts:**
@@ -174,8 +177,9 @@ Fill in `.env`, which is in `.gitignore`.
    - a **Race** lane with `nvidia/nemotron-3.5-lightning-30b-a3b` (for example the job "Extract structured
      data"). It answers the Checker's ratings. Without any lane, Nightshift falls back to its own routing
      and ignores the model Becuz asks for.
-   - a **Judge** lane with `nvidia/nemotron-3-ultra-550b-a55b` ("Score different answers"). Nightshift
-     keeps one non-racing judge in every setup.
+   - a **Judge** lane with the same `nvidia/nemotron-3.5-lightning-30b-a3b` ("Score different answers").
+     Nightshift keeps one non-racing judge in every setup; Becuz asks for `meterless/judge`, and on
+     27 Oct both lanes answered with Lightning, so we seat Lightning in both.
 2. **Shop data in S3.** Upload one scenario's CSVs to `s3://<bucket>/becuz/<scenario>/`, without
    `answer_key.json`:
 
@@ -206,8 +210,8 @@ uv run python smoke.py
 ```text
 config   PASS  zetaris=ok nightshift=ok
 zetaris  PASS  daily_pnl up to 2026-10-18 via=zetaris
-model    PASS  via=nightshift model=nvidia/nemotron-3-ultra-550b-a55b
-agent    PASS  sample s01: 4 cause(s) supported
+model    PASS  via=nightshift model=nvidia/nemotron-3.5-lightning-30b-a3b
+agent    PASS  sample s01: 3 cause(s) supported
 ```
 
 ## 7. Usage
@@ -334,6 +338,10 @@ If a remembered cause does not happen again, its memory loses confidence and is 
 | `input_examples/example_1.json` | `s01`: three planted profit causes and missing transfers | 3 profit causes and an ₦18,200 cash gap; fewer items sold and POS charges ruled out |
 | `input_examples/example_2.json` | `s04`: missing transfers only | Profit did not fall, but ₦25,670 in transfers never reached the bank; every profit cause ruled out |
 | `input_examples/example_3.json` | `s05`: nothing wrong | Nothing to fix; every cause ruled out |
+| `input_examples/example_4.json` | `s01`, a direct question: "What sold the most?" | Mama Gold Rice 5kg, ₦352,800 from 36 units; no investigation, no model call |
+| `input_examples/example_5.json` | `s01` over 14 days | Profit ₦78,611 below usual; the same 3 causes |
+| `input_examples/example_4.json` | `s01`, a direct question: "What sold the most?" | Mama Gold Rice 5kg, ₦352,800 from 36 units; no investigation, no model call |
+| `input_examples/example_5.json` | `s01` over 14 days | Profit ₦78,611 below usual; the same 3 causes |
 
 Each output and its trace are in `output_examples/`, saved from real sample-mode runs. The live run of
 `s01` through Zetaris and Nightshift is saved too (`live_s01_*`, 27 Oct): it returned the same findings and
@@ -398,6 +406,10 @@ It adds a `model_receipt` line for each signed request.
 
 All shop data is synthetic, generated from a fixed seed by `data/generator.py`. No real shop, customer
 or bank data is used. See `data/README.md` for the five scenarios.
+
+**Uploads of any shape (offline preparation, not part of a live run yet).** `uv run python -m becuz.ingest <upload_dir> <out_dir>` maps a shop's own CSV exports, whatever their file and column names, onto the records Becuz uses. It blocks the mapping when the figures do not reconcile or a payment type is unknown, and says which records are missing. `data/uploads/s06` is a test upload; `tests/test_ingest.py` covers it.
+
+**Uploads of any shape (offline preparation, not part of a live run yet).** `uv run python -m becuz.ingest <upload_dir> <out_dir>` reads a shop's own CSV exports, whatever their file and column names, maps them onto the records Becuz uses, and writes them in the shape `data/scenarios` uses. It blocks the mapping when the figures do not reconcile (for example, sale lines that do not add up to the sale) or when a payment type is unknown, and says which records are missing. `data/uploads/s06` is a test upload with different names and no stock file; `tests/test_ingest.py` covers it.
 
 ## 13. Configuration
 
