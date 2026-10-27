@@ -3,7 +3,7 @@
 The owner-facing UI for Becuz. It renders the Investigation JSON returned by the agent. It computes nothing and shows no invented data.
 
 ```bash
-npm install
+npm ci
 npm run dev      # http://localhost:3000
 # / is the landing page, /investigate is the investigation flow
 npm run build

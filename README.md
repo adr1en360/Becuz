@@ -77,11 +77,12 @@ This runs the whole investigation on the bundled synthetic shop and prints the r
 
 ```bash
 SAMPLE_MODE=1 uv run python server.py     # terminal 1: the agent on http://127.0.0.1:8000
-cd web && npm install && npm run dev      # terminal 2: the web app on http://localhost:3000
+cd web && npm ci && npm run dev           # terminal 2: the web app on http://localhost:3000
 ```
 
 On Windows, set `$env:SAMPLE_MODE = "1"` first, then run `uv run python server.py`. Open
-<http://localhost:3000> and choose **Investigate**.
+<http://localhost:3000> and choose **Investigate**. If `npm run build` ever says Turbopack has no native bindings, npm
+skipped the compiler for your platform: delete `web/node_modules` and run `npm ci` again.
 
 **Or use Docker** (sample mode only):
 
@@ -161,7 +162,15 @@ same claims and every status change is kept.
 ### Zetaris: where the shop's data is joined and checked
 
 The four sources (POS, bank, books and context) are CSV files in S3, registered as Lightning databases. A Unified
-Semantic Layer (USL) named `becuz` declares the shop's 12 tables and their keys. Two of them do work inside Zetaris:
+Semantic Layer (USL) named `becuz` declares the shop's 12 tables and their keys.
+
+**How the table counts fit together:** the 4 sources hold 11 files. The USL declares 12 tables: 10 mapped onto those
+files (`products`, `staff`, `sales`, `sale_lines`, `promos`, `stock_movements`, `bank_statement`, `supplier_invoices`,
+`expenses` from `expense_book`, and `fx_rates`) plus the 2 tables computed inside Zetaris below. The eleventh file,
+`calendar`, is read only inside `daily_pnl` as its list of days. Scout Intent then lets an investigation read 10 of
+the 12: the 2 computed tables and 8 source tables; `staff` and `fx_rates` are never read by the agent.
+
+Two of the USL tables do work inside Zetaris:
 
 - `daily_pnl` computes the profit tree for each day: sales minus cost of goods, wastage and expenses. It also keeps
   the day's missing transfers in their own column, outside profit.
@@ -195,7 +204,7 @@ receipts.
 
 | Engine | Feature it powers | How it works in Becuz | Test result |
 |---|---|---|---|
-| **Scout Intent** | Every question is scoped before any data is read, and off-topic questions are refused | Turns the question into a signed contract: one of 5 intents (the investigation, or a direct answer for top sellers, totals, expenses or missing money), the 10 tables the agent may read, a budget of 80 queries and a 5-minute expiry. Every query passes through it | 12 tests pass (the rules in its spec; it has no conformance suite) |
+| **Scout Intent** | Every question is scoped before any data is read, and off-topic questions are refused | Turns the question into a signed contract: one of 5 intents (the investigation, or a direct answer for top sellers, totals, expenses or missing money), the 10 USL tables the agent may read (see [how the table counts fit together](#zetaris-where-the-shops-data-is-joined-and-checked)), a budget of 80 queries and a 5-minute expiry. Every query passes through it | 12 tests pass (the rules in its spec; it has no conformance suite) |
 | **World Model** | The ruled-out list: the owner sees what was tested and rejected, and why | The shared list of claims. Each verdict is a new status edge, so a claim's full history is kept | 10 tests pass (ported Meterless conformance cases) |
 | **H-MEM** | “This was right”: confirmed causes are checked first next time, and the report says whether they held | Remembers causes the owner confirmed and how they were found; a memory that fails loses confidence and is flagged | 9 tests pass (ported conformance cases) |
 | **Markovian** | Nemotron's rating of every tested cause, at a steady cost | Runs the Checker's model calls as a chain. Each call carries one short summary of earlier verdicts instead of the whole history, so every call stays the same size | 18 tests pass (ported conformance cases) |
@@ -378,7 +387,7 @@ Fill in `.env`, which is in `.gitignore`.
 
    ```bash
    uv run python -m scripts.zetaris_setup s01            # dry run
-   uv run python -m scripts.zetaris_setup s01 --apply    # register the 4 sources and 10 tables
+   uv run python -m scripts.zetaris_setup s01 --apply    # register the 4 sources and their 11 files
    uv run python -m scripts.zetaris_usl --apply          # build the becuz USL and its data-quality rule
    ```
 
