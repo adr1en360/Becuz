@@ -6,6 +6,7 @@ import { PrinterMinimalisticIcon } from "@solar-icons/react/outline";
 import { Barcode } from "@/components/barcode";
 import { demo } from "@/lib/demo-report";
 import { formatNaira, formatRange } from "@/lib/format";
+import { useSeen } from "@/lib/use-seen";
 import { Figure } from "./figure";
 import { HeroBars } from "./hero-bars";
 import { Tilt } from "./tilt";
@@ -21,10 +22,12 @@ const row = (n: number) => 1010 + n * 110;
 // replays it. Every figure comes from the saved run.
 export function HeroReceipt() {
   const [copy, setCopy] = useState(0);
+  // Held at its first frame until it scrolls into view, so the printing is seen, not missed.
+  const [ref, seen] = useSeen<HTMLDivElement>(0.25);
   const checked = 2300;
 
   return (
-    <div className="flex flex-col items-center gap-3 lg:items-end">
+    <div ref={ref} data-play={seen} className="flex flex-col items-center gap-3">
       <Tilt className="relative w-full">
         <div aria-hidden className="relative z-10 h-4 rounded-full border border-desk-line bg-desk-2" />
         <div key={copy} className="receipt slot paper print-slow relative -mt-2 px-6 pb-6 pt-6 sm:px-7">
@@ -56,7 +59,7 @@ export function HeroReceipt() {
             )}
           </p>
 
-          <div className="row-in lg:[@media(max-height:780px)]:hidden" style={at(720)}>
+          <div className="row-in" style={at(720)}>
             <HeroBars />
           </div>
 
@@ -110,7 +113,7 @@ export function HeroReceipt() {
       <button
         type="button"
         onClick={() => setCopy((n) => n + 1)}
-        className="inline-flex h-9 items-center gap-2 rounded-full border border-desk-line px-4 text-sm lg:[@media(max-height:780px)]:hidden font-semibold text-desk-muted transition-[color,border-color,transform] duration-150 hover:border-paper hover:text-paper active:scale-[0.97]"
+        className="inline-flex h-9 items-center gap-2 rounded-full border border-desk-line px-4 text-sm font-semibold text-desk-muted transition-[color,border-color,transform] duration-150 hover:border-paper hover:text-paper active:scale-[0.97]"
       >
         <PrinterMinimalisticIcon size={16} aria-hidden />
         Print it again

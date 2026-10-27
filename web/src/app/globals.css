@@ -400,6 +400,121 @@
 }
 
 
+/* Landing backdrop: a ledger dot grid with naira flowing along a few lines. */
+.ledger-grid {
+  background-image: radial-gradient(rgb(247 245 239 / 0.1) 1px, transparent 1.4px);
+  background-size: 26px 26px;
+  mask-image: radial-gradient(ellipse 75% 65% at 65% 40%, #000 25%, transparent 78%);
+}
+
+.flow-path {
+  fill: none;
+  stroke: var(--color-flare);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-dasharray: 1 13;
+  opacity: 0.45;
+  animation: flow-dots 2.8s linear infinite;
+}
+
+@keyframes flow-dots {
+  to {
+    stroke-dashoffset: -56;
+  }
+}
+
+.flow-pulse {
+  fill: none;
+  stroke: var(--color-flare);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 70 930;
+  stroke-dashoffset: 1000;
+  animation: flow-pulse 5.5s var(--ease-out) infinite;
+}
+
+@keyframes flow-pulse {
+  0% {
+    stroke-dashoffset: 1000;
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.9;
+  }
+  80% {
+    opacity: 0.9;
+  }
+  100% {
+    stroke-dashoffset: -70;
+    opacity: 0;
+  }
+}
+
+/* Hero bridge chart: rows slide in, bars grow from the level before them. */
+.bridge-row {
+  opacity: 0;
+  transform: translateX(28px);
+  transition:
+    opacity 600ms var(--ease-out),
+    transform 600ms var(--ease-out);
+  transition-delay: var(--d, 0ms);
+}
+
+[data-seen="true"] .bridge-row {
+  opacity: 1;
+  transform: none;
+}
+
+.bridge-bar {
+  transform: scaleX(0);
+  transition: transform 800ms var(--ease-out);
+  transition-delay: var(--d, 0ms);
+}
+
+[data-seen="true"] .bridge-bar {
+  transform: scaleX(1);
+}
+
+/* Records strip. */
+.marquee {
+  animation: marquee 60s linear infinite;
+}
+
+.marquee-mask:hover .marquee {
+  animation-play-state: paused;
+}
+
+.marquee-mask {
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Step numbers drawn as outlines. */
+.outline-num {
+  color: transparent;
+  -webkit-text-stroke: 2px var(--color-flare);
+}
+
+/* Side reveals for alternating content. */
+[data-reveal="hidden"][data-from="left"] {
+  transform: translateX(-56px);
+}
+
+[data-reveal="hidden"][data-from="right"] {
+  transform: translateX(56px);
+}
+
+/* The proof receipt waits at its first frame until it is on screen. */
+[data-play="false"],
+[data-play="false"] * {
+  animation-play-state: paused !important;
+}
+
 /* Landing page: a short load sequence, one-shot scroll reveals, and a lift on hover-capable devices. */
 .rise {
   animation: rise 450ms var(--ease-out) both;
@@ -453,8 +568,26 @@
   }
 
   .print-slow,
-  .scan {
+  .scan,
+  .flow-path,
+  .flow-pulse,
+  .marquee {
     animation: none;
+  }
+
+  .flow-pulse {
+    opacity: 0;
+  }
+
+  .bridge-row,
+  .bridge-bar {
+    transform: none;
+    transition: opacity 250ms ease;
+  }
+
+  [data-reveal="hidden"][data-from="left"],
+  [data-reveal="hidden"][data-from="right"] {
+    transform: none;
   }
 
   .strike {

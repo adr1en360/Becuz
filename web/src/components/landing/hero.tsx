@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { ArrowRightIcon, DatabaseIcon } from "@solar-icons/react/outline";
+import { Backdrop } from "./backdrop";
 import { primaryButton, secondaryButton } from "./buttons";
-import { HeroReceipt } from "./hero-receipt";
+import { HeroBridge } from "./hero-bridge";
+import { Tilt } from "./tilt";
 
 const delay = (ms: number) => ({ "--d": `${ms}ms` }) as React.CSSProperties;
 const lines = [
@@ -11,58 +13,65 @@ const lines = [
 
 export function Hero() {
   return (
-    <section aria-labelledby="hero" className="mx-auto flex w-full max-w-6xl items-center px-4 pb-20 pt-24 sm:px-8 lg:min-h-[100svh] lg:pb-8 lg:pt-20">
-      <div className="grid w-full items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] lg:gap-x-14">
-        <div className="flex flex-col gap-6 lg:[@media(max-height:780px)]:gap-4">
-          <p style={delay(0)} className="rise inline-flex w-fit items-center gap-2 rounded-full border border-desk-line px-3 py-1 text-xs font-semibold text-flare">
-            <span className="size-2 rounded-full bg-flare" aria-hidden />
-            Track 2, The Agent That Can Explain Why
-          </p>
+    <section aria-labelledby="hero" className="relative isolate overflow-hidden">
+      <Backdrop />
+      <div className="relative mx-auto flex w-full max-w-6xl items-center px-4 pb-20 pt-24 sm:px-8 lg:min-h-[100svh] lg:pb-10 lg:pt-20">
+        <div className="grid w-full grid-cols-[minmax(0,1fr)] items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,29rem)] lg:gap-x-14">
+          <div className="flex flex-col gap-6 lg:[@media(max-height:780px)]:gap-4">
+            <p style={delay(0)} className="rise inline-flex w-fit items-center gap-2 rounded-full border border-desk-line bg-desk px-3 py-1 text-xs font-semibold text-flare">
+              <span className="size-2 rounded-full bg-flare" aria-hidden />
+              Track 2, The Agent That Can Explain Why
+            </p>
 
-          <div className="hero-title">
-            <h1
-              id="hero"
-              className="font-display text-[3.4rem] font-extrabold leading-[0.88] tracking-[-0.035em] [font-stretch:120%] sm:text-8xl lg:text-[5.5rem] lg:[font-stretch:105%] xl:text-[6.25rem] lg:[@media(max-height:780px)]:text-[4.25rem]"
-            >
-              {lines.map((line, l) => (
-                <span key={l} className="block">
-                  {line.map((word, w) => (
-                    <span key={word}>
-                      <span className="mask">
-                        <span className={`word ${word === "moved." ? "text-flare" : ""}`} style={delay(80 + (l * 3 + w) * 70)}>
-                          {word}
-                        </span>
-                      </span>{" "}
-                    </span>
-                  ))}
-                </span>
-              ))}
-            </h1>
+            <div className="hero-title">
+              <h1
+                id="hero"
+                className="font-display text-[3.4rem] font-extrabold leading-[0.88] tracking-[-0.035em] [font-stretch:120%] sm:text-8xl lg:text-[5.5rem] lg:[font-stretch:105%] xl:text-[6.25rem] lg:[@media(max-height:780px)]:text-[4.25rem]"
+              >
+                {lines.map((line, l) => (
+                  <span key={l} className="block">
+                    {line.map((word, w) => (
+                      <span key={word}>
+                        <span className="mask">
+                          <span className={`word ${word === "moved." ? "text-flare" : ""}`} style={delay(80 + (l * 3 + w) * 70)}>
+                            {word}
+                          </span>
+                        </span>{" "}
+                      </span>
+                    ))}
+                  </span>
+                ))}
+              </h1>
+            </div>
+
+            <p style={delay(420)} className="rise max-w-md text-lg leading-relaxed text-desk-muted">
+              Becuz checks your sales, bank, supplier and expense records and tells you why, with the records behind every
+              cause.
+            </p>
+
+            <div style={delay(520)} className="rise flex flex-wrap items-center gap-3">
+              <Link href="/investigate" className={primaryButton}>
+                Investigate
+                <ArrowRightIcon size={18} aria-hidden />
+              </Link>
+              <a href="#how-it-works" className={secondaryButton}>
+                See how it works
+              </a>
+            </div>
+
+            <p style={delay(620)} className="rise flex flex-wrap items-center gap-2 border-t border-desk-line pt-5 font-mono text-xs text-desk-muted">
+              <DatabaseIcon size={14} className="text-flare" aria-hidden />
+              Zetaris data layer, Meterless Nightshift, NVIDIA Nemotron
+            </p>
           </div>
 
-          <p style={delay(420)} className="rise max-w-md text-lg leading-relaxed text-desk-muted">
-            Becuz checks your sales, bank, supplier and expense records and tells you why, with the records behind every
-            cause.
-          </p>
-
-          <div style={delay(520)} className="rise flex flex-wrap items-center gap-3">
-            <Link href="/investigate" className={primaryButton}>
-              Investigate
-              <ArrowRightIcon size={18} aria-hidden />
-            </Link>
-            <a href="#how-it-works" className={secondaryButton}>
-              See how it works
-            </a>
+          <div className="hero-receipt mx-auto w-full max-w-[29rem] lg:mx-0">
+            <div style={delay(250)} className="rise">
+              <Tilt>
+                <HeroBridge />
+              </Tilt>
+            </div>
           </div>
-
-          <p style={delay(620)} className="rise flex flex-wrap items-center gap-2 border-t border-desk-line pt-5 font-mono text-xs text-desk-muted">
-            <DatabaseIcon size={14} className="text-flare" aria-hidden />
-            Zetaris data layer, Meterless Nightshift, NVIDIA Nemotron
-          </p>
-        </div>
-
-        <div className="hero-receipt mx-auto w-full max-w-[30rem] lg:mx-0">
-          <HeroReceipt />
         </div>
       </div>
     </section>
