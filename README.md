@@ -42,6 +42,9 @@ never computes or changes a number.
 
 ## 2. Agents
 
+![How Becuz answers a question](docs/diagrams/architecture-plain.svg)
+
+
 Four agents share one LangGraph state. The claims themselves live in a shared World Model, so every
 agent sees the same claims and every status change is kept.
 
@@ -97,7 +100,7 @@ Nightshift receipt ID.
 
 | Agent | Nemotron model | What it does | Calls per run |
 |---|---|---|---|
-| Checker | `nvidia/nemotron-3.5-lightning-30b-a3b` (Nightshift Race lane) | Rates the evidence for each supported or rejected claim and writes a note for the owner | One per tested cause (6 on `s01`) |
+| Checker | `nvidia/nemotron-3.5-lightning-30b-a3b` (asked for as `meterless/judge`; both Nightshift lanes run it) | Rates the evidence for each supported or rejected claim and writes a note for the owner | One per tested cause on why-questions (6 on `s01`), plus retries; none on direct answers |
 | Planner, Investigator, Writer | none | SQL only; they never call a model | 0 |
 
 Both Nightshift lanes (Race and Judge) run Nemotron 3.5 Lightning. **Receipts:**
@@ -174,8 +177,9 @@ Fill in `.env`, which is in `.gitignore`.
    - a **Race** lane with `nvidia/nemotron-3.5-lightning-30b-a3b` (for example the job "Extract structured
      data"). It answers the Checker's ratings. Without any lane, Nightshift falls back to its own routing
      and ignores the model Becuz asks for.
-   - a **Judge** lane with `nvidia/nemotron-3-ultra-550b-a55b` ("Score different answers"). Nightshift
-     keeps one non-racing judge in every setup.
+   - a **Judge** lane with the same `nvidia/nemotron-3.5-lightning-30b-a3b` ("Score different answers").
+     Nightshift keeps one non-racing judge in every setup; Becuz asks for `meterless/judge`, and on
+     27 Oct both lanes answered with Lightning, so we seat Lightning in both.
 2. **Shop data in S3.** Upload one scenario's CSVs to `s3://<bucket>/becuz/<scenario>/`, without
    `answer_key.json`:
 
@@ -206,8 +210,8 @@ uv run python smoke.py
 ```text
 config   PASS  zetaris=ok nightshift=ok
 zetaris  PASS  daily_pnl up to 2026-10-18 via=zetaris
-model    PASS  via=nightshift model=nvidia/nemotron-3-ultra-550b-a55b
-agent    PASS  sample s01: 4 cause(s) supported
+model    PASS  via=nightshift model=nvidia/nemotron-3.5-lightning-30b-a3b
+agent    PASS  sample s01: 3 cause(s) supported
 ```
 
 ## 7. Usage

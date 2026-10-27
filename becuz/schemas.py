@@ -128,7 +128,7 @@ class Cause(Finding):
     rank: int = Field(ge=1, description="1 = largest effect")
     origin: Literal["internal", "external"]
     nature: Literal["actionable", "temporary"]
-    counterfactual_ngn: float = Field(description="This week's profit without this cause: headline.current_ngn - impact_ngn")
+    counterfactual_ngn: float = Field(description="This period's profit without this cause: headline.current_ngn - impact_ngn")
 
 
 class CashGap(Finding):

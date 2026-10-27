@@ -131,7 +131,7 @@ export type Rank = number;
 export type Origin = "internal" | "external";
 export type Nature = "actionable" | "temporary";
 /**
- * This week's profit without this cause: headline.current_ngn - impact_ngn
+ * This period's profit without this cause: headline.current_ngn - impact_ngn
  */
 export type CounterfactualNgn = number;
 export type Causes = Cause[];

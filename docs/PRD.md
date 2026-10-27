@@ -77,7 +77,7 @@ Becuz is **not** a dashboard, a chat window over SQL, or a forecaster. It never 
 
 ## 4. Data contract
 
-All data is **synthetic**: a seeded generator builds 8 weeks of shop history, and causes are planted in the final week. It is labelled as synthetic everywhere. It is input data for the agent, never a substitute for its output.
+All data is **synthetic**: a seeded generator builds 26 weeks of shop history, and causes are planted in the final week. It is labelled as synthetic everywhere. It is input data for the agent, never a substitute for its output.
 
 Four logical sources, stored as CSV in S3 and registered in Zetaris:
 
