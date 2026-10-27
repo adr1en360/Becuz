@@ -16,27 +16,33 @@ ran, the record IDs it found, and a second agent's independent re-run of that SQ
 SQL computes every naira figure. The model only rates the evidence and writes a note for the owner. It never
 computes or changes a number.
 
+### What the owner sees
+
+> **“Why is my profit down?”**
+>
+> Profit in these 7 days was **₦223,451**, which is **₦83,273 less** than usual (₦306,724).
+>
+> - A supplier raised the unit cost of a product. This cost you **₦45,408**.
+> - More stock expired or was damaged than usual. This cost you **₦25,152**.
+> - A discount kept running after the promo ended. This cost you **₦14,175**.
+> - **Missing, not lost:** ₦18,200 from 6 transfer sales was recorded at the till but never reached the bank.
+>
+> Ruled out: fewer items sold, a higher POS fee. Each line opens to its records and the second check.
+
+<sub>From `output_examples/example_1_output.json`, test shop s01. The live run of 27 Oct gave the same figures.</sub>
+
+**At a glance:** 8 of 8 planted causes found and 6 of 6 red herrings ruled out on five test weeks · four agents that
+check each other · all four Meterless engines in real features · 215 tests pass offline · a sample run takes about a
+second.
+
 ## Contents
 
-1. [Quick start](#quick-start)
-2. [The problem](#the-problem)
-3. [What Becuz returns](#what-becuz-returns)
-4. [How it works](#how-it-works)
-5. [Sponsor technology](#sponsor-technology)
-6. [Web interface](#web-interface)
-7. [API](#api)
-8. [Live mode setup](#live-mode-setup)
-9. [Examples and results](#examples-and-results)
-10. [Source reliability and failure handling](#source-reliability-and-failure-handling)
-11. [Logs and receipts](#logs-and-receipts)
-12. [Safety](#safety)
-13. [Data](#data)
-14. [Configuration](#configuration)
-15. [Tests](#tests)
-16. [Tech stack](#tech-stack)
-17. [AI and model usage](#ai-and-model-usage)
-18. [Limitations](#limitations)
-19. [Team and license](#team-and-license)
+[Quick start](#quick-start) · [The problem](#the-problem) · [What Becuz returns](#what-becuz-returns) ·
+[How it works](#how-it-works) · [Sponsor technology](#sponsor-technology) · [Web interface](#web-interface) ·
+[API](#api) · [Live mode setup](#live-mode-setup) · [Examples and results](#examples-and-results) ·
+[Source reliability](#source-reliability-and-failure-handling) · [Logs](#logs-and-receipts) · [Safety](#safety) ·
+[Data](#data) · [Configuration](#configuration) · [Tests](#tests) · [Tech stack](#tech-stack) ·
+[AI and model usage](#ai-and-model-usage) · [Limitations](#limitations) · [Team and license](#team-and-license)
 
 ## Quick start
 
@@ -187,14 +193,14 @@ receipts.
 
 ### Four Meterless engines, implemented in `becuz/engines/`
 
-| Engine | What it does in Becuz | Log |
-|---|---|---|
-| Scout Intent | Turns the question into a signed contract: one of 5 intents (the investigation, or a direct answer for top sellers, totals, expenses or missing money), the 10 tables the agent may read, a budget of 80 queries, and a 5-minute expiry. Every query passes through the contract | `logs/scout.jsonl` |
-| World Model | The shared list of claims. Each verdict is a new status edge, so a claim's full history is kept | `logs/world.jsonl` |
-| H-MEM | Remembers causes the owner confirmed and how they were found. They are recalled and tested first in later runs | `logs/hmem.json`, `logs/hmem.jsonl` |
-| Markovian | Runs the Checker's model calls as a chain. Each call carries one short summary of earlier verdicts instead of the whole history, so every call stays the same size | `logs/markovian.jsonl` |
+| Engine | Feature it powers | How it works in Becuz | Test result |
+|---|---|---|---|
+| **Scout Intent** | Every question is scoped before any data is read, and off-topic questions are refused | Turns the question into a signed contract: one of 5 intents (the investigation, or a direct answer for top sellers, totals, expenses or missing money), the 10 tables the agent may read, a budget of 80 queries and a 5-minute expiry. Every query passes through it | 12 tests pass (the rules in its spec; it has no conformance suite) |
+| **World Model** | The ruled-out list: the owner sees what was tested and rejected, and why | The shared list of claims. Each verdict is a new status edge, so a claim's full history is kept | 10 tests pass (ported Meterless conformance cases) |
+| **H-MEM** | “This was right”: confirmed causes are checked first next time, and the report says whether they held | Remembers causes the owner confirmed and how they were found; a memory that fails loses confidence and is flagged | 9 tests pass (ported conformance cases) |
+| **Markovian** | Nemotron's rating of every tested cause, at a steady cost | Runs the Checker's model calls as a chain. Each call carries one short summary of earlier verdicts instead of the whole history, so every call stays the same size | 18 tests pass (ported conformance cases) |
 
-Each engine has its own tests in `tests/` (see [Tests](#tests)).
+Engine logs: `logs/scout.jsonl`, `logs/world.jsonl`, `logs/hmem.json` and `logs/hmem.jsonl`, `logs/markovian.jsonl`.
 
 ### What makes our sponsor use different
 
@@ -607,7 +613,7 @@ For the web app: `cd web && npm run lint && npm run build`.
 **Sponsor technology:** see [Sponsor technology](#sponsor-technology) for Zetaris, the four Meterless engines (each with
 its tests in `tests/`), Nightshift and NVIDIA Nemotron.
 
-**Development tools:** built with Claude Code and Antigravity. Cursor was not used, and we are not entering the Cursor award. AI-assisted coding was used for scaffolding, debugging,
+**Development tools:** we started with Cursor for an early planning pass, then switched to Claude Code and the Antigravity IDE for the build. We are not entering the Cursor award. AI-assisted coding was used for scaffolding, debugging,
 tests, the web interface and documentation. All generated code was reviewed and tested by the team.
 
 **External libraries:** LangGraph, Pydantic, DuckDB and sqlglot (sample mode), and Next.js for the web interface
