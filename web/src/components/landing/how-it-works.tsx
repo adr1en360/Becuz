@@ -1,7 +1,7 @@
 import { Reveal } from "./reveal";
 
 const steps = [
-  "You ask about your week.",
+  "You ask about your shop's money, for any 1 to 28 days.",
   "Becuz checks your sales, bank, supplier and expense records through Zetaris.",
   "A second check re-runs the evidence for every cause.",
   "You get the causes, the records behind them, the causes ruled out, and one action per cause.",

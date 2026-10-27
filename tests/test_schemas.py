@@ -88,3 +88,11 @@ class SchemaTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class LandingDataTests(unittest.TestCase):
+    def test_the_landing_page_shows_the_saved_example_run(self) -> None:
+        root = Path(__file__).resolve().parent.parent
+        saved, shown = (json.loads((root / p).read_text(encoding="utf-8"))
+                        for p in ("output_examples/example_1_output.json", "web/src/data/example-s01.json"))
+        self.assertEqual(shown, saved, "copy output_examples/example_1_output.json to web/src/data/example-s01.json")

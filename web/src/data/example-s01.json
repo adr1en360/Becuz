@@ -1,0 +1,363 @@
+{
+  "run_id": "inv-1f0fc98e6f",
+  "status": "complete",
+  "errors": [],
+  "mode": "sample",
+  "synthetic": true,
+  "scenario": "s01",
+  "frame": {
+    "question": "Why is my profit down?",
+    "metric": "profit",
+    "period_start": "2026-10-12",
+    "period_end": "2026-10-18",
+    "days": 7,
+    "baseline_start": "2026-09-14",
+    "baseline_end": "2026-10-11",
+    "baseline": "the average of the 4 weeks before"
+  },
+  "headline": {
+    "current_ngn": 223450.94,
+    "baseline_ngn": 306723.56,
+    "change_ngn": -83272.62,
+    "change_pct": -27.1,
+    "direction": "down"
+  },
+  "tree": [
+    {
+      "component": "net_sales",
+      "current_ngn": 2576025.0,
+      "baseline_ngn": 2590200.0,
+      "change_ngn": -14175.0,
+      "profit_effect_ngn": -14175.0,
+      "share_of_change_pct": 17.0,
+      "status": "explained"
+    },
+    {
+      "component": "cogs",
+      "current_ngn": 2094388.0,
+      "baseline_ngn": 2048980.0,
+      "change_ngn": 45408.0,
+      "profit_effect_ngn": -45408.0,
+      "share_of_change_pct": 54.5,
+      "status": "explained"
+    },
+    {
+      "component": "wastage",
+      "current_ngn": 37928.0,
+      "baseline_ngn": 12776.0,
+      "change_ngn": 25152.0,
+      "profit_effect_ngn": -25152.0,
+      "share_of_change_pct": 30.2,
+      "status": "explained"
+    },
+    {
+      "component": "opex",
+      "current_ngn": 220258.06,
+      "baseline_ngn": 221720.44,
+      "change_ngn": -1462.38,
+      "profit_effect_ngn": 1462.38,
+      "share_of_change_pct": -1.8,
+      "status": "unexplained"
+    }
+  ],
+  "causes": [
+    {
+      "cause_id": "supplier_cost_rise",
+      "title": "A supplier raised the unit cost of a product",
+      "status": "supported",
+      "impact_ngn": -45408.0,
+      "impact_evidence_id": "ev-supplier_cost_rise",
+      "confidence": 0.7,
+      "evidence": [
+        {
+          "evidence_id": "ev-supplier_cost_rise",
+          "table": "becuz.supplier_invoices",
+          "sql": "SELECT ROUND(-COALESCE(SUM(CASE WHEN x.period_cost > x.period_qty * x.base_cost\n                                     THEN x.period_cost - x.period_qty * x.base_cost END), 0), 2) AS effect_ngn\nFROM (SELECT q.product_id,\n             SUM(CASE WHEN q.day BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN q.qty * c.unit_cost_ngn END) AS period_cost,\n             SUM(CASE WHEN q.day BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN q.qty END) AS period_qty,\n             ROUND(SUM(CASE WHEN q.day IN (DATE '2026-09-14', DATE '2026-09-15', DATE '2026-09-16', DATE '2026-09-17', DATE '2026-09-18', DATE '2026-09-19', DATE '2026-09-20', DATE '2026-09-21', DATE '2026-09-22', DATE '2026-09-23', DATE '2026-09-24', DATE '2026-09-25', DATE '2026-09-26', DATE '2026-09-27', DATE '2026-09-28', DATE '2026-09-29', DATE '2026-09-30', DATE '2026-10-01', DATE '2026-10-02', DATE '2026-10-03', DATE '2026-10-04', DATE '2026-10-05', DATE '2026-10-06', DATE '2026-10-07', DATE '2026-10-08', DATE '2026-10-09', DATE '2026-10-10', DATE '2026-10-11') THEN q.qty * c.unit_cost_ngn END)\n                   / SUM(CASE WHEN q.day IN (DATE '2026-09-14', DATE '2026-09-15', DATE '2026-09-16', DATE '2026-09-17', DATE '2026-09-18', DATE '2026-09-19', DATE '2026-09-20', DATE '2026-09-21', DATE '2026-09-22', DATE '2026-09-23', DATE '2026-09-24', DATE '2026-09-25', DATE '2026-09-26', DATE '2026-09-27', DATE '2026-09-28', DATE '2026-09-29', DATE '2026-09-30', DATE '2026-10-01', DATE '2026-10-02', DATE '2026-10-03', DATE '2026-10-04', DATE '2026-10-05', DATE '2026-10-06', DATE '2026-10-07', DATE '2026-10-08', DATE '2026-10-09', DATE '2026-10-10', DATE '2026-10-11') THEN q.qty END), 2) AS base_cost\n      FROM (SELECT CAST(s.sold_at AS DATE) AS day, l.product_id, SUM(l.qty) AS qty\n            FROM becuz.sale_lines l JOIN becuz.sales s ON s.sale_id = l.sale_id\n            WHERE CAST(s.sold_at AS DATE) BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' OR CAST(s.sold_at AS DATE) IN (DATE '2026-09-14', DATE '2026-09-15', DATE '2026-09-16', DATE '2026-09-17', DATE '2026-09-18', DATE '2026-09-19', DATE '2026-09-20', DATE '2026-09-21', DATE '2026-09-22', DATE '2026-09-23', DATE '2026-09-24', DATE '2026-09-25', DATE '2026-09-26', DATE '2026-09-27', DATE '2026-09-28', DATE '2026-09-29', DATE '2026-09-30', DATE '2026-10-01', DATE '2026-10-02', DATE '2026-10-03', DATE '2026-10-04', DATE '2026-10-05', DATE '2026-10-06', DATE '2026-10-07', DATE '2026-10-08', DATE '2026-10-09', DATE '2026-10-10', DATE '2026-10-11')\n            GROUP BY CAST(s.sold_at AS DATE), l.product_id) q\n      JOIN (SELECT p.product_id, p.invoice_date AS valid_from,\n                   COALESCE(MIN(n.invoice_date), DATE '9999-12-31') AS valid_until, p.unit_cost_ngn\n            FROM (SELECT product_id, invoice_date, AVG(unit_cost_ngn) AS unit_cost_ngn\n                  FROM becuz.supplier_invoices GROUP BY product_id, invoice_date) p\n            LEFT JOIN (SELECT DISTINCT product_id, invoice_date FROM becuz.supplier_invoices) n\n              ON n.product_id = p.product_id AND n.invoice_date > p.invoice_date\n            GROUP BY p.product_id, p.invoice_date, p.unit_cost_ngn) c\n        ON c.product_id = q.product_id AND q.day >= c.valid_from AND q.day < c.valid_until\n      GROUP BY q.product_id) x",
+          "row_ids": [
+            "INV-01158",
+            "INV-01185"
+          ],
+          "value_ngn": -45408.0,
+          "summary": "A supplier raised the unit cost of a product: -45,408",
+          "via": "local",
+          "check": {
+            "match": true,
+            "rerun_value_ngn": -45408.0,
+            "note": "The re-check matched: 45,408 naira from 2 records. 2 records back this.",
+            "model": null,
+            "via": "sample-rules",
+            "signed": false
+          }
+        }
+      ],
+      "falsified_by": [
+        {
+          "test": "unit costs on the period's invoices match the baseline",
+          "evidence_id": "ev-supplier_cost_rise",
+          "survived": true
+        }
+      ],
+      "depends_on_sources": [
+        "books_files",
+        "pos_files"
+      ],
+      "retries": 0,
+      "component": "cogs",
+      "share_of_change_pct": 54.5,
+      "rank": 1,
+      "origin": "external",
+      "nature": "actionable",
+      "counterfactual_ngn": 268858.94
+    },
+    {
+      "cause_id": "wastage_spike",
+      "title": "More stock expired or was damaged than usual",
+      "status": "supported",
+      "impact_ngn": -25152.0,
+      "impact_evidence_id": "ev-wastage_spike",
+      "confidence": 0.9,
+      "evidence": [
+        {
+          "evidence_id": "ev-wastage_spike",
+          "table": "becuz.stock_movements",
+          "sql": "SELECT ROUND(-(COALESCE(SUM(CASE WHEN CAST(moved_at AS DATE) BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN qty * unit_cost_ngn END), 0)\n                  - COALESCE(SUM(CASE WHEN CAST(moved_at AS DATE) IN (DATE '2026-09-14', DATE '2026-09-15', DATE '2026-09-16', DATE '2026-09-17', DATE '2026-09-18', DATE '2026-09-19', DATE '2026-09-20', DATE '2026-09-21', DATE '2026-09-22', DATE '2026-09-23', DATE '2026-09-24', DATE '2026-09-25', DATE '2026-09-26', DATE '2026-09-27', DATE '2026-09-28', DATE '2026-09-29', DATE '2026-09-30', DATE '2026-10-01', DATE '2026-10-02', DATE '2026-10-03', DATE '2026-10-04', DATE '2026-10-05', DATE '2026-10-06', DATE '2026-10-07', DATE '2026-10-08', DATE '2026-10-09', DATE '2026-10-10', DATE '2026-10-11') THEN qty * unit_cost_ngn END), 0) / 4), 2)\n       AS effect_ngn\nFROM becuz.stock_movements WHERE type IN ('expired', 'damaged')",
+          "row_ids": [
+            "MV-00276",
+            "MV-00277",
+            "MV-00278",
+            "MV-00279",
+            "MV-00280",
+            "MV-00281",
+            "MV-00282",
+            "MV-00283",
+            "MV-00284",
+            "MV-00285",
+            "MV-00286",
+            "MV-00287",
+            "MV-00288",
+            "MV-00289",
+            "MV-00290",
+            "MV-00291",
+            "MV-00292",
+            "MV-00293",
+            "MV-00294",
+            "MV-00295",
+            "MV-00296"
+          ],
+          "value_ngn": -25152.0,
+          "summary": "More stock expired or was damaged than usual: -25,152",
+          "via": "local",
+          "check": {
+            "match": true,
+            "rerun_value_ngn": -25152.0,
+            "note": "The re-check matched: 25,152 naira from 21 records. 21 records back this.",
+            "model": null,
+            "via": "sample-rules",
+            "signed": false
+          }
+        }
+      ],
+      "falsified_by": [
+        {
+          "test": "expired and damaged stock in the period is no higher than usual",
+          "evidence_id": "ev-wastage_spike",
+          "survived": true
+        }
+      ],
+      "depends_on_sources": [
+        "pos_files"
+      ],
+      "retries": 0,
+      "component": "wastage",
+      "share_of_change_pct": 30.2,
+      "rank": 2,
+      "origin": "internal",
+      "nature": "actionable",
+      "counterfactual_ngn": 248602.94
+    },
+    {
+      "cause_id": "promo_overrun",
+      "title": "A discount kept running after the promo ended",
+      "status": "supported",
+      "impact_ngn": -14175.0,
+      "impact_evidence_id": "ev-promo_overrun",
+      "confidence": 0.9,
+      "evidence": [
+        {
+          "evidence_id": "ev-promo_overrun",
+          "table": "becuz.sale_lines",
+          "sql": "SELECT ROUND(-COALESCE(SUM(l.discount_ngn), 0), 2) AS effect_ngn\nFROM becuz.sale_lines l JOIN becuz.sales s ON s.sale_id = l.sale_id\nJOIN becuz.promos p ON p.promo_id = l.promo_id\nWHERE CAST(s.sold_at AS DATE) BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' AND CAST(s.sold_at AS DATE) > p.end_date",
+          "row_ids": [
+            "LN-026013",
+            "LN-026167",
+            "LN-026384",
+            "LN-026472",
+            "LN-026480",
+            "LN-026619",
+            "LN-026624",
+            "LN-026690",
+            "LN-026730",
+            "LN-026821",
+            "LN-026858",
+            "LN-026913",
+            "LN-026922",
+            "LN-026979",
+            "LN-027027"
+          ],
+          "value_ngn": -14175.0,
+          "summary": "A discount kept running after the promo ended: -14,175",
+          "via": "local",
+          "check": {
+            "match": true,
+            "rerun_value_ngn": -14175.0,
+            "note": "The re-check matched: 14,175 naira from 15 records. 15 records back this.",
+            "model": null,
+            "via": "sample-rules",
+            "signed": false
+          }
+        }
+      ],
+      "falsified_by": [
+        {
+          "test": "no promo discount was given after the promo's end date",
+          "evidence_id": "ev-promo_overrun",
+          "survived": true
+        }
+      ],
+      "depends_on_sources": [
+        "pos_files"
+      ],
+      "retries": 0,
+      "component": "net_sales",
+      "share_of_change_pct": 17.0,
+      "rank": 3,
+      "origin": "internal",
+      "nature": "actionable",
+      "counterfactual_ngn": 237625.94
+    }
+  ],
+  "cash_gaps": [
+    {
+      "cause_id": "transfer_leakage",
+      "title": "Transfers recorded at the till never reached the bank",
+      "status": "supported",
+      "impact_ngn": -18200.0,
+      "impact_evidence_id": "ev-transfer_leakage",
+      "confidence": 0.9,
+      "evidence": [
+        {
+          "evidence_id": "ev-transfer_leakage",
+          "table": "becuz.transfer_check",
+          "sql": "SELECT ROUND(-COALESCE(SUM(net_ngn), 0), 2) AS effect_ngn FROM becuz.transfer_check\nWHERE bank_txn_id IS NULL AND CAST(sold_at AS DATE) BETWEEN DATE '2026-10-12' AND DATE '2026-10-18'",
+          "row_ids": [
+            "SL-10924",
+            "SL-10957",
+            "SL-11010",
+            "SL-11080",
+            "SL-11139",
+            "SL-11202"
+          ],
+          "value_ngn": -18200.0,
+          "summary": "Transfers recorded at the till never reached the bank: -18,200",
+          "via": "local",
+          "check": {
+            "match": true,
+            "rerun_value_ngn": -18200.0,
+            "note": "The re-check matched: 18,200 naira from 6 records. 6 records back this.",
+            "model": null,
+            "via": "sample-rules",
+            "signed": false
+          }
+        }
+      ],
+      "falsified_by": [
+        {
+          "test": "every transfer sale in the period has a matching bank credit",
+          "evidence_id": "ev-transfer_leakage",
+          "survived": true
+        }
+      ],
+      "depends_on_sources": [
+        "pos_files",
+        "bank_files"
+      ],
+      "retries": 0
+    }
+  ],
+  "memory": [],
+  "ruled_out": [
+    {
+      "cause_id": "sales_volume_drop",
+      "hypothesis": "Fewer items sold than usual",
+      "reason": "The records show no loss from this cause in this period.",
+      "tested_value_ngn": 0.0,
+      "evidence_id": null
+    },
+    {
+      "cause_id": "pos_charge_rise",
+      "hypothesis": "The POS terminal charged a higher fee",
+      "reason": "The records show no loss from this cause in this period.",
+      "tested_value_ngn": 0.0,
+      "evidence_id": null
+    }
+  ],
+  "not_tested": [],
+  "convergence": {
+    "explained_ngn": -84735.0,
+    "explained_pct": 101.8,
+    "unexplained_ngn": 1462.38
+  },
+  "summary": {
+    "what_happened": "Profit in these 7 days was ₦223,451, which is ₦83,273 less than usual (₦306,724).",
+    "why": [
+      "A supplier raised the unit cost of a product. This cost you ₦45,408.",
+      "More stock expired or was damaged than usual. This cost you ₦25,152.",
+      "A discount kept running after the promo ended. This cost you ₦14,175."
+    ],
+    "cash": [
+      "₦18,200 from 6 transfer sales was recorded at the till but never reached the bank. The sales still count toward your profit, but this money is missing from your account."
+    ],
+    "outcome": "Without these 3 causes, these 7 days would have made about ₦308,186, against ₦306,724 usually, and chasing the 6 missing transfers brings ₦18,200 back into your account.",
+    "what_to_do": [
+      {
+        "cause_id": "supplier_cost_rise",
+        "action": "Compare prices from other suppliers for the affected product and review its shelf price."
+      },
+      {
+        "cause_id": "wastage_spike",
+        "action": "Order perishables in smaller batches and check storage for the affected items."
+      },
+      {
+        "cause_id": "promo_overrun",
+        "action": "Switch off the expired promo at the till and check which staff applied it."
+      },
+      {
+        "cause_id": "transfer_leakage",
+        "action": "Check these transfers against the bank app with the staff who recorded them."
+      }
+    ]
+  },
+  "owner_questions": [
+    {
+      "cause_id": "transfer_leakage",
+      "question": "6 transfer sales in these 7 days have no matching payment in the bank (SL-10924, SL-10957, SL-11010, SL-11080, SL-11139, SL-11202). Can you check them with the staff who recorded them?"
+    }
+  ],
+  "limitations": [
+    "Findings show correlation, not proven causation.",
+    "The shop data is synthetic.",
+    "Sample mode: evidence ratings come from fixed rules, not a model; every number comes from SQL."
+  ],
+  "stats": {
+    "duration_s": 0.86,
+    "zetaris_queries": 27,
+    "model_calls": 0,
+    "retries": 0,
+    "models": {},
+    "via": {
+      "local": 27,
+      "sample-rules": 6
+    }
+  },
+  "trace_file": "logs/trace-inv-1f0fc98e6f.jsonl"
+}

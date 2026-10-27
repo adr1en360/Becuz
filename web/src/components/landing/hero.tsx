@@ -1,13 +1,15 @@
 import Link from "next/link";
 import { ArrowRightIcon } from "@solar-icons/react/outline";
 import { Stamp } from "@/components/stamp";
+import { demo, demoDays } from "@/lib/demo-report";
 import { primaryButton, secondaryButton } from "./buttons";
 import { Figure } from "./figure";
 import { HeroBars } from "./hero-bars";
 import { Tilt } from "./tilt";
 
 const delay = (ms: number) => ({ "--d": `${ms}ms` }) as React.CSSProperties;
-const words = ["Know", "why", "your", "profit", "moved", "this", "week."];
+const words = ["Know", "why", "your", "profit", "moved."];
+const { current_ngn, baseline_ngn, change_ngn, change_pct, direction } = demo.headline;
 
 export function Hero() {
   return (
@@ -44,21 +46,21 @@ export function Hero() {
               </div>
               <p className="mt-7 text-2xl leading-snug sm:text-[1.9rem]">
                 <span className="block">
-                  This week, profit was{" "}
+                  In these {demoDays} days, profit was{" "}
                   <span className="whitespace-nowrap">
-                    <Figure value={241717} kind="naira" />.
+                    <Figure value={current_ngn} kind="naira" />.
                   </span>
                 </span>
                 <span className="mt-3 block">
-                  A usual week is{" "}
+                  Usually it is{" "}
                   <span className="whitespace-nowrap">
-                    <Figure value={379412} kind="naira" />.
+                    <Figure value={baseline_ngn} kind="naira" />.
                   </span>
                 </span>
                 <span className="cut-line mt-6 block pt-6 font-bold text-accent">
-                  That is <Figure value={137695} kind="naira" /> less, down{" "}
+                  That is <Figure value={Math.abs(change_ngn)} kind="naira" /> {direction === "down" ? "less, down" : "more, up"}{" "}
                   <span className="whitespace-nowrap">
-                    <Figure value={36.3} kind="percent" /> percent.
+                    <Figure value={Math.abs(change_pct ?? 0)} kind="percent" /> percent.
                   </span>
                 </span>
               </p>
