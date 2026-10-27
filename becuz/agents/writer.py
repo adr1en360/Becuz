@@ -91,7 +91,8 @@ def assemble(state: InvestigationState, run: dict, world: WorldModel, judge: Jud
     explained_by = {name: sum(c["effect_ngn"] for c in causes_found if CATALOGUE[c["cause_id"]].component == name)
                     for name in effects}
     explained = sum(c["effect_ngn"] for c in causes_found)
-    errors = [f"{c['cause_id']}: {c['judgement']['error']}" for c in claims if "error" in c.get("judgement", {})]
+    # A missing model rating does not undo a SQL verdict, so the run stays complete; the raw error is in the trace.
+    unrated = sum("error" in c.get("judgement", {}) for c in claims)
 
     def evidence(claim: dict) -> dict:
         spec = CATALOGUE[claim["cause_id"]]
@@ -130,7 +131,7 @@ def assemble(state: InvestigationState, run: dict, world: WorldModel, judge: Jud
                 "up": f"Profit went up, and none of the problems Becuz checks for showed up {when}.",
                 "down": "None of the causes Becuz checked explains this drop."}[direction]]
     data = {
-        "run_id": run["run_id"], "status": "partial" if errors else "complete", "errors": errors, "mode": run["mode"], "synthetic": True, "scenario": run["scenario"],
+        "run_id": run["run_id"], "status": "complete", "errors": [], "mode": run["mode"], "synthetic": True, "scenario": run["scenario"],
         "frame": {"question": state["question"], "period_start": start, "period_end": end,
                   "days": (end - start).days + 1, "baseline_start": baseline[0], "baseline_end": baseline[-1],
                   "baseline": baseline_words(start, end)},
@@ -162,7 +163,9 @@ def assemble(state: InvestigationState, run: dict, world: WorldModel, judge: Jud
         "owner_questions": owner_questions,
         "limitations": ["Findings show correlation, not proven causation.",
                         "The shop data is synthetic.",
-                        judge.limitation],
+                        judge.limitation]
+                       + ([f"The model could not rate {unrated} of {len(claims)} causes; their SQL checks still stand."]
+                          if unrated else []),
         "stats": {"duration_s": round(time.monotonic() - run["started"], 2), "zetaris_queries": run["queries"](),
                   "model_calls": judge.calls, "retries": sum(c["retries"] for c in claims),
                   "models": dict(judge.models), "via": {run["via"]: run["queries"](), judge.via: judge.reviews}},
