@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { ArrowRightIcon } from "@solar-icons/react/outline";
-import { SAMPLE_SCENARIOS } from "@/lib/api";
+import { TEST_SHOPS } from "@/lib/shops";
 
 // Two why-questions start an investigation; the other two get a direct answer from the records.
 const SUGGESTIONS = [
@@ -31,7 +31,8 @@ const segment = (on: boolean) =>
 
 export function Composer({ running, showScenario, sampleMode = true, note, alert, onSubmit }: Props) {
   const [question, setQuestion] = useState("Why is my profit down?");
-  const [scenario, setScenario] = useState<string>(SAMPLE_SCENARIOS[0]);
+  const [scenario, setScenario] = useState<string>(TEST_SHOPS[0].id);
+  const shop = TEST_SHOPS.find((s) => s.id === scenario) ?? TEST_SHOPS[0];
   const [days, setDays] = useState(7);
   const [custom, setCustom] = useState(false);
   const [start, setStart] = useState("");
@@ -76,7 +77,7 @@ export function Composer({ running, showScenario, sampleMode = true, note, alert
         <div className="flex items-center justify-between gap-2 pl-3">
           <span className="font-mono text-xs text-desk-muted">
             {custom && start ? `from ${start}, ` : ""}
-            {days} days{showScenario ? `, shop ${scenario}` : ""}
+            {days} days{showScenario ? `, ${shop.name}` : ""}
           </span>
           <button
             type="submit"
@@ -97,7 +98,7 @@ export function Composer({ running, showScenario, sampleMode = true, note, alert
 
       <div>
         <p className={label}>Try asking</p>
-        <div className="mt-2 grid grid-cols-2 gap-2 lg:[@media(min-height:930px)]:mt-3 lg:[@media(min-height:930px)]:gap-3">
+        <div className="mt-2 flex flex-wrap gap-2 lg:[@media(min-height:930px)]:mt-3">
           {SUGGESTIONS.map((s) => (
             <button
               key={s}
@@ -107,7 +108,7 @@ export function Composer({ running, showScenario, sampleMode = true, note, alert
                 setQuestion(s);
                 box.current?.focus();
               }}
-              className={`rounded-2xl border px-3 py-2 text-left text-sm leading-snug transition-colors lg:[@media(min-height:930px)]:px-4 lg:[@media(min-height:930px)]:py-2.5 lg:[@media(min-height:930px)]:text-[0.95rem] ${
+              className={`whitespace-nowrap rounded-full border px-3.5 py-1.5 text-sm transition-colors lg:[@media(min-height:930px)]:py-2 ${
                 question === s ? "border-flare text-paper" : "border-desk-line text-desk-muted hover:border-paper/60 hover:text-paper"
               }`}
             >
@@ -166,15 +167,35 @@ export function Composer({ running, showScenario, sampleMode = true, note, alert
 
       {showScenario && (
         <div>
-          <p className={label} id="scenario-label">
+          <p className={label} id="shop-label">
             Test shop
           </p>
-          <div className="mt-2 grid grid-cols-5 rounded-full border border-desk-line p-0.5 lg:[@media(min-height:930px)]:mt-3 lg:[@media(min-height:930px)]:p-1" role="group" aria-labelledby="scenario-label">
-            {SAMPLE_SCENARIOS.map((id) => (
-              <button key={id} type="button" aria-pressed={scenario === id} onClick={() => setScenario(id)} className={segment(scenario === id)}>
-                {id}
-              </button>
-            ))}
+          <div className="mt-2 flex items-center gap-3 lg:[@media(min-height:930px)]:mt-3">
+            <div className="flex gap-2" role="group" aria-labelledby="shop-label">
+              {TEST_SHOPS.map((s) => {
+                const on = s.id === scenario;
+                return (
+                  <button
+                    key={s.id}
+                    type="button"
+                    aria-pressed={on}
+                    aria-label={`${s.name}: ${s.hint}`}
+                    title={s.name}
+                    onClick={() => setScenario(s.id)}
+                    style={{ backgroundColor: s.colour }}
+                    className={`flex size-10 shrink-0 items-center justify-center rounded-xl font-mono text-sm font-bold text-desk transition-[transform,opacity] duration-150 active:scale-95 lg:[@media(min-height:930px)]:size-11 ${
+                      on ? "ring-2 ring-paper ring-offset-2 ring-offset-desk" : "hover:-translate-y-0.5"
+                    }`}
+                  >
+                    {s.initials}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold text-paper">{shop.name}</p>
+              <p className="truncate text-xs text-desk-muted">{shop.hint}</p>
+            </div>
           </div>
         </div>
       )}

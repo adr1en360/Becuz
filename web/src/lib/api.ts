@@ -3,7 +3,6 @@ import type { Investigation } from "./investigation";
 const base = (process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000").replace(/\/$/, "");
 
 export const apiBase = base;
-export const SAMPLE_SCENARIOS = ["s01", "s02", "s03", "s04", "s05"] as const;
 
 export type Health = { ok: boolean; sample: boolean };
 

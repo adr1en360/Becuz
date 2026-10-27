@@ -2,6 +2,7 @@
 
 import type { Investigation } from "@/lib/investigation";
 import { formatRange } from "@/lib/format";
+import { shopName } from "@/lib/shops";
 import { AltArrowDownIcon } from "@solar-icons/react/outline";
 
 export function StepQuestion({ data }: { data: Investigation }) {
@@ -46,7 +47,7 @@ export function StepQuestion({ data }: { data: Investigation }) {
             <div className="mt-2 rounded-xl bg-paper-2 p-3 font-mono text-xs text-muted">
               <p>Run ID: <span className="text-ink font-semibold">{run_id}</span></p>
               <p>Mode: <span className="text-ink">{mode}</span></p>
-              {scenario && <p>Test scenario: <span className="text-ink">{scenario}</span></p>}
+              {scenario && <p>Test shop: <span className="text-ink">{shopName(scenario)} ({scenario})</span></p>}
               <p>Metric: <span className="text-ink">{frame.metric ?? "profit"}</span></p>
             </div>
           </details>

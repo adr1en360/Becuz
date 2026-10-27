@@ -104,7 +104,7 @@ export function InvestigationApp() {
           : "Becuz reads your records and never changes them.";
 
   return (
-    <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(0,27rem)_minmax(0,1fr)] xl:grid-cols-[minmax(0,32rem)_minmax(0,1fr)] 2xl:grid-cols-[minmax(0,34rem)_minmax(0,1fr)]">
+    <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(0,30rem)_minmax(0,1fr)] xl:grid-cols-[minmax(0,32rem)_minmax(0,1fr)] 2xl:grid-cols-[minmax(0,34rem)_minmax(0,1fr)]">
       <aside
         aria-label="Investigation setup"
         className="border-b border-desk-line px-4 py-6 sm:px-8 lg:overflow-y-auto lg:border-b-0 lg:border-r lg:py-8 lg:[@media(max-height:760px)]:py-4 print:hidden"

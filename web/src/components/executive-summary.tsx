@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { Investigation } from "@/lib/investigation";
 import { formatPct, formatSigned } from "@/lib/format";
 import { natureLabel, originLabel } from "@/lib/labels";
+import { shopName } from "@/lib/shops";
 import {
   AltArrowDownIcon,
   CheckSquareIcon,
@@ -183,7 +184,7 @@ export function ExecutiveSummary({ data }: { data: Investigation }) {
               <Leader
                 label="Data"
                 value={`${data.synthetic ? "Synthetic" : "Real"}${
-                  data.scenario ? `, ${data.scenario}` : ""
+                  data.scenario ? `, ${shopName(data.scenario)}` : ""
                 }`}
               />
               <Leader
