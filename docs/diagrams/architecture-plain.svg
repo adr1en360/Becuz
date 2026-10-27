@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg viewBox="0 0 1560 616" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="architecture-plain-title architecture-plain-desc" width="1560" height="616">
+  <rect id="bg" x="0" y="0" width="100%" height="100%" fill="#ffffff"/>
 <title id="architecture-plain-title">How Becuz answers a question about the shop&#x27;s money</title>
 <desc id="architecture-plain-desc">The owner asks about any 1 to 28 days. The Planner signs a Scout contract, recalls confirmed causes and measures the profit tree in Zetaris; what questions get one read-only query straight to the Writer, why questions go through the Investigator and the Checker, which re-runs the SQL and has Nemotron rate the evidence through Nightshift; the Writer reports supported claims only.</desc>
 <defs><marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#57606a"/></marker><marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#1f2328"/></marker><marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#1f2328"/></marker></defs>

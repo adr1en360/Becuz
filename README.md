@@ -42,7 +42,23 @@ never computes or changes a number.
 
 ## 2. Agents
 
-![How Becuz answers a question](docs/diagrams/architecture-plain.svg)
+```mermaid
+flowchart LR
+  Q["Owner's question<br/>any 1 to 28 days"] --> P["Planner<br/>Scout Intent + H-MEM"]
+  P -->|what| A["Direct answer<br/>one SQL query"]
+  P -->|why| I["Investigator<br/>tests one cause"]
+  I -->|claim + SQL| C["Checker<br/>re-runs the SQL"]
+  C -->|send back, max 2| I
+  C -->|supported| W["Writer"]
+  A --> W
+  W --> R["Owner's report"]
+  Z[("Zetaris<br/>read-only SQL")] -.-> P & I & C
+  C -.->|rate evidence| N["Nightshift<br/>Nemotron 3.5 Lightning"]
+  R -.->|This was right| P
+```
+
+The full diagram, with the engines and logs, is in [`docs/diagrams/architecture.html`](docs/diagrams/architecture.html)
+([PNG](docs/diagrams/architecture-plain.png)).
 
 
 Four agents share one LangGraph state. The claims themselves live in a shared World Model, so every
