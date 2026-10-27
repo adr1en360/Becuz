@@ -196,6 +196,21 @@ receipts.
 
 Each engine has its own tests in `tests/` (see [Tests](#tests)).
 
+### What makes our sponsor use different
+
+A common integration puts the data in a warehouse and asks a model for the answer. Becuz splits the work the other way:
+
+1. **Zetaris computes, the model judges.** The profit tree (`daily_pnl`) and the transfer-to-bank match
+   (`transfer_check`) are computed inside the Zetaris semantic layer. Nemotron only rates evidence it can see, so it
+   cannot invent a figure.
+2. **Two locks on the data.** Our own read-only SQL check runs first, and the agent's Zetaris user has `SELECT` on the
+   USL only, so Zetaris itself refuses any write or raw-source read.
+3. **The engines are the product, not a side demo.** Scout Intent gates every query, the World Model holds every claim
+   and keeps the rejected ones, so the owner sees what was ruled out and why. H-MEM makes the owner's confirmations
+   change the next run, and Markovian keeps each Checker call the same size.
+4. **Every model rating is traceable.** The trace names the model that answered each call, and the ledger keeps a
+   signed Nightshift receipt per call.
+
 ## Web interface
 
 `web/` holds the owner-facing app: a Next.js site that renders the report JSON and computes nothing itself.
@@ -592,7 +607,7 @@ For the web app: `cd web && npm run lint && npm run build`.
 **Sponsor technology:** see [Sponsor technology](#sponsor-technology) for Zetaris, the four Meterless engines (each with
 its tests in `tests/`), Nightshift and NVIDIA Nemotron.
 
-**Development tools:** built with Claude Code and Antigravity. AI-assisted coding was used for scaffolding, debugging,
+**Development tools:** built with Claude Code and Antigravity. Cursor was not used, and we are not entering the Cursor award. AI-assisted coding was used for scaffolding, debugging,
 tests, the web interface and documentation. All generated code was reviewed and tested by the team.
 
 **External libraries:** LangGraph, Pydantic, DuckDB and sqlglot (sample mode), and Next.js for the web interface
