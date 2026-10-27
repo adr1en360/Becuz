@@ -6,7 +6,7 @@
 > **Sponsor technology:** Zetaris (data layer), Meterless Nightshift and four Meterless engines, NVIDIA Nemotron
 > **Try it in two minutes:** [sample mode](#quick-start) needs no accounts, keys or network
 
-![The Becuz landing page](docs/screenshots/landing.png)
+[![How Becuz answers a question: Planner, Investigator, Checker and Writer over Zetaris, with Nightshift and Nemotron rating the evidence](docs/diagrams/architecture.png)](docs/diagrams/architecture.png)
 
 The owner asks a question about any 1 to 28 days, such as "Why is my profit down?". Becuz reads the shop's till
 sales, bank statement, supplier invoices and expense book through Zetaris. It names each cause with its naira effect,
@@ -124,9 +124,8 @@ Anything not about the shop's money gets a short reply with example questions.
 
 ## How it works
 
-![How Becuz answers a question](docs/diagrams/architecture-plain.svg)
-
-Four agents share one LangGraph state. The claims themselves live in a shared World Model, so every agent sees the
+The diagram at the top shows the whole flow ([full size](docs/diagrams/architecture.png); its source is `docs/diagrams/architecture.html`). Four agents
+share one LangGraph state. The claims themselves live in a shared World Model, so every agent sees the
 same claims and every status change is kept.
 
 | Agent | Responsibility | Can block or retry? |
@@ -135,15 +134,6 @@ same claims and every status change is kept.
 | Investigator | Measures one cause with its SQL template through Zetaris and proposes a claim with its record IDs | Yes: re-tests a claim the Checker sends back |
 | Checker | Re-runs the claim's SQL itself, then supports, rejects or sends it back. Asks Nemotron to rate the supported and rejected claims | Yes: sends a claim back up to 2 times, then rejects it |
 | Writer | Builds the report from supported claims only. The report schema re-checks that every figure adds up | Yes: an invalid report fails instead of being returned |
-
-```text
-            ┌──────────── sent back (max 2) ────────────┐
-            ▼                                           │
-Planner ─► Investigator ─► Checker ─► next cause? ──────┤
-                                          │ no          │ yes
-                                          ▼             │
-                                        Writer          └─► Investigator
-```
 
 ### What makes this an agent system
 
@@ -221,6 +211,8 @@ missing money; how much is explained; then a summary with what to do, the measur
 the run facts. While a run is going, each agent step appears in plain words as it happens, and **Play investigation**
 replays the steps afterwards.
 
+![The Becuz landing page](docs/screenshots/landing.png)
+
 | | |
 |---|---|
 | ![The investigate page](docs/screenshots/investigate.png) | ![A finished report](docs/screenshots/report.png) |
@@ -254,6 +246,9 @@ Start the server on `127.0.0.1:8000` with `uv run python server.py` (add `SAMPLE
 `question` is required. `days` (1 to 28, default 7) sets the period's length, and `period_start` (like `2026-10-12`)
 its first day; without it Becuz takes the latest days in the data. A period without 4 earlier periods of records is
 refused with a plain message. `scenario` (`s01` to `s05`) applies to sample mode only.
+
+<details>
+<summary><b>Example response (abridged)</b></summary>
 
 **Response (abridged, from `output_examples/example_1_output.json`):**
 
@@ -293,6 +288,8 @@ refused with a plain message. `scenario` (`s01` to `s05`) applies to sample mode
 }
 ```
 
+</details>
+
 The full contract is in [`docs/investigation.schema.json`](docs/investigation.schema.json).
 
 ### Confirming a cause
@@ -324,8 +321,14 @@ If a remembered cause does not happen again, its memory loses confidence and is 
 
 ## Live mode setup
 
-Live mode queries Zetaris and rates evidence with Nemotron through Nightshift. Fill in `.env`, which is in
-`.gitignore`.
+Live mode queries Zetaris and rates evidence with NVIDIA Nemotron through Nightshift. It needs a Nightshift install with
+your NVIDIA key, the shop data in S3, and a Zetaris instance with a read-only agent user. Check every connection with
+`uv run python smoke.py`.
+
+<details>
+<summary><b>Step-by-step live setup: Nightshift, S3 and Zetaris</b></summary>
+
+Fill in `.env`, which is in `.gitignore`.
 
 1. **Nightshift.** Install and start Meterless Nightshift, then add your NVIDIA key in its Providers tab. The NVIDIA
    key never goes in `.env`. On Windows, Becuz reads the Nightshift token from
@@ -372,6 +375,8 @@ agent    PASS  sample s01: 3 cause(s) supported
 
 Then run `uv run python run.py --input input_examples/example_1.json`, or start the server and the web interface as
 in the [Quick start](#quick-start) without `SAMPLE_MODE`.
+
+</details>
 
 ### Sample mode
 
@@ -447,6 +452,9 @@ mode builds the same tables in DuckDB in memory and finishes a run in about a se
 
 ### Failure handling
 
+<details>
+<summary><b>Every failure and how Becuz handles it</b></summary>
+
 | Failure | Behaviour |
 |---|---|
 | Zetaris timeout, network error, HTTP 5xx, or Zetaris internal fault (`Could not create ResultSet`, `TTransportException`, which Zetaris engineering traced to the Spark session restarting on a small cluster) | That query is retried, up to 5 attempts over about two minutes, with a `retry_query` line in the trace. Queries run one at a time with a 180 s timeout. The ledger records each query's `query_id` and `duration_ms` |
@@ -458,6 +466,8 @@ mode builds the same tables in DuckDB in memory and finishes a run in about a se
 | Malformed input | `400` with a validation message |
 | Query budget used up, or contract expired | The query is refused; an expired contract is re-issued and linked to the first |
 | A run that loops | Stopped after 60 steps |
+
+</details>
 
 ## Logs and receipts
 
@@ -495,6 +505,9 @@ file; `tests/test_ingest.py` covers it.
 
 ## Configuration
 
+<details>
+<summary><b>All settings</b></summary>
+
 `.env.example` lists every setting with placeholder values.
 
 | Variable | Default | Purpose |
@@ -512,6 +525,8 @@ file; `tests/test_ingest.py` covers it.
 | `SERVER_HOST`, `SERVER_PORT` | `127.0.0.1`, `8000` | Server address |
 
 The web app reads one setting, `NEXT_PUBLIC_API_URL` (default `http://127.0.0.1:8000`).
+
+</details>
 
 ## Tests
 
