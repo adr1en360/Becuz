@@ -64,8 +64,8 @@ class LocalWarehouseTests(unittest.TestCase):
             profit_tree(self.wh, "2026-10-12' OR 1=1 --", FINAL[1])
         with self.assertRaises(ValueError):
             profit_tree(self.wh, FINAL[1], FINAL[0])
-        with self.assertRaises(ValueError):  # not a 7-day week
-            profit_tree(self.wh, FINAL[0], date(2026, 10, 14))
+        with self.assertRaises(ValueError):  # longer than 28 days
+            profit_tree(self.wh, FINAL[0], date(2026, 11, 30))
 
     def test_a_week_without_data_fails_instead_of_reading_zero(self) -> None:
         with self.assertRaises(ValueError):
