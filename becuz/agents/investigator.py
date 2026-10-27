@@ -15,7 +15,7 @@ def make_investigator(wh: Warehouse, trace: Trace, world: WorldModel):
         sent_back = current and world.status(world.claim_id(current, period(state))) == "sent_back"
         cause = current if sent_back else queue.pop(0)
         retries = world.claims_by_cause(period(state)).get(cause, {}).get("retries", 0)
-        m = measure(wh, cause, state["week_start"], state["week_end"])
+        m = measure(wh, cause, state["period_start"], state["period_end"])
         world.propose_claim(cause, period(state), "Investigator", trace.run_id, effect_ngn=m.effect_ngn,
                             row_ids=m.row_ids, effect_sql=m.effect_sql, records_sql=m.records_sql, retries=retries)
         effect = "not measurable" if m.effect_ngn is None else f"{m.effect_ngn:+,.0f}"

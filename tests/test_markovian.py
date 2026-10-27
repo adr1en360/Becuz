@@ -92,10 +92,12 @@ class JudgeTests(unittest.TestCase):
         def down(*args, **kwargs):
             raise ProviderError("nightshift", 503, "down")
         judge = Judge(Markovian("r"), SimpleNamespace(ask_messages=down))
-        judged = judge.rate(self.claim)
+        with patch("becuz.judge.time.sleep") as wait:
+            judged = judge.rate(self.claim)
         self.assertIsNone(judged["confidence"])
         self.assertIn("down", judged["error"])
-        self.assertEqual(judge.calls, 2)  # one retry, then give up
+        self.assertEqual(judge.calls, 3)  # two retries, then give up
+        self.assertEqual(wait.call_count, 3)  # a provider failure waits before trying again
 
     def test_a_rate_limit_waits_before_the_retry(self) -> None:
         replies = iter([ProviderError("nightshift", 429, "slow down"),

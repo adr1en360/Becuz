@@ -1,0 +1,41 @@
+Item Code,SKU,Description,Group,Unit,Price,Perishable
+P001,SKU-0001,Peak Milk 400g,dairy,tin,1650.00,No
+P002,SKU-0002,Peak Milk 16g sachet,dairy,sachet,150.00,No
+P003,SKU-0003,Three Crowns Milk 400g,dairy,tin,1450.00,No
+P004,SKU-0004,Hollandia Yoghurt 1L,dairy,bottle,2400.00,Yes
+P005,SKU-0005,Indomie Chicken 70g,noodles,pack,250.00,No
+P006,SKU-0006,Indomie Onion 70g,noodles,pack,250.00,No
+P007,SKU-0007,Golden Penny Spaghetti 500g,pasta,pack,1100.00,No
+P008,SKU-0008,Golden Penny Semovita 1kg,flour,bag,1700.00,No
+P009,SKU-0009,Dangote Sugar 500g,sugar,pack,900.00,No
+P010,SKU-0010,St Louis Sugar Cubes,sugar,box,1300.00,No
+P011,SKU-0011,Mama Gold Rice 5kg,rice,bag,9800.00,No
+P012,SKU-0012,Royal Stallion Rice 1kg,rice,bag,2100.00,No
+P013,SKU-0013,Kings Vegetable Oil 1L,oil,bottle,2900.00,No
+P014,SKU-0014,Power Oil 75cl,oil,bottle,2300.00,No
+P015,SKU-0015,Gino Tomato Paste 70g,paste,sachet,200.00,No
+P016,SKU-0016,Maggi Star Cube,seasoning,pack,50.00,No
+P017,SKU-0017,Knorr Chicken Cube,seasoning,pack,60.00,No
+P018,SKU-0018,Dano Milk Powder 400g,dairy,pack,3200.00,No
+P019,SKU-0019,Milo 400g,beverage,tin,3500.00,No
+P020,SKU-0020,Bournvita 500g,beverage,tin,3900.00,No
+P021,SKU-0021,Lipton Tea 50 bags,beverage,box,1500.00,No
+P022,SKU-0022,Nescafe Classic 50g,beverage,jar,2200.00,No
+P023,SKU-0023,Coca-Cola 50cl,drinks,bottle,400.00,No
+P024,SKU-0024,Fanta 50cl,drinks,bottle,400.00,No
+P025,SKU-0025,Malta Guinness 33cl,drinks,can,600.00,No
+P026,SKU-0026,Eva Water 75cl,drinks,bottle,250.00,No
+P027,SKU-0027,Chi Exotic Juice 1L,drinks,pack,1800.00,Yes
+P028,SKU-0028,Agege Bread,bakery,loaf,1200.00,Yes
+P029,SKU-0029,Butterfield Bread,bakery,loaf,1500.00,Yes
+P030,SKU-0030,Eggs (crate of 30),eggs,crate,5200.00,Yes
+P031,SKU-0031,Gala Sausage Roll,snacks,pack,300.00,Yes
+P032,SKU-0032,Digestive Biscuits,snacks,pack,700.00,No
+P033,SKU-0033,Cabin Biscuits,snacks,pack,350.00,No
+P034,SKU-0034,Plantain Chips,snacks,pack,300.00,No
+P035,SKU-0035,Hypo Bleach 1L,household,bottle,900.00,No
+P036,SKU-0036,Ariel Detergent 500g,household,pack,1600.00,No
+P037,SKU-0037,Morning Fresh 400ml,household,bottle,1400.00,No
+P038,SKU-0038,Joy Soap,toiletries,bar,450.00,No
+P039,SKU-0039,Closeup Toothpaste 140g,toiletries,tube,1300.00,No
+P040,SKU-0040,Always Pads,toiletries,pack,1200.00,No

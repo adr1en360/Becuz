@@ -1,34 +1,36 @@
 {
-  "run_id": "inv-632d2a3552",
+  "run_id": "inv-8d5a41a0a4",
   "status": "complete",
   "errors": [],
   "mode": "sample",
   "synthetic": true,
   "scenario": "s04",
   "frame": {
-    "question": "Why is my profit down this week?",
+    "question": "Why is my profit down?",
     "metric": "profit",
     "period_start": "2026-10-12",
     "period_end": "2026-10-18",
+    "days": 7,
     "baseline_start": "2026-09-14",
-    "baseline_end": "2026-10-11"
+    "baseline_end": "2026-10-11",
+    "baseline": "the average of the 4 weeks before"
   },
   "headline": {
-    "current_ngn": 396172.0,
-    "baseline_ngn": 389609.5,
-    "change_ngn": 6562.5,
-    "change_pct": 1.7,
+    "current_ngn": 337413.94,
+    "baseline_ngn": 335951.56,
+    "change_ngn": 1462.38,
+    "change_pct": 0.4,
     "direction": "up"
   },
   "tree": [
     {
       "component": "net_sales",
       "current_ngn": 2768020.0,
-      "baseline_ngn": 2761457.5,
-      "change_ngn": 6562.5,
-      "profit_effect_ngn": 6562.5,
-      "share_of_change_pct": 100.0,
-      "status": "unexplained"
+      "baseline_ngn": 2768020.0,
+      "change_ngn": 0.0,
+      "profit_effect_ngn": 0.0,
+      "share_of_change_pct": 0.0,
+      "status": "no_change"
     },
     {
       "component": "cogs",
@@ -50,12 +52,12 @@
     },
     {
       "component": "opex",
-      "current_ngn": 162000.0,
-      "baseline_ngn": 162000.0,
-      "change_ngn": 0.0,
-      "profit_effect_ngn": -0.0,
-      "share_of_change_pct": -0.0,
-      "status": "no_change"
+      "current_ngn": 220758.06,
+      "baseline_ngn": 222220.44,
+      "change_ngn": -1462.38,
+      "profit_effect_ngn": 1462.38,
+      "share_of_change_pct": 100.0,
+      "status": "unexplained"
     }
   ],
   "causes": [],
@@ -64,7 +66,7 @@
       "cause_id": "transfer_leakage",
       "title": "Transfers recorded at the till never reached the bank",
       "status": "supported",
-      "impact_ngn": -33100.0,
+      "impact_ngn": -25670.0,
       "impact_evidence_id": "ev-transfer_leakage",
       "confidence": 0.9,
       "evidence": [
@@ -73,20 +75,20 @@
           "table": "becuz.transfer_check",
           "sql": "SELECT ROUND(-COALESCE(SUM(net_ngn), 0), 2) AS effect_ngn FROM becuz.transfer_check\nWHERE bank_txn_id IS NULL AND CAST(sold_at AS DATE) BETWEEN DATE '2026-10-12' AND DATE '2026-10-18'",
           "row_ids": [
-            "SL-03208",
-            "SL-03231",
-            "SL-03302",
-            "SL-03323",
-            "SL-03333",
-            "SL-03372"
+            "SL-11486",
+            "SL-11494",
+            "SL-11548",
+            "SL-11629",
+            "SL-11696",
+            "SL-11795"
           ],
-          "value_ngn": -33100.0,
-          "summary": "Transfers recorded at the till never reached the bank: -33,100",
+          "value_ngn": -25670.0,
+          "summary": "Transfers recorded at the till never reached the bank: -25,670",
           "via": "local",
           "check": {
             "match": true,
-            "rerun_value_ngn": -33100.0,
-            "note": "The re-check matched: 33,100 naira from 6 records. 6 records back this.",
+            "rerun_value_ngn": -25670.0,
+            "note": "The re-check matched: 25,670 naira from 6 records. 6 records back this.",
             "model": null,
             "via": "sample-rules",
             "signed": false
@@ -95,7 +97,7 @@
       ],
       "falsified_by": [
         {
-          "test": "every transfer sale this week has a matching bank credit",
+          "test": "every transfer sale in the period has a matching bank credit",
           "evidence_id": "ev-transfer_leakage",
           "survived": true
         }
@@ -112,35 +114,35 @@
     {
       "cause_id": "supplier_cost_rise",
       "hypothesis": "A supplier raised the unit cost of a product",
-      "reason": "The records show no loss from this cause this week.",
-      "tested_value_ngn": 0.0,
-      "evidence_id": null
-    },
-    {
-      "cause_id": "wastage_spike",
-      "hypothesis": "More stock expired or was damaged than usual",
-      "reason": "The records show no loss from this cause this week.",
-      "tested_value_ngn": 0.0,
-      "evidence_id": null
-    },
-    {
-      "cause_id": "pos_charge_rise",
-      "hypothesis": "The POS terminal charged a higher fee",
-      "reason": "The records show no loss from this cause this week.",
+      "reason": "The records show no loss from this cause in this period.",
       "tested_value_ngn": 0.0,
       "evidence_id": null
     },
     {
       "cause_id": "promo_overrun",
       "hypothesis": "A discount kept running after the promo ended",
-      "reason": "The records show no loss from this cause this week.",
+      "reason": "The records show no loss from this cause in this period.",
+      "tested_value_ngn": 0.0,
+      "evidence_id": null
+    },
+    {
+      "cause_id": "wastage_spike",
+      "hypothesis": "More stock expired or was damaged than usual",
+      "reason": "The records show no loss from this cause in this period.",
       "tested_value_ngn": 0.0,
       "evidence_id": null
     },
     {
       "cause_id": "sales_volume_drop",
-      "hypothesis": "Fewer items sold than in a usual week",
-      "reason": "The records show no loss from this cause this week.",
+      "hypothesis": "Fewer items sold than usual",
+      "reason": "The records show no loss from this cause in this period.",
+      "tested_value_ngn": 0.0,
+      "evidence_id": null
+    },
+    {
+      "cause_id": "pos_charge_rise",
+      "hypothesis": "The POS terminal charged a higher fee",
+      "reason": "The records show no loss from this cause in this period.",
       "tested_value_ngn": 0.0,
       "evidence_id": null
     }
@@ -149,17 +151,17 @@
   "convergence": {
     "explained_ngn": 0.0,
     "explained_pct": 0.0,
-    "unexplained_ngn": 6562.5
+    "unexplained_ngn": 1462.38
   },
   "summary": {
-    "what_happened": "Profit this week was ₦396,172, which is ₦6,563 more than a usual week (₦389,610).",
+    "what_happened": "Profit in these 7 days was ₦337,414, which is ₦1,462 more than usual (₦335,952).",
     "why": [
-      "Profit went up, and none of the problems Becuz checks for showed up this week."
+      "Profit went up, and none of the problems Becuz checks for showed up in these 7 days."
     ],
     "cash": [
-      "₦33,100 from 6 transfer sales was recorded at the till but never reached the bank. The sales still count toward your profit, but this money is missing from your account."
+      "₦25,670 from 6 transfer sales was recorded at the till but never reached the bank. The sales still count toward your profit, but this money is missing from your account."
     ],
-    "outcome": "Profit is on track; chasing the 6 missing transfers brings ₦33,100 back into your account.",
+    "outcome": "Profit is on track; chasing the 6 missing transfers brings ₦25,670 back into your account.",
     "what_to_do": [
       {
         "cause_id": "transfer_leakage",
@@ -170,7 +172,7 @@
   "owner_questions": [
     {
       "cause_id": "transfer_leakage",
-      "question": "6 transfer sales this week have no matching payment in the bank (SL-03208, SL-03231, SL-03302, SL-03323, SL-03333, SL-03372). Can you check them with the staff who recorded them?"
+      "question": "6 transfer sales in these 7 days have no matching payment in the bank (SL-11486, SL-11494, SL-11548, SL-11629, SL-11696, SL-11795). Can you check them with the staff who recorded them?"
     }
   ],
   "limitations": [
@@ -179,7 +181,7 @@
     "Sample mode: evidence ratings come from fixed rules, not a model; every number comes from SQL."
   ],
   "stats": {
-    "duration_s": 3.11,
+    "duration_s": 0.59,
     "zetaris_queries": 27,
     "model_calls": 0,
     "retries": 0,
@@ -189,5 +191,5 @@
       "sample-rules": 6
     }
   },
-  "trace_file": "logs/trace-inv-632d2a3552.jsonl"
+  "trace_file": "logs/trace-inv-8d5a41a0a4.jsonl"
 }

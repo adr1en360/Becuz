@@ -9,10 +9,16 @@
     "start": "2026-09-14",
     "end": "2026-10-11"
   },
+  "history": {
+    "start": "2026-04-20",
+    "end": "2026-10-18"
+  },
+  "accrual": "an expense with cover_start and cover_end is spread evenly per day over that period",
+  "cost_rule": "a sale line is costed at the latest supplier invoice for its product on or before the sale day",
   "causes": [
     {
       "cause_id": "wastage_spike",
-      "impact_ngn": -39832.0,
+      "impact_ngn": -39944.0,
       "rank": 1
     },
     {

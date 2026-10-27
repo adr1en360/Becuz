@@ -85,7 +85,7 @@ Four logical sources, stored as CSV in S3 and registered in Zetaris:
 |---|---|
 | `pos_files` | `products`, `staff`, `sales`, `sale_lines`, `promos`, `stock_movements` |
 | `bank_files` | `bank_statement` |
-| `books_files` | `supplier_invoices`, `expenses` |
+| `books_files` | `supplier_invoices`, `expense_book` |
 | `context_files` | `fx_rates` |
 
 - Money is naira with 2 decimals. Every template rounds it.

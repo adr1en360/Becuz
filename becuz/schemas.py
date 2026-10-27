@@ -1,7 +1,7 @@
 """The Investigation JSON: what one Becuz run returns, and what the UI renders.
 
-Units: every *_ngn field is naira for the investigated week (a one-week period),
-compared with the average week of the 4 weeks before it. Every *_pct field is a
+Units: every *_ngn field is naira for the investigated period (1 to 28 days), compared
+with the average of its 4 weekday-matched baseline windows (metrics.baseline_days). Every *_pct field is a
 percentage from 0 to 100; confidence is a fraction from 0 to 1. A negative
 profit effect is a loss.
 
@@ -40,8 +40,10 @@ class Frame(Model):
     metric: Literal["profit"] = "profit"
     period_start: date
     period_end: date
-    baseline_start: date
-    baseline_end: date
+    days: int = Field(default=7, description="The period's length in days, 1 to 28")
+    baseline_start: date = Field(description="First day of the earliest baseline window")
+    baseline_end: date = Field(description="Last day of the latest baseline window")
+    baseline: str = Field(default="", description="What the period is compared with, in the owner's words")
 
 
 class Headline(Model):
@@ -85,7 +87,7 @@ class Evidence(Model):
 
 
 class FalsificationTest(Model):
-    test: str = Field(description="What would have disproved the cause, e.g. 'unit cost flat across the baseline weeks'")
+    test: str = Field(description="What would have disproved the cause, e.g. 'unit cost flat across the baseline'")
     evidence_id: str
     survived: bool = Field(description="True if the cause survived the test")
 
@@ -96,7 +98,7 @@ class Finding(Model):
     cause_id: str
     title: str
     status: Literal["supported"] = "supported"
-    impact_ngn: float = Field(description="Naira this week; negative is a loss")
+    impact_ngn: float = Field(description="Naira in the period; negative is a loss")
     impact_evidence_id: str = Field(description="Evidence row whose value_ngn is the impact")
     confidence: float | None = Field(ge=0, le=1, description="The model's rating of the evidence; None if it was unavailable")
     evidence: list[Evidence] = Field(min_length=1)
@@ -119,7 +121,7 @@ class Finding(Model):
 
 
 class Cause(Finding):
-    """A supported cause of the profit change; impact_ngn is its effect on this week's profit."""
+    """A supported cause of the profit change; impact_ngn is its effect on the period's profit."""
 
     component: Component = Field(description="The tree node this cause explains")
     share_of_change_pct: float
@@ -139,7 +141,7 @@ class Recall(Model):
 
     cause_id: str
     confirmed_at: str = Field(description="When the owner confirmed it (ISO timestamp)")
-    held_again: bool | None = Field(description="True if it was found again, False if not, None if this week could not test it")
+    held_again: bool | None = Field(description="True if it was found again, False if not, None if this period could not test it")
     confidence_before: float = Field(ge=0, le=1, description="H-MEM confidence in the memory before this run")
     confidence_after: float = Field(ge=0, le=1, description="H-MEM confidence after this run's result")
     message: str = Field(description="Plain-language line for the owner")

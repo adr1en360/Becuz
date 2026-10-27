@@ -116,6 +116,12 @@ class JobRouteTests(unittest.TestCase):
         self.assertEqual(job["report"]["run_id"], run_id)
         self.assertEqual({e["agent_name"] for e in job["events"]}, {"Planner", "Investigator", "Checker", "Writer"})
 
+    def test_a_period_without_history_fails_with_the_plain_reason(self) -> None:
+        body = {"question": "Why is my profit down?", "scenario": "s04", "period_start": "2026-04-25", "days": 3}
+        job = self.finished(json.loads(self.call("POST", "/runs", body)[1])["run_id"])
+        self.assertEqual(job["status"], "failed")
+        self.assertIn("Not enough records for that period", job["error"])
+
     def test_a_bad_request_is_refused_before_the_run_starts(self) -> None:
         status, data = self.call("POST", "/runs", {"question": ""})
         self.assertEqual(status, 400)

@@ -5,6 +5,7 @@ path (ZetarisWarehouse and its guard) is deliberately not used here.
 
     uv run python -m scripts.zetaris_setup s01            # dry run: print statements, keys hidden
     uv run python -m scripts.zetaris_setup s01 --apply    # run them, one statement per call
+    uv run python -m scripts.zetaris_setup s01 --only 12  # dry run of one statement; add --apply to run it
 """
 from __future__ import annotations
 
@@ -46,6 +47,7 @@ def main() -> int:
     parser.add_argument("scenario")
     parser.add_argument("--apply", action="store_true", help="run the statements against Zetaris")
     parser.add_argument("--start", type=int, default=1, help="resume at this statement number")
+    parser.add_argument("--only", type=int, help="run just this statement number, e.g. one new table")
     args = parser.parse_args()
 
     loaded = admin_env("S3_BUCKET", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY")
@@ -54,6 +56,8 @@ def main() -> int:
     admin, env = loaded
     secrets = (env["AWS_ACCESS_KEY_ID"], env["AWS_SECRET_ACCESS_KEY"], env["ZETARIS_ADMIN_API_KEY"])
     plan = statements(args.scenario, env["S3_BUCKET"], env["AWS_ACCESS_KEY_ID"], env["AWS_SECRET_ACCESS_KEY"])
+    if args.only:
+        plan, args.start = [plan[args.only - 1]], 1
     failed = run_plan(admin, plan, args.apply, args.start, secrets)
     if failed or not args.apply:
         return failed

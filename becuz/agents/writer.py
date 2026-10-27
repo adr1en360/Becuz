@@ -14,13 +14,13 @@ from becuz.adapters import Warehouse
 from becuz.agents.checker import record_judgements
 from becuz.agents.planner import profit_effects
 from becuz.catalogue import CATALOGUE
-from becuz.metrics import week
+from becuz.metrics import baseline_days
 from becuz.engines.world_model import WorldModel
 from becuz.judge import Judge
 from becuz.orchestration.state import InvestigationState, period
 from becuz.schemas import MIN_EFFECT_NGN, Investigation
 from becuz.tracing import Trace
-from becuz.words import naira, plural
+from becuz.words import baseline_words, naira, plural, span
 
 
 def pct(part: float, whole: float) -> float:
@@ -35,27 +35,28 @@ def node_status(effect: float, explained: float) -> str:
     return "explained" if abs(effect - explained) <= 0.1 * abs(effect) else "partly_explained"
 
 
-def what_happened(profit: dict, direction: str) -> str:
+def what_happened(profit: dict, direction: str, when: str) -> str:
     if direction == "flat":
-        return f"Profit this week was {naira(profit['current'])}, about the same as a usual week."
+        return f"Profit {when} was {naira(profit['current'])}, about the same as usual."
     side = "less" if direction == "down" else "more"
-    return (f"Profit this week was {naira(profit['current'])}, which is {naira(profit['change'])} {side} "
-            f"than a usual week ({naira(profit['baseline'])}).")
+    return (f"Profit {when} was {naira(profit['current'])}, which is {naira(profit['change'])} {side} "
+            f"than usual ({naira(profit['baseline'])}).")
 
 
-def outcome_line(profit: dict, causes: list[dict], cash: list[dict]) -> str:
+def outcome_line(profit: dict, causes: list[dict], cash: list[dict], period: str, when: str) -> str:
     """What acting on the findings is worth, from the measured figures only: no forecast, no new number."""
     missing = sum(c["effect_ngn"] for c in cash)
     chase = (f"chasing the {plural(sum(len(c['row_ids']) for c in cash), 'missing transfer')} brings "
              f"{naira(missing)} back into your account") if cash else ""
     if causes:
         fixed = profit["current"] - sum(c["effect_ngn"] for c in causes)
-        line = (f"Without these {plural(len(causes), 'cause')}, this week would have made about {naira(fixed)}, "
-                f"against {naira(profit['baseline'])} in a usual week")
+        these = "this cause" if len(causes) == 1 else f"these {plural(len(causes), 'cause')}"
+        line = (f"Without {these}, {period} would have made about {naira(fixed)}, "
+                f"against {naira(profit['baseline'])} usually")
         return f"{line}, and {chase}." if chase else f"{line}."
     if chase:
         return f"Profit is on track; {chase}."
-    return "Nothing to fix this week."
+    return f"Nothing to fix {when}."
 
 
 def cash_line(claim: dict) -> str:
@@ -64,19 +65,21 @@ def cash_line(claim: dict) -> str:
             "from your account.")
 
 
-def recall_message(cause_id: str, held_again: bool | None) -> str:
+def recall_message(cause_id: str, held_again: bool | None, when: str) -> str:
     title = CATALOGUE[cause_id].title
     opening = f"You confirmed that {title[0].lower()}{title[1:]} after an earlier run, so Becuz checked it first this time."
     if held_again is None:
-        return f"{opening} This week's records could not check it."
+        return f"{opening} The records {when} could not check it."
     if held_again:
-        return f"{opening} It happened again this week."
-    return f"{opening} It did not happen this week, so Becuz will rely on that memory less until you confirm it again."
+        return f"{opening} It happened again {when}."
+    return f"{opening} It did not happen {when}, so Becuz will rely on that memory less until you confirm it again."
 
 
 def assemble(state: InvestigationState, run: dict, world: WorldModel, judge: Judge) -> Investigation:
     tree = state["tree"]
-    baseline = week(state["week_start"], state["week_end"])
+    start, end = state["period_start"], state["period_end"]
+    baseline = baseline_days(start, end)
+    span_noun, when = span(start, end)
     profit = tree["profit_ngn"]
     change = profit["change"]
     claims = world.claims_by_cause(period(state)).values()
@@ -88,7 +91,8 @@ def assemble(state: InvestigationState, run: dict, world: WorldModel, judge: Jud
     explained_by = {name: sum(c["effect_ngn"] for c in causes_found if CATALOGUE[c["cause_id"]].component == name)
                     for name in effects}
     explained = sum(c["effect_ngn"] for c in causes_found)
-    errors = [f"{c['cause_id']}: {c['judgement']['error']}" for c in claims if "error" in c.get("judgement", {})]
+    # A missing model rating does not undo a SQL verdict, so the run stays complete; the raw error is in the trace.
+    unrated = sum("error" in c.get("judgement", {}) for c in claims)
 
     def evidence(claim: dict) -> dict:
         spec = CATALOGUE[claim["cause_id"]]
@@ -116,7 +120,7 @@ def assemble(state: InvestigationState, run: dict, world: WorldModel, judge: Jud
 
     owner_questions = [{
         "cause_id": c["cause_id"],
-        "question": f"{plural(len(c['row_ids']), 'transfer sale')} this week have no matching payment in the bank "
+        "question": f"{plural(len(c['row_ids']), 'transfer sale')} {when} {'has' if len(c['row_ids']) == 1 else 'have'} no matching payment in the bank "
                     f"({', '.join(c['row_ids'][:6])}). Can you check them with the staff who recorded them?",
     } for c in cash]
 
@@ -124,12 +128,13 @@ def assemble(state: InvestigationState, run: dict, world: WorldModel, judge: Jud
     why = [f"{CATALOGUE[c['cause_id']].title}. This cost you {naira(c['effect_ngn'])}." for c in causes_found]
     if not why:
         why = [{"flat": "Nothing changed enough to need an explanation.",
-                "up": "Profit went up, and none of the problems Becuz checks for showed up this week.",
+                "up": f"Profit went up, and none of the problems Becuz checks for showed up {when}.",
                 "down": "None of the causes Becuz checked explains this drop."}[direction]]
     data = {
-        "run_id": run["run_id"], "status": "partial" if errors else "complete", "errors": errors, "mode": run["mode"], "synthetic": True, "scenario": run["scenario"],
-        "frame": {"question": state["question"], "period_start": state["week_start"], "period_end": state["week_end"],
-                  "baseline_start": baseline[0], "baseline_end": baseline[1]},
+        "run_id": run["run_id"], "status": "complete", "errors": [], "mode": run["mode"], "synthetic": True, "scenario": run["scenario"],
+        "frame": {"question": state["question"], "period_start": start, "period_end": end,
+                  "days": (end - start).days + 1, "baseline_start": baseline[0], "baseline_end": baseline[-1],
+                  "baseline": baseline_words(start, end)},
         "headline": {"current_ngn": profit["current"], "baseline_ngn": profit["baseline"], "change_ngn": change,
                      "change_pct": pct(change, abs(profit["baseline"])) if profit["baseline"] else None,
                      "direction": direction},
@@ -140,7 +145,7 @@ def assemble(state: InvestigationState, run: dict, world: WorldModel, judge: Jud
         "causes": causes,
         "cash_gaps": [finding(c) for c in cash],
         "memory": [{"cause_id": c["cause_id"], **{k: v for k, v in c["recall"].items() if k != "memory_id"},
-                    "message": recall_message(c["cause_id"], c["recall"]["held_again"])}
+                    "message": recall_message(c["cause_id"], c["recall"]["held_again"], when)}
                    for c in claims if "recall" in c],
         "ruled_out": [{"cause_id": c["cause_id"], "hypothesis": CATALOGUE[c["cause_id"]].title, "reason": c["reason"],
                        "tested_value_ngn": c["effect_ngn"], "evidence_id": None}
@@ -149,16 +154,18 @@ def assemble(state: InvestigationState, run: dict, world: WorldModel, judge: Jud
         "convergence": {"explained_ngn": round(explained, 2), "explained_pct": pct(explained, change),
                         "unexplained_ngn": round(change - explained, 2)},
         "summary": {
-            "what_happened": what_happened(profit, direction),
+            "what_happened": what_happened(profit, direction, when),
             "why": why,
             "cash": [cash_line(c) for c in cash],
-            "outcome": outcome_line(profit, causes_found, cash),
+            "outcome": outcome_line(profit, causes_found, cash, span_noun, when),
             "what_to_do": [{"cause_id": c["cause_id"], "action": CATALOGUE[c["cause_id"]].action} for c in causes_found + cash],
         },
         "owner_questions": owner_questions,
         "limitations": ["Findings show correlation, not proven causation.",
                         "The shop data is synthetic.",
-                        judge.limitation],
+                        judge.limitation]
+                       + ([f"The model could not rate {unrated} of {len(claims)} causes; their SQL checks still stand."]
+                          if unrated else []),
         "stats": {"duration_s": round(time.monotonic() - run["started"], 2), "zetaris_queries": run["queries"](),
                   "model_calls": judge.calls, "retries": sum(c["retries"] for c in claims),
                   "models": dict(judge.models), "via": {run["via"]: run["queries"](), judge.via: judge.reviews}},

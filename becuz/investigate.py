@@ -1,7 +1,8 @@
 """One entry point for an investigation, used by run.py --input and POST /run.
 
-Request JSON: {"question": "...", "week_start": "YYYY-MM-DD" (optional, a Monday-to-Sunday
-week; default the latest week in the data), "scenario": "s01" (sample mode only)}.
+Request JSON: {"question": "...", "period_start": "YYYY-MM-DD" (optional; default the latest days in
+the data; "week_start" is still accepted), "days": 1 to 28 (optional, default 7),
+"scenario": "s01" (sample mode only)}.
 """
 from __future__ import annotations
 
@@ -20,6 +21,7 @@ from becuz.engines.scout_intent import ContractGate, ContractRefused, Scout
 from becuz.engines.markovian import ChunkConfig, Markovian
 from becuz.engines.world_model import WorldModel
 from becuz.judge import Judge
+from becuz.metrics import MAX_DAYS, NotEnoughHistory
 from becuz.orchestration.graph import STEP_LIMIT, build_graph
 from becuz.tracing import Trace
 from data.generator import SCENARIOS
@@ -32,11 +34,11 @@ class BadRequest(ValueError):
     pass
 
 
-OUT_OF_SCOPE = ("Becuz explains what happened to your shop's money this week. Try \"Why is my profit down this "
-                "week?\", \"How is my shop doing?\" or \"Where did my money go?\"")
+OUT_OF_SCOPE = ("Becuz explains what happened to your shop's money: profit, sales, costs, expenses and cash. "
+                "Try \"Why is my profit down?\", \"How is my shop doing?\" or \"Where did my money go?\"")
 
 
-def parse(request: dict, sample_mode: bool) -> tuple[str, date | None, str | None]:
+def parse(request: dict, sample_mode: bool) -> tuple[str, date | None, int, str | None]:
     if not isinstance(request, dict):
         raise BadRequest("request must be a JSON object")
     question = request.get("question")
@@ -44,15 +46,18 @@ def parse(request: dict, sample_mode: bool) -> tuple[str, date | None, str | Non
         raise BadRequest(f"question must be text of 1 to {MAX_QUESTION} characters")
     if Scout(key=b"scope-check").classify(question)[1] == 0:  # refuse off-topic before any run starts
         raise BadRequest(OUT_OF_SCOPE)
-    week_start = request.get("week_start")
+    start = request.get("period_start") or request.get("week_start")
     try:
-        week_start = date.fromisoformat(week_start) if week_start else None
+        start = date.fromisoformat(start) if start else None
     except (TypeError, ValueError):
-        raise BadRequest("week_start must be a date like 2026-10-12") from None
+        raise BadRequest("period_start must be a date like 2026-10-12") from None
+    days = request.get("days", 7)
+    if not isinstance(days, int) or isinstance(days, bool) or not 1 <= days <= MAX_DAYS:
+        raise BadRequest(f"days must be a whole number from 1 to {MAX_DAYS}")
     scenario = request.get("scenario", "s01") if sample_mode else None
     if sample_mode and scenario not in SCENARIOS:
         raise BadRequest(f"scenario must be one of {', '.join(SCENARIOS)}")
-    return question.strip(), week_start, scenario
+    return question.strip(), start, days, scenario
 
 
 def shown(path) -> str:
@@ -106,7 +111,7 @@ def confirm(run_id: str, cause_id: str, config) -> str:
 
 
 def investigate(request: dict, config, run_id: str | None = None) -> dict:
-    question, week_start, scenario = parse(request, config.sample_mode)
+    question, start, days, scenario = parse(request, config.sample_mode)
     run_id = run_id or new_run_id()
     logs = config.trace_path.parent if config.trace_path else None
     trace = Trace(run_id, logs)
@@ -120,12 +125,15 @@ def investigate(request: dict, config, run_id: str | None = None) -> dict:
     chain = Markovian(run_id, config=ChunkConfig(carryover_tokens=128), log_path=logs / "markovian.jsonl" if logs else None)
     judge = Judge(chain, None if config.sample_mode else Nightshift(config))
     graph = build_graph(wh, trace, run, world, open_memory(logs), judge)
-    state = {"question": question} | ({"week_start": week_start} if week_start else {})
+    state = {"question": question, "days": days} | ({"period_start": start} if start else {})
     try:
         return graph.invoke(state, {"recursion_limit": STEP_LIMIT})["report"]
     except ContractRefused as exc:
         if exc.reason == "out-of-scope":
             raise BadRequest(OUT_OF_SCOPE) from None
         raise
+    except (NotEnoughHistory, OverflowError) as exc:  # OverflowError: a start date near year 1
+        raise BadRequest(f"Not enough records for that period: {exc}. Becuz compares a period with the same days "
+                         "in the 4 periods before it.") from None
     finally:
         judge.close()  # a failed run must not leave a rating running in the background

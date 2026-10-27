@@ -107,13 +107,13 @@ class Judge:
         if not self.nightshift:
             return rules(claim)
         last_error = None
-        for _ in range(2):  # one retry on a failed call or an unusable reply
+        for _ in range(3):  # two retries on a failed call or an unusable reply
             self.calls += 1
             try:
                 completion = self.nightshift.ask_messages(msgs, label="checker judgement", model=JUDGE_MODEL)
             except ProviderError as exc:
                 last_error = exc
-                if exc.status == 429:
+                if exc.status == 429 or exc.status >= 500:  # rate limit, or the provider behind Nightshift failed
                     time.sleep(RATE_LIMIT_WAIT_S)
                 continue
             self.models[completion.model] = self.models.get(completion.model, 0) + 1

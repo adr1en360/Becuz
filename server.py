@@ -140,6 +140,8 @@ class AppServer(ThreadingHTTPServer):
     def work(self, run_id: str, body: dict) -> None:
         try:
             self.jobs[run_id] = {"status": "complete", "report": investigate(body, self.config, run_id=run_id)}
+        except BadRequest as exc:  # the owner's own words, e.g. not enough records for that period
+            self.jobs[run_id] = {"status": "failed", "error": str(exc)}
         except Exception as exc:
             print(f"investigation error: {type(exc).__name__}: {redact(str(exc)[:200])}", file=sys.stderr)
             self.jobs[run_id] = {"status": "failed", "error": "investigation failed"}
