@@ -9,25 +9,31 @@
     "start": "2026-09-14",
     "end": "2026-10-11"
   },
+  "history": {
+    "start": "2026-04-20",
+    "end": "2026-10-18"
+  },
+  "accrual": "an expense with cover_start and cover_end is spread evenly per day over that period",
+  "cost_rule": "a sale line is costed at the latest supplier invoice for its product on or before the sale day",
   "causes": [
     {
       "cause_id": "supplier_cost_rise",
-      "impact_ngn": -46992.0,
+      "impact_ngn": -45408.0,
       "rank": 1
     },
     {
       "cause_id": "wastage_spike",
-      "impact_ngn": -35948.0,
+      "impact_ngn": -25152.0,
       "rank": 2
     },
     {
       "cause_id": "transfer_leakage",
-      "impact_ngn": -28360.0,
+      "impact_ngn": -18200.0,
       "rank": 3
     },
     {
       "cause_id": "promo_overrun",
-      "impact_ngn": -20475.0,
+      "impact_ngn": -14175.0,
       "rank": 4
     }
   ],
@@ -35,12 +41,12 @@
     "pos_charge_rise"
   ],
   "leaked_sale_ids": [
-    "SL-03043",
-    "SL-03067",
-    "SL-03102",
-    "SL-03112",
-    "SL-03132",
-    "SL-03192"
+    "SL-10924",
+    "SL-10957",
+    "SL-11010",
+    "SL-11080",
+    "SL-11139",
+    "SL-11202"
   ],
   "tolerance_pct": 10
 }

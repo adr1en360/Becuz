@@ -1,425 +1,1529 @@
 movement_id,product_id,moved_at,qty,type,unit_cost_ngn,note
-MV-00001,P004,2026-08-24 21:00:00,1,expired,1920.00,closing count
-MV-00002,P004,2026-08-26 21:00:00,1,damaged,1920.00,closing count
-MV-00003,P027,2026-08-26 21:00:00,1,expired,1296.00,closing count
-MV-00004,P030,2026-08-26 21:00:00,1,damaged,4160.00,closing count
-MV-00005,P030,2026-08-27 21:00:00,1,expired,4160.00,closing count
-MV-00006,P027,2026-08-28 21:00:00,1,damaged,1296.00,closing count
-MV-00007,P031,2026-08-28 21:00:00,1,damaged,216.00,closing count
-MV-00008,P004,2026-08-29 21:00:00,1,expired,1920.00,closing count
-MV-00009,P031,2026-08-29 21:00:00,1,expired,216.00,closing count
-MV-00010,P027,2026-08-30 21:00:00,1,expired,1296.00,closing count
-MV-00011,P030,2026-08-30 21:00:00,1,damaged,4160.00,closing count
-MV-00012,P004,2026-08-31 21:00:00,1,damaged,1920.00,closing count
-MV-00013,P004,2026-09-02 21:00:00,1,damaged,1920.00,closing count
-MV-00014,P027,2026-09-02 21:00:00,1,expired,1296.00,closing count
-MV-00015,P030,2026-09-02 21:00:00,1,damaged,4160.00,closing count
-MV-00016,P030,2026-09-03 21:00:00,1,expired,4160.00,closing count
-MV-00017,P027,2026-09-04 21:00:00,1,damaged,1296.00,closing count
-MV-00018,P031,2026-09-04 21:00:00,1,expired,216.00,closing count
-MV-00019,P004,2026-09-05 21:00:00,1,damaged,1920.00,closing count
-MV-00020,P031,2026-09-05 21:00:00,1,damaged,216.00,closing count
-MV-00021,P027,2026-09-06 21:00:00,1,damaged,1296.00,closing count
-MV-00022,P030,2026-09-06 21:00:00,1,expired,4160.00,closing count
-MV-00023,P004,2026-09-07 21:00:00,1,damaged,1920.00,closing count
-MV-00024,P004,2026-09-09 21:00:00,1,expired,1920.00,closing count
-MV-00025,P027,2026-09-09 21:00:00,1,expired,1296.00,closing count
-MV-00026,P030,2026-09-09 21:00:00,1,expired,4160.00,closing count
-MV-00027,P030,2026-09-10 21:00:00,1,expired,4160.00,closing count
-MV-00028,P027,2026-09-11 21:00:00,1,damaged,1296.00,closing count
-MV-00029,P031,2026-09-11 21:00:00,1,expired,216.00,closing count
-MV-00030,P004,2026-09-12 21:00:00,1,damaged,1920.00,closing count
-MV-00031,P031,2026-09-12 21:00:00,1,damaged,216.00,closing count
-MV-00032,P027,2026-09-13 21:00:00,1,damaged,1296.00,closing count
-MV-00033,P030,2026-09-13 21:00:00,1,expired,4160.00,closing count
-MV-00034,P004,2026-09-14 21:00:00,1,expired,1920.00,closing count
-MV-00035,P004,2026-09-16 21:00:00,1,expired,1920.00,closing count
-MV-00036,P027,2026-09-16 21:00:00,1,damaged,1296.00,closing count
-MV-00037,P030,2026-09-16 21:00:00,1,damaged,4160.00,closing count
-MV-00038,P030,2026-09-17 21:00:00,1,expired,4160.00,closing count
-MV-00039,P027,2026-09-18 21:00:00,1,damaged,1296.00,closing count
-MV-00040,P031,2026-09-18 21:00:00,1,damaged,216.00,closing count
-MV-00041,P004,2026-09-19 21:00:00,1,expired,1920.00,closing count
-MV-00042,P031,2026-09-19 21:00:00,1,expired,216.00,closing count
-MV-00043,P027,2026-09-20 21:00:00,1,expired,1296.00,closing count
-MV-00044,P030,2026-09-20 21:00:00,1,expired,4160.00,closing count
-MV-00045,P004,2026-09-21 21:00:00,1,expired,1920.00,closing count
-MV-00046,P004,2026-09-23 21:00:00,1,expired,1920.00,closing count
-MV-00047,P027,2026-09-23 21:00:00,1,expired,1296.00,closing count
-MV-00048,P030,2026-09-23 21:00:00,1,expired,4160.00,closing count
-MV-00049,P030,2026-09-24 21:00:00,1,expired,4160.00,closing count
-MV-00050,P027,2026-09-25 21:00:00,1,expired,1296.00,closing count
-MV-00051,P031,2026-09-25 21:00:00,1,expired,216.00,closing count
-MV-00052,P004,2026-09-26 21:00:00,1,expired,1920.00,closing count
-MV-00053,P031,2026-09-26 21:00:00,1,expired,216.00,closing count
-MV-00054,P027,2026-09-27 21:00:00,1,expired,1296.00,closing count
-MV-00055,P030,2026-09-27 21:00:00,1,damaged,4160.00,closing count
-MV-00056,P004,2026-09-28 21:00:00,1,damaged,1920.00,closing count
-MV-00057,P004,2026-09-30 21:00:00,1,expired,1920.00,closing count
-MV-00058,P027,2026-09-30 21:00:00,1,expired,1296.00,closing count
-MV-00059,P030,2026-09-30 21:00:00,1,expired,4160.00,closing count
-MV-00060,P030,2026-10-01 21:00:00,1,damaged,4160.00,closing count
-MV-00061,P027,2026-10-02 21:00:00,1,damaged,1296.00,closing count
-MV-00062,P031,2026-10-02 21:00:00,1,damaged,216.00,closing count
-MV-00063,P004,2026-10-03 21:00:00,1,damaged,1920.00,closing count
-MV-00064,P031,2026-10-03 21:00:00,1,expired,216.00,closing count
-MV-00065,P027,2026-10-04 21:00:00,1,damaged,1296.00,closing count
-MV-00066,P030,2026-10-04 21:00:00,1,expired,4160.00,closing count
-MV-00067,P004,2026-10-05 21:00:00,1,damaged,1920.00,closing count
-MV-00068,P004,2026-10-07 21:00:00,1,damaged,1920.00,closing count
-MV-00069,P027,2026-10-07 21:00:00,1,damaged,1296.00,closing count
-MV-00070,P030,2026-10-07 21:00:00,1,expired,4160.00,closing count
-MV-00071,P030,2026-10-08 21:00:00,1,damaged,4160.00,closing count
-MV-00072,P027,2026-10-09 21:00:00,1,expired,1296.00,closing count
-MV-00073,P031,2026-10-09 21:00:00,1,expired,216.00,closing count
-MV-00074,P004,2026-10-10 21:00:00,1,expired,1920.00,closing count
-MV-00075,P031,2026-10-10 21:00:00,1,damaged,216.00,closing count
-MV-00076,P027,2026-10-11 21:00:00,1,expired,1296.00,closing count
-MV-00077,P030,2026-10-11 21:00:00,1,expired,4160.00,closing count
-MV-00078,P004,2026-10-12 21:00:00,1,damaged,1920.00,closing count
-MV-00079,P028,2026-10-12 21:00:00,1,damaged,960.00,closing count
-MV-00080,P029,2026-10-12 21:00:00,1,damaged,1200.00,closing count
-MV-00081,P031,2026-10-12 21:00:00,1,expired,216.00,closing count
-MV-00082,P030,2026-10-13 21:00:00,1,expired,4160.00,closing count
-MV-00083,P004,2026-10-14 21:00:00,2,damaged,1920.00,closing count
-MV-00084,P027,2026-10-14 21:00:00,2,damaged,1296.00,closing count
-MV-00085,P028,2026-10-14 21:00:00,1,damaged,960.00,closing count
-MV-00086,P030,2026-10-14 21:00:00,1,damaged,4160.00,closing count
-MV-00087,P031,2026-10-14 21:00:00,1,expired,216.00,closing count
-MV-00088,P027,2026-10-15 21:00:00,1,damaged,1296.00,closing count
-MV-00089,P028,2026-10-15 21:00:00,1,damaged,960.00,closing count
-MV-00090,P030,2026-10-15 21:00:00,2,damaged,4160.00,closing count
-MV-00091,P004,2026-10-16 21:00:00,1,expired,1920.00,closing count
-MV-00092,P027,2026-10-16 21:00:00,2,expired,1296.00,closing count
-MV-00093,P030,2026-10-16 21:00:00,1,damaged,4160.00,closing count
-MV-00094,P031,2026-10-16 21:00:00,2,expired,216.00,closing count
-MV-00095,P004,2026-10-17 21:00:00,1,expired,1920.00,closing count
-MV-00096,P027,2026-10-17 21:00:00,1,damaged,1296.00,closing count
-MV-00097,P028,2026-10-17 21:00:00,1,expired,960.00,closing count
-MV-00098,P029,2026-10-17 21:00:00,1,expired,1200.00,closing count
-MV-00099,P030,2026-10-17 21:00:00,1,damaged,4160.00,closing count
-MV-00100,P031,2026-10-17 21:00:00,1,expired,216.00,closing count
-MV-00101,P004,2026-10-18 21:00:00,1,damaged,1920.00,closing count
-MV-00102,P027,2026-10-18 21:00:00,1,damaged,1296.00,closing count
-MV-00103,P029,2026-10-18 21:00:00,1,damaged,1200.00,closing count
-MV-00104,P030,2026-10-18 21:00:00,2,expired,4160.00,closing count
-MV-00105,P001,2026-08-24 08:00:00,60,receive,1320.00,weekly delivery
-MV-00106,P002,2026-08-24 08:00:00,60,receive,120.00,weekly delivery
-MV-00107,P003,2026-08-24 08:00:00,30,receive,1160.00,weekly delivery
-MV-00108,P004,2026-08-24 08:00:00,30,receive,1920.00,weekly delivery
-MV-00109,P005,2026-08-24 08:00:00,60,receive,200.00,weekly delivery
-MV-00110,P006,2026-08-24 08:00:00,60,receive,200.00,weekly delivery
-MV-00111,P007,2026-08-24 08:00:00,60,receive,880.00,weekly delivery
-MV-00112,P008,2026-08-24 08:00:00,30,receive,1360.00,weekly delivery
-MV-00113,P009,2026-08-24 08:00:00,60,receive,720.00,weekly delivery
-MV-00114,P010,2026-08-24 08:00:00,30,receive,1040.00,weekly delivery
-MV-00115,P011,2026-08-24 08:00:00,30,receive,7840.00,weekly delivery
-MV-00116,P012,2026-08-24 08:00:00,30,receive,1680.00,weekly delivery
-MV-00117,P013,2026-08-24 08:00:00,30,receive,2320.00,weekly delivery
-MV-00118,P014,2026-08-24 08:00:00,30,receive,1840.00,weekly delivery
-MV-00119,P015,2026-08-24 08:00:00,60,receive,160.00,weekly delivery
-MV-00120,P016,2026-08-24 08:00:00,60,receive,40.00,weekly delivery
-MV-00121,P017,2026-08-24 08:00:00,60,receive,48.00,weekly delivery
-MV-00122,P018,2026-08-24 08:00:00,30,receive,2560.00,weekly delivery
-MV-00123,P019,2026-08-24 08:00:00,30,receive,2800.00,weekly delivery
-MV-00124,P020,2026-08-24 08:00:00,30,receive,3120.00,weekly delivery
-MV-00125,P021,2026-08-24 08:00:00,30,receive,1200.00,weekly delivery
-MV-00126,P022,2026-08-24 08:00:00,30,receive,1760.00,weekly delivery
-MV-00127,P023,2026-08-24 08:00:00,60,receive,288.00,weekly delivery
-MV-00128,P024,2026-08-24 08:00:00,60,receive,288.00,weekly delivery
-MV-00129,P025,2026-08-24 08:00:00,60,receive,432.00,weekly delivery
-MV-00130,P026,2026-08-24 08:00:00,60,receive,180.00,weekly delivery
-MV-00131,P027,2026-08-24 08:00:00,30,receive,1296.00,weekly delivery
-MV-00132,P028,2026-08-24 08:00:00,60,receive,960.00,weekly delivery
-MV-00133,P029,2026-08-24 08:00:00,30,receive,1200.00,weekly delivery
-MV-00134,P030,2026-08-24 08:00:00,30,receive,4160.00,weekly delivery
-MV-00135,P031,2026-08-24 08:00:00,60,receive,216.00,weekly delivery
-MV-00136,P032,2026-08-24 08:00:00,30,receive,504.00,weekly delivery
-MV-00137,P033,2026-08-24 08:00:00,30,receive,252.00,weekly delivery
-MV-00138,P034,2026-08-24 08:00:00,30,receive,216.00,weekly delivery
-MV-00139,P035,2026-08-24 08:00:00,30,receive,720.00,weekly delivery
-MV-00140,P036,2026-08-24 08:00:00,30,receive,1280.00,weekly delivery
-MV-00141,P037,2026-08-24 08:00:00,30,receive,1120.00,weekly delivery
-MV-00142,P038,2026-08-24 08:00:00,30,receive,360.00,weekly delivery
-MV-00143,P039,2026-08-24 08:00:00,30,receive,1040.00,weekly delivery
-MV-00144,P040,2026-08-24 08:00:00,30,receive,960.00,weekly delivery
-MV-00145,P001,2026-08-31 08:00:00,60,receive,1320.00,weekly delivery
-MV-00146,P002,2026-08-31 08:00:00,60,receive,120.00,weekly delivery
-MV-00147,P003,2026-08-31 08:00:00,30,receive,1160.00,weekly delivery
-MV-00148,P004,2026-08-31 08:00:00,30,receive,1920.00,weekly delivery
-MV-00149,P005,2026-08-31 08:00:00,60,receive,200.00,weekly delivery
-MV-00150,P006,2026-08-31 08:00:00,60,receive,200.00,weekly delivery
-MV-00151,P007,2026-08-31 08:00:00,60,receive,880.00,weekly delivery
-MV-00152,P008,2026-08-31 08:00:00,30,receive,1360.00,weekly delivery
-MV-00153,P009,2026-08-31 08:00:00,60,receive,720.00,weekly delivery
-MV-00154,P010,2026-08-31 08:00:00,30,receive,1040.00,weekly delivery
-MV-00155,P011,2026-08-31 08:00:00,30,receive,7840.00,weekly delivery
-MV-00156,P012,2026-08-31 08:00:00,30,receive,1680.00,weekly delivery
-MV-00157,P013,2026-08-31 08:00:00,30,receive,2320.00,weekly delivery
-MV-00158,P014,2026-08-31 08:00:00,30,receive,1840.00,weekly delivery
-MV-00159,P015,2026-08-31 08:00:00,60,receive,160.00,weekly delivery
-MV-00160,P016,2026-08-31 08:00:00,60,receive,40.00,weekly delivery
-MV-00161,P017,2026-08-31 08:00:00,60,receive,48.00,weekly delivery
-MV-00162,P018,2026-08-31 08:00:00,30,receive,2560.00,weekly delivery
-MV-00163,P019,2026-08-31 08:00:00,30,receive,2800.00,weekly delivery
-MV-00164,P020,2026-08-31 08:00:00,30,receive,3120.00,weekly delivery
-MV-00165,P021,2026-08-31 08:00:00,30,receive,1200.00,weekly delivery
-MV-00166,P022,2026-08-31 08:00:00,30,receive,1760.00,weekly delivery
-MV-00167,P023,2026-08-31 08:00:00,60,receive,288.00,weekly delivery
-MV-00168,P024,2026-08-31 08:00:00,60,receive,288.00,weekly delivery
-MV-00169,P025,2026-08-31 08:00:00,60,receive,432.00,weekly delivery
-MV-00170,P026,2026-08-31 08:00:00,60,receive,180.00,weekly delivery
-MV-00171,P027,2026-08-31 08:00:00,30,receive,1296.00,weekly delivery
-MV-00172,P028,2026-08-31 08:00:00,60,receive,960.00,weekly delivery
-MV-00173,P029,2026-08-31 08:00:00,30,receive,1200.00,weekly delivery
-MV-00174,P030,2026-08-31 08:00:00,30,receive,4160.00,weekly delivery
-MV-00175,P031,2026-08-31 08:00:00,60,receive,216.00,weekly delivery
-MV-00176,P032,2026-08-31 08:00:00,30,receive,504.00,weekly delivery
-MV-00177,P033,2026-08-31 08:00:00,30,receive,252.00,weekly delivery
-MV-00178,P034,2026-08-31 08:00:00,30,receive,216.00,weekly delivery
-MV-00179,P035,2026-08-31 08:00:00,30,receive,720.00,weekly delivery
-MV-00180,P036,2026-08-31 08:00:00,30,receive,1280.00,weekly delivery
-MV-00181,P037,2026-08-31 08:00:00,30,receive,1120.00,weekly delivery
-MV-00182,P038,2026-08-31 08:00:00,30,receive,360.00,weekly delivery
-MV-00183,P039,2026-08-31 08:00:00,30,receive,1040.00,weekly delivery
-MV-00184,P040,2026-08-31 08:00:00,30,receive,960.00,weekly delivery
-MV-00185,P001,2026-09-07 08:00:00,60,receive,1320.00,weekly delivery
-MV-00186,P002,2026-09-07 08:00:00,60,receive,120.00,weekly delivery
-MV-00187,P003,2026-09-07 08:00:00,30,receive,1160.00,weekly delivery
-MV-00188,P004,2026-09-07 08:00:00,30,receive,1920.00,weekly delivery
-MV-00189,P005,2026-09-07 08:00:00,60,receive,200.00,weekly delivery
-MV-00190,P006,2026-09-07 08:00:00,60,receive,200.00,weekly delivery
-MV-00191,P007,2026-09-07 08:00:00,60,receive,880.00,weekly delivery
-MV-00192,P008,2026-09-07 08:00:00,30,receive,1360.00,weekly delivery
-MV-00193,P009,2026-09-07 08:00:00,60,receive,720.00,weekly delivery
-MV-00194,P010,2026-09-07 08:00:00,30,receive,1040.00,weekly delivery
-MV-00195,P011,2026-09-07 08:00:00,30,receive,7840.00,weekly delivery
-MV-00196,P012,2026-09-07 08:00:00,30,receive,1680.00,weekly delivery
-MV-00197,P013,2026-09-07 08:00:00,30,receive,2320.00,weekly delivery
-MV-00198,P014,2026-09-07 08:00:00,30,receive,1840.00,weekly delivery
-MV-00199,P015,2026-09-07 08:00:00,60,receive,160.00,weekly delivery
-MV-00200,P016,2026-09-07 08:00:00,60,receive,40.00,weekly delivery
-MV-00201,P017,2026-09-07 08:00:00,60,receive,48.00,weekly delivery
-MV-00202,P018,2026-09-07 08:00:00,30,receive,2560.00,weekly delivery
-MV-00203,P019,2026-09-07 08:00:00,30,receive,2800.00,weekly delivery
-MV-00204,P020,2026-09-07 08:00:00,30,receive,3120.00,weekly delivery
-MV-00205,P021,2026-09-07 08:00:00,30,receive,1200.00,weekly delivery
-MV-00206,P022,2026-09-07 08:00:00,30,receive,1760.00,weekly delivery
-MV-00207,P023,2026-09-07 08:00:00,60,receive,288.00,weekly delivery
-MV-00208,P024,2026-09-07 08:00:00,60,receive,288.00,weekly delivery
-MV-00209,P025,2026-09-07 08:00:00,60,receive,432.00,weekly delivery
-MV-00210,P026,2026-09-07 08:00:00,60,receive,180.00,weekly delivery
-MV-00211,P027,2026-09-07 08:00:00,30,receive,1296.00,weekly delivery
-MV-00212,P028,2026-09-07 08:00:00,60,receive,960.00,weekly delivery
-MV-00213,P029,2026-09-07 08:00:00,30,receive,1200.00,weekly delivery
-MV-00214,P030,2026-09-07 08:00:00,30,receive,4160.00,weekly delivery
-MV-00215,P031,2026-09-07 08:00:00,60,receive,216.00,weekly delivery
-MV-00216,P032,2026-09-07 08:00:00,30,receive,504.00,weekly delivery
-MV-00217,P033,2026-09-07 08:00:00,30,receive,252.00,weekly delivery
-MV-00218,P034,2026-09-07 08:00:00,30,receive,216.00,weekly delivery
-MV-00219,P035,2026-09-07 08:00:00,30,receive,720.00,weekly delivery
-MV-00220,P036,2026-09-07 08:00:00,30,receive,1280.00,weekly delivery
-MV-00221,P037,2026-09-07 08:00:00,30,receive,1120.00,weekly delivery
-MV-00222,P038,2026-09-07 08:00:00,30,receive,360.00,weekly delivery
-MV-00223,P039,2026-09-07 08:00:00,30,receive,1040.00,weekly delivery
-MV-00224,P040,2026-09-07 08:00:00,30,receive,960.00,weekly delivery
-MV-00225,P001,2026-09-14 08:00:00,60,receive,1320.00,weekly delivery
-MV-00226,P002,2026-09-14 08:00:00,60,receive,120.00,weekly delivery
-MV-00227,P003,2026-09-14 08:00:00,30,receive,1160.00,weekly delivery
-MV-00228,P004,2026-09-14 08:00:00,30,receive,1920.00,weekly delivery
-MV-00229,P005,2026-09-14 08:00:00,60,receive,200.00,weekly delivery
-MV-00230,P006,2026-09-14 08:00:00,60,receive,200.00,weekly delivery
-MV-00231,P007,2026-09-14 08:00:00,60,receive,880.00,weekly delivery
-MV-00232,P008,2026-09-14 08:00:00,30,receive,1360.00,weekly delivery
-MV-00233,P009,2026-09-14 08:00:00,60,receive,720.00,weekly delivery
-MV-00234,P010,2026-09-14 08:00:00,30,receive,1040.00,weekly delivery
-MV-00235,P011,2026-09-14 08:00:00,30,receive,7840.00,weekly delivery
-MV-00236,P012,2026-09-14 08:00:00,30,receive,1680.00,weekly delivery
-MV-00237,P013,2026-09-14 08:00:00,30,receive,2320.00,weekly delivery
-MV-00238,P014,2026-09-14 08:00:00,30,receive,1840.00,weekly delivery
-MV-00239,P015,2026-09-14 08:00:00,60,receive,160.00,weekly delivery
-MV-00240,P016,2026-09-14 08:00:00,60,receive,40.00,weekly delivery
-MV-00241,P017,2026-09-14 08:00:00,60,receive,48.00,weekly delivery
-MV-00242,P018,2026-09-14 08:00:00,30,receive,2560.00,weekly delivery
-MV-00243,P019,2026-09-14 08:00:00,30,receive,2800.00,weekly delivery
-MV-00244,P020,2026-09-14 08:00:00,30,receive,3120.00,weekly delivery
-MV-00245,P021,2026-09-14 08:00:00,30,receive,1200.00,weekly delivery
-MV-00246,P022,2026-09-14 08:00:00,30,receive,1760.00,weekly delivery
-MV-00247,P023,2026-09-14 08:00:00,60,receive,288.00,weekly delivery
-MV-00248,P024,2026-09-14 08:00:00,60,receive,288.00,weekly delivery
-MV-00249,P025,2026-09-14 08:00:00,60,receive,432.00,weekly delivery
-MV-00250,P026,2026-09-14 08:00:00,60,receive,180.00,weekly delivery
-MV-00251,P027,2026-09-14 08:00:00,30,receive,1296.00,weekly delivery
-MV-00252,P028,2026-09-14 08:00:00,60,receive,960.00,weekly delivery
-MV-00253,P029,2026-09-14 08:00:00,30,receive,1200.00,weekly delivery
-MV-00254,P030,2026-09-14 08:00:00,30,receive,4160.00,weekly delivery
-MV-00255,P031,2026-09-14 08:00:00,60,receive,216.00,weekly delivery
-MV-00256,P032,2026-09-14 08:00:00,30,receive,504.00,weekly delivery
-MV-00257,P033,2026-09-14 08:00:00,30,receive,252.00,weekly delivery
-MV-00258,P034,2026-09-14 08:00:00,30,receive,216.00,weekly delivery
-MV-00259,P035,2026-09-14 08:00:00,30,receive,720.00,weekly delivery
-MV-00260,P036,2026-09-14 08:00:00,30,receive,1280.00,weekly delivery
-MV-00261,P037,2026-09-14 08:00:00,30,receive,1120.00,weekly delivery
-MV-00262,P038,2026-09-14 08:00:00,30,receive,360.00,weekly delivery
-MV-00263,P039,2026-09-14 08:00:00,30,receive,1040.00,weekly delivery
-MV-00264,P040,2026-09-14 08:00:00,30,receive,960.00,weekly delivery
-MV-00265,P001,2026-09-21 08:00:00,60,receive,1320.00,weekly delivery
-MV-00266,P002,2026-09-21 08:00:00,60,receive,120.00,weekly delivery
-MV-00267,P003,2026-09-21 08:00:00,30,receive,1160.00,weekly delivery
-MV-00268,P004,2026-09-21 08:00:00,30,receive,1920.00,weekly delivery
-MV-00269,P005,2026-09-21 08:00:00,60,receive,200.00,weekly delivery
-MV-00270,P006,2026-09-21 08:00:00,60,receive,200.00,weekly delivery
-MV-00271,P007,2026-09-21 08:00:00,60,receive,880.00,weekly delivery
-MV-00272,P008,2026-09-21 08:00:00,30,receive,1360.00,weekly delivery
-MV-00273,P009,2026-09-21 08:00:00,60,receive,720.00,weekly delivery
-MV-00274,P010,2026-09-21 08:00:00,30,receive,1040.00,weekly delivery
-MV-00275,P011,2026-09-21 08:00:00,30,receive,7840.00,weekly delivery
-MV-00276,P012,2026-09-21 08:00:00,30,receive,1680.00,weekly delivery
-MV-00277,P013,2026-09-21 08:00:00,30,receive,2320.00,weekly delivery
-MV-00278,P014,2026-09-21 08:00:00,30,receive,1840.00,weekly delivery
-MV-00279,P015,2026-09-21 08:00:00,60,receive,160.00,weekly delivery
-MV-00280,P016,2026-09-21 08:00:00,60,receive,40.00,weekly delivery
-MV-00281,P017,2026-09-21 08:00:00,60,receive,48.00,weekly delivery
-MV-00282,P018,2026-09-21 08:00:00,30,receive,2560.00,weekly delivery
-MV-00283,P019,2026-09-21 08:00:00,30,receive,2800.00,weekly delivery
-MV-00284,P020,2026-09-21 08:00:00,30,receive,3120.00,weekly delivery
-MV-00285,P021,2026-09-21 08:00:00,30,receive,1200.00,weekly delivery
-MV-00286,P022,2026-09-21 08:00:00,30,receive,1760.00,weekly delivery
-MV-00287,P023,2026-09-21 08:00:00,60,receive,288.00,weekly delivery
-MV-00288,P024,2026-09-21 08:00:00,60,receive,288.00,weekly delivery
-MV-00289,P025,2026-09-21 08:00:00,60,receive,432.00,weekly delivery
-MV-00290,P026,2026-09-21 08:00:00,60,receive,180.00,weekly delivery
-MV-00291,P027,2026-09-21 08:00:00,30,receive,1296.00,weekly delivery
-MV-00292,P028,2026-09-21 08:00:00,60,receive,960.00,weekly delivery
-MV-00293,P029,2026-09-21 08:00:00,30,receive,1200.00,weekly delivery
-MV-00294,P030,2026-09-21 08:00:00,30,receive,4160.00,weekly delivery
-MV-00295,P031,2026-09-21 08:00:00,60,receive,216.00,weekly delivery
-MV-00296,P032,2026-09-21 08:00:00,30,receive,504.00,weekly delivery
-MV-00297,P033,2026-09-21 08:00:00,30,receive,252.00,weekly delivery
-MV-00298,P034,2026-09-21 08:00:00,30,receive,216.00,weekly delivery
-MV-00299,P035,2026-09-21 08:00:00,30,receive,720.00,weekly delivery
-MV-00300,P036,2026-09-21 08:00:00,30,receive,1280.00,weekly delivery
-MV-00301,P037,2026-09-21 08:00:00,30,receive,1120.00,weekly delivery
-MV-00302,P038,2026-09-21 08:00:00,30,receive,360.00,weekly delivery
-MV-00303,P039,2026-09-21 08:00:00,30,receive,1040.00,weekly delivery
-MV-00304,P040,2026-09-21 08:00:00,30,receive,960.00,weekly delivery
-MV-00305,P001,2026-09-28 08:00:00,60,receive,1320.00,weekly delivery
-MV-00306,P002,2026-09-28 08:00:00,60,receive,120.00,weekly delivery
-MV-00307,P003,2026-09-28 08:00:00,30,receive,1160.00,weekly delivery
-MV-00308,P004,2026-09-28 08:00:00,30,receive,1920.00,weekly delivery
-MV-00309,P005,2026-09-28 08:00:00,60,receive,200.00,weekly delivery
-MV-00310,P006,2026-09-28 08:00:00,60,receive,200.00,weekly delivery
-MV-00311,P007,2026-09-28 08:00:00,60,receive,880.00,weekly delivery
-MV-00312,P008,2026-09-28 08:00:00,30,receive,1360.00,weekly delivery
-MV-00313,P009,2026-09-28 08:00:00,60,receive,720.00,weekly delivery
-MV-00314,P010,2026-09-28 08:00:00,30,receive,1040.00,weekly delivery
-MV-00315,P011,2026-09-28 08:00:00,30,receive,7840.00,weekly delivery
-MV-00316,P012,2026-09-28 08:00:00,30,receive,1680.00,weekly delivery
-MV-00317,P013,2026-09-28 08:00:00,30,receive,2320.00,weekly delivery
-MV-00318,P014,2026-09-28 08:00:00,30,receive,1840.00,weekly delivery
-MV-00319,P015,2026-09-28 08:00:00,60,receive,160.00,weekly delivery
-MV-00320,P016,2026-09-28 08:00:00,60,receive,40.00,weekly delivery
-MV-00321,P017,2026-09-28 08:00:00,60,receive,48.00,weekly delivery
-MV-00322,P018,2026-09-28 08:00:00,30,receive,2560.00,weekly delivery
-MV-00323,P019,2026-09-28 08:00:00,30,receive,2800.00,weekly delivery
-MV-00324,P020,2026-09-28 08:00:00,30,receive,3120.00,weekly delivery
-MV-00325,P021,2026-09-28 08:00:00,30,receive,1200.00,weekly delivery
-MV-00326,P022,2026-09-28 08:00:00,30,receive,1760.00,weekly delivery
-MV-00327,P023,2026-09-28 08:00:00,60,receive,288.00,weekly delivery
-MV-00328,P024,2026-09-28 08:00:00,60,receive,288.00,weekly delivery
-MV-00329,P025,2026-09-28 08:00:00,60,receive,432.00,weekly delivery
-MV-00330,P026,2026-09-28 08:00:00,60,receive,180.00,weekly delivery
-MV-00331,P027,2026-09-28 08:00:00,30,receive,1296.00,weekly delivery
-MV-00332,P028,2026-09-28 08:00:00,60,receive,960.00,weekly delivery
-MV-00333,P029,2026-09-28 08:00:00,30,receive,1200.00,weekly delivery
-MV-00334,P030,2026-09-28 08:00:00,30,receive,4160.00,weekly delivery
-MV-00335,P031,2026-09-28 08:00:00,60,receive,216.00,weekly delivery
-MV-00336,P032,2026-09-28 08:00:00,30,receive,504.00,weekly delivery
-MV-00337,P033,2026-09-28 08:00:00,30,receive,252.00,weekly delivery
-MV-00338,P034,2026-09-28 08:00:00,30,receive,216.00,weekly delivery
-MV-00339,P035,2026-09-28 08:00:00,30,receive,720.00,weekly delivery
-MV-00340,P036,2026-09-28 08:00:00,30,receive,1280.00,weekly delivery
-MV-00341,P037,2026-09-28 08:00:00,30,receive,1120.00,weekly delivery
-MV-00342,P038,2026-09-28 08:00:00,30,receive,360.00,weekly delivery
-MV-00343,P039,2026-09-28 08:00:00,30,receive,1040.00,weekly delivery
-MV-00344,P040,2026-09-28 08:00:00,30,receive,960.00,weekly delivery
-MV-00345,P001,2026-10-05 08:00:00,60,receive,1320.00,weekly delivery
-MV-00346,P002,2026-10-05 08:00:00,60,receive,120.00,weekly delivery
-MV-00347,P003,2026-10-05 08:00:00,30,receive,1160.00,weekly delivery
-MV-00348,P004,2026-10-05 08:00:00,30,receive,1920.00,weekly delivery
-MV-00349,P005,2026-10-05 08:00:00,60,receive,200.00,weekly delivery
-MV-00350,P006,2026-10-05 08:00:00,60,receive,200.00,weekly delivery
-MV-00351,P007,2026-10-05 08:00:00,60,receive,880.00,weekly delivery
-MV-00352,P008,2026-10-05 08:00:00,30,receive,1360.00,weekly delivery
-MV-00353,P009,2026-10-05 08:00:00,60,receive,720.00,weekly delivery
-MV-00354,P010,2026-10-05 08:00:00,30,receive,1040.00,weekly delivery
-MV-00355,P011,2026-10-05 08:00:00,30,receive,7840.00,weekly delivery
-MV-00356,P012,2026-10-05 08:00:00,30,receive,1680.00,weekly delivery
-MV-00357,P013,2026-10-05 08:00:00,30,receive,2320.00,weekly delivery
-MV-00358,P014,2026-10-05 08:00:00,30,receive,1840.00,weekly delivery
-MV-00359,P015,2026-10-05 08:00:00,60,receive,160.00,weekly delivery
-MV-00360,P016,2026-10-05 08:00:00,60,receive,40.00,weekly delivery
-MV-00361,P017,2026-10-05 08:00:00,60,receive,48.00,weekly delivery
-MV-00362,P018,2026-10-05 08:00:00,30,receive,2560.00,weekly delivery
-MV-00363,P019,2026-10-05 08:00:00,30,receive,2800.00,weekly delivery
-MV-00364,P020,2026-10-05 08:00:00,30,receive,3120.00,weekly delivery
-MV-00365,P021,2026-10-05 08:00:00,30,receive,1200.00,weekly delivery
-MV-00366,P022,2026-10-05 08:00:00,30,receive,1760.00,weekly delivery
-MV-00367,P023,2026-10-05 08:00:00,60,receive,288.00,weekly delivery
-MV-00368,P024,2026-10-05 08:00:00,60,receive,288.00,weekly delivery
-MV-00369,P025,2026-10-05 08:00:00,60,receive,432.00,weekly delivery
-MV-00370,P026,2026-10-05 08:00:00,60,receive,180.00,weekly delivery
-MV-00371,P027,2026-10-05 08:00:00,30,receive,1296.00,weekly delivery
-MV-00372,P028,2026-10-05 08:00:00,60,receive,960.00,weekly delivery
-MV-00373,P029,2026-10-05 08:00:00,30,receive,1200.00,weekly delivery
-MV-00374,P030,2026-10-05 08:00:00,30,receive,4160.00,weekly delivery
-MV-00375,P031,2026-10-05 08:00:00,60,receive,216.00,weekly delivery
-MV-00376,P032,2026-10-05 08:00:00,30,receive,504.00,weekly delivery
-MV-00377,P033,2026-10-05 08:00:00,30,receive,252.00,weekly delivery
-MV-00378,P034,2026-10-05 08:00:00,30,receive,216.00,weekly delivery
-MV-00379,P035,2026-10-05 08:00:00,30,receive,720.00,weekly delivery
-MV-00380,P036,2026-10-05 08:00:00,30,receive,1280.00,weekly delivery
-MV-00381,P037,2026-10-05 08:00:00,30,receive,1120.00,weekly delivery
-MV-00382,P038,2026-10-05 08:00:00,30,receive,360.00,weekly delivery
-MV-00383,P039,2026-10-05 08:00:00,30,receive,1040.00,weekly delivery
-MV-00384,P040,2026-10-05 08:00:00,30,receive,960.00,weekly delivery
-MV-00385,P001,2026-10-12 08:00:00,60,receive,1320.00,weekly delivery
-MV-00386,P002,2026-10-12 08:00:00,60,receive,120.00,weekly delivery
-MV-00387,P003,2026-10-12 08:00:00,30,receive,1160.00,weekly delivery
-MV-00388,P004,2026-10-12 08:00:00,30,receive,1920.00,weekly delivery
-MV-00389,P005,2026-10-12 08:00:00,60,receive,200.00,weekly delivery
-MV-00390,P006,2026-10-12 08:00:00,60,receive,200.00,weekly delivery
-MV-00391,P007,2026-10-12 08:00:00,60,receive,880.00,weekly delivery
-MV-00392,P008,2026-10-12 08:00:00,30,receive,1360.00,weekly delivery
-MV-00393,P009,2026-10-12 08:00:00,60,receive,720.00,weekly delivery
-MV-00394,P010,2026-10-12 08:00:00,30,receive,1040.00,weekly delivery
-MV-00395,P011,2026-10-12 08:00:00,30,receive,7840.00,weekly delivery
-MV-00396,P012,2026-10-12 08:00:00,30,receive,1680.00,weekly delivery
-MV-00397,P013,2026-10-12 08:00:00,30,receive,2320.00,weekly delivery
-MV-00398,P014,2026-10-12 08:00:00,30,receive,1840.00,weekly delivery
-MV-00399,P015,2026-10-12 08:00:00,60,receive,160.00,weekly delivery
-MV-00400,P016,2026-10-12 08:00:00,60,receive,40.00,weekly delivery
-MV-00401,P017,2026-10-12 08:00:00,60,receive,48.00,weekly delivery
-MV-00402,P018,2026-10-12 08:00:00,30,receive,2560.00,weekly delivery
-MV-00403,P019,2026-10-12 08:00:00,30,receive,2800.00,weekly delivery
-MV-00404,P020,2026-10-12 08:00:00,30,receive,3120.00,weekly delivery
-MV-00405,P021,2026-10-12 08:00:00,30,receive,1200.00,weekly delivery
-MV-00406,P022,2026-10-12 08:00:00,30,receive,1760.00,weekly delivery
-MV-00407,P023,2026-10-12 08:00:00,60,receive,288.00,weekly delivery
-MV-00408,P024,2026-10-12 08:00:00,60,receive,288.00,weekly delivery
-MV-00409,P025,2026-10-12 08:00:00,60,receive,432.00,weekly delivery
-MV-00410,P026,2026-10-12 08:00:00,60,receive,180.00,weekly delivery
-MV-00411,P027,2026-10-12 08:00:00,30,receive,1296.00,weekly delivery
-MV-00412,P028,2026-10-12 08:00:00,60,receive,960.00,weekly delivery
-MV-00413,P029,2026-10-12 08:00:00,30,receive,1200.00,weekly delivery
-MV-00414,P030,2026-10-12 08:00:00,30,receive,4160.00,weekly delivery
-MV-00415,P031,2026-10-12 08:00:00,60,receive,216.00,weekly delivery
-MV-00416,P032,2026-10-12 08:00:00,30,receive,504.00,weekly delivery
-MV-00417,P033,2026-10-12 08:00:00,30,receive,252.00,weekly delivery
-MV-00418,P034,2026-10-12 08:00:00,30,receive,216.00,weekly delivery
-MV-00419,P035,2026-10-12 08:00:00,30,receive,720.00,weekly delivery
-MV-00420,P036,2026-10-12 08:00:00,30,receive,1280.00,weekly delivery
-MV-00421,P037,2026-10-12 08:00:00,30,receive,1120.00,weekly delivery
-MV-00422,P038,2026-10-12 08:00:00,30,receive,360.00,weekly delivery
-MV-00423,P039,2026-10-12 08:00:00,30,receive,1040.00,weekly delivery
-MV-00424,P040,2026-10-12 08:00:00,30,receive,960.00,weekly delivery
+MV-00001,P004,2026-04-20 21:00:00,1,expired,1920.00,closing count
+MV-00002,P004,2026-04-22 21:00:00,1,damaged,1920.00,closing count
+MV-00003,P027,2026-04-22 21:00:00,1,expired,1296.00,closing count
+MV-00004,P030,2026-04-22 21:00:00,1,damaged,4160.00,closing count
+MV-00005,P030,2026-04-23 21:00:00,1,expired,4160.00,closing count
+MV-00006,P027,2026-04-24 21:00:00,1,damaged,1296.00,closing count
+MV-00007,P031,2026-04-24 21:00:00,1,damaged,216.00,closing count
+MV-00008,P004,2026-04-25 21:00:00,1,expired,1920.00,closing count
+MV-00009,P031,2026-04-25 21:00:00,1,expired,216.00,closing count
+MV-00010,P027,2026-04-26 21:00:00,1,expired,1296.00,closing count
+MV-00011,P030,2026-04-26 21:00:00,1,damaged,4160.00,closing count
+MV-00012,P004,2026-04-27 21:00:00,1,damaged,1920.00,closing count
+MV-00013,P004,2026-04-29 21:00:00,1,damaged,1920.00,closing count
+MV-00014,P027,2026-04-29 21:00:00,1,expired,1296.00,closing count
+MV-00015,P030,2026-04-29 21:00:00,1,damaged,4160.00,closing count
+MV-00016,P030,2026-04-30 21:00:00,1,expired,4160.00,closing count
+MV-00017,P027,2026-05-01 21:00:00,1,damaged,1296.00,closing count
+MV-00018,P031,2026-05-01 21:00:00,1,expired,216.00,closing count
+MV-00019,P004,2026-05-02 21:00:00,1,damaged,1920.00,closing count
+MV-00020,P031,2026-05-02 21:00:00,1,damaged,216.00,closing count
+MV-00021,P027,2026-05-03 21:00:00,1,damaged,1296.00,closing count
+MV-00022,P030,2026-05-03 21:00:00,1,expired,4160.00,closing count
+MV-00023,P004,2026-05-04 21:00:00,1,damaged,1920.00,closing count
+MV-00024,P004,2026-05-06 21:00:00,1,expired,1920.00,closing count
+MV-00025,P027,2026-05-06 21:00:00,1,expired,1296.00,closing count
+MV-00026,P030,2026-05-06 21:00:00,1,expired,4160.00,closing count
+MV-00027,P030,2026-05-07 21:00:00,1,expired,4160.00,closing count
+MV-00028,P027,2026-05-08 21:00:00,1,damaged,1296.00,closing count
+MV-00029,P031,2026-05-08 21:00:00,1,expired,216.00,closing count
+MV-00030,P004,2026-05-09 21:00:00,1,damaged,1920.00,closing count
+MV-00031,P031,2026-05-09 21:00:00,1,damaged,216.00,closing count
+MV-00032,P027,2026-05-10 21:00:00,1,damaged,1296.00,closing count
+MV-00033,P030,2026-05-10 21:00:00,1,expired,4160.00,closing count
+MV-00034,P004,2026-05-11 21:00:00,1,expired,1920.00,closing count
+MV-00035,P004,2026-05-13 21:00:00,1,expired,1920.00,closing count
+MV-00036,P027,2026-05-13 21:00:00,1,damaged,1296.00,closing count
+MV-00037,P030,2026-05-13 21:00:00,1,damaged,4160.00,closing count
+MV-00038,P030,2026-05-14 21:00:00,1,expired,4160.00,closing count
+MV-00039,P027,2026-05-15 21:00:00,1,damaged,1296.00,closing count
+MV-00040,P031,2026-05-15 21:00:00,1,damaged,216.00,closing count
+MV-00041,P004,2026-05-16 21:00:00,1,expired,1920.00,closing count
+MV-00042,P031,2026-05-16 21:00:00,1,expired,216.00,closing count
+MV-00043,P027,2026-05-17 21:00:00,1,expired,1296.00,closing count
+MV-00044,P030,2026-05-17 21:00:00,1,expired,4160.00,closing count
+MV-00045,P004,2026-05-18 21:00:00,1,expired,1920.00,closing count
+MV-00046,P004,2026-05-20 21:00:00,1,expired,1920.00,closing count
+MV-00047,P027,2026-05-20 21:00:00,1,expired,1296.00,closing count
+MV-00048,P030,2026-05-20 21:00:00,1,expired,4160.00,closing count
+MV-00049,P030,2026-05-21 21:00:00,1,expired,4160.00,closing count
+MV-00050,P027,2026-05-22 21:00:00,1,expired,1296.00,closing count
+MV-00051,P031,2026-05-22 21:00:00,1,expired,216.00,closing count
+MV-00052,P004,2026-05-23 21:00:00,1,expired,1920.00,closing count
+MV-00053,P031,2026-05-23 21:00:00,1,expired,216.00,closing count
+MV-00054,P027,2026-05-24 21:00:00,1,expired,1296.00,closing count
+MV-00055,P030,2026-05-24 21:00:00,1,damaged,4160.00,closing count
+MV-00056,P004,2026-05-25 21:00:00,1,damaged,1920.00,closing count
+MV-00057,P004,2026-05-27 21:00:00,1,expired,1920.00,closing count
+MV-00058,P027,2026-05-27 21:00:00,1,expired,1296.00,closing count
+MV-00059,P030,2026-05-27 21:00:00,1,expired,4160.00,closing count
+MV-00060,P030,2026-05-28 21:00:00,1,damaged,4160.00,closing count
+MV-00061,P027,2026-05-29 21:00:00,1,damaged,1296.00,closing count
+MV-00062,P031,2026-05-29 21:00:00,1,damaged,216.00,closing count
+MV-00063,P004,2026-05-30 21:00:00,1,damaged,1920.00,closing count
+MV-00064,P031,2026-05-30 21:00:00,1,expired,216.00,closing count
+MV-00065,P027,2026-05-31 21:00:00,1,damaged,1296.00,closing count
+MV-00066,P030,2026-05-31 21:00:00,1,expired,4160.00,closing count
+MV-00067,P004,2026-06-01 21:00:00,1,damaged,1920.00,closing count
+MV-00068,P004,2026-06-03 21:00:00,1,damaged,1920.00,closing count
+MV-00069,P027,2026-06-03 21:00:00,1,damaged,1296.00,closing count
+MV-00070,P030,2026-06-03 21:00:00,1,expired,4160.00,closing count
+MV-00071,P030,2026-06-04 21:00:00,1,damaged,4160.00,closing count
+MV-00072,P027,2026-06-05 21:00:00,1,expired,1296.00,closing count
+MV-00073,P031,2026-06-05 21:00:00,1,expired,216.00,closing count
+MV-00074,P004,2026-06-06 21:00:00,1,expired,1920.00,closing count
+MV-00075,P031,2026-06-06 21:00:00,1,damaged,216.00,closing count
+MV-00076,P027,2026-06-07 21:00:00,1,expired,1296.00,closing count
+MV-00077,P030,2026-06-07 21:00:00,1,expired,4160.00,closing count
+MV-00078,P004,2026-06-08 21:00:00,1,expired,1920.00,closing count
+MV-00079,P004,2026-06-10 21:00:00,1,expired,1920.00,closing count
+MV-00080,P027,2026-06-10 21:00:00,1,damaged,1296.00,closing count
+MV-00081,P030,2026-06-10 21:00:00,1,damaged,4160.00,closing count
+MV-00082,P030,2026-06-11 21:00:00,1,expired,4160.00,closing count
+MV-00083,P027,2026-06-12 21:00:00,1,expired,1296.00,closing count
+MV-00084,P031,2026-06-12 21:00:00,1,expired,216.00,closing count
+MV-00085,P004,2026-06-13 21:00:00,1,expired,1920.00,closing count
+MV-00086,P031,2026-06-13 21:00:00,1,damaged,216.00,closing count
+MV-00087,P027,2026-06-14 21:00:00,1,damaged,1296.00,closing count
+MV-00088,P030,2026-06-14 21:00:00,1,damaged,4160.00,closing count
+MV-00089,P004,2026-06-15 21:00:00,1,expired,1920.00,closing count
+MV-00090,P004,2026-06-17 21:00:00,1,damaged,1920.00,closing count
+MV-00091,P027,2026-06-17 21:00:00,1,damaged,1296.00,closing count
+MV-00092,P030,2026-06-17 21:00:00,1,damaged,4160.00,closing count
+MV-00093,P030,2026-06-18 21:00:00,1,damaged,4160.00,closing count
+MV-00094,P027,2026-06-19 21:00:00,1,expired,1296.00,closing count
+MV-00095,P031,2026-06-19 21:00:00,1,damaged,216.00,closing count
+MV-00096,P004,2026-06-20 21:00:00,1,expired,1920.00,closing count
+MV-00097,P031,2026-06-20 21:00:00,1,damaged,216.00,closing count
+MV-00098,P027,2026-06-21 21:00:00,1,damaged,1296.00,closing count
+MV-00099,P030,2026-06-21 21:00:00,1,damaged,4160.00,closing count
+MV-00100,P004,2026-06-22 21:00:00,1,expired,1920.00,closing count
+MV-00101,P004,2026-06-24 21:00:00,1,damaged,1920.00,closing count
+MV-00102,P027,2026-06-24 21:00:00,1,damaged,1296.00,closing count
+MV-00103,P030,2026-06-24 21:00:00,1,expired,4160.00,closing count
+MV-00104,P030,2026-06-25 21:00:00,1,expired,4160.00,closing count
+MV-00105,P027,2026-06-26 21:00:00,1,expired,1296.00,closing count
+MV-00106,P031,2026-06-26 21:00:00,1,damaged,216.00,closing count
+MV-00107,P004,2026-06-27 21:00:00,1,expired,1920.00,closing count
+MV-00108,P031,2026-06-27 21:00:00,1,damaged,216.00,closing count
+MV-00109,P027,2026-06-28 21:00:00,1,damaged,1296.00,closing count
+MV-00110,P030,2026-06-28 21:00:00,1,damaged,4160.00,closing count
+MV-00111,P004,2026-06-29 21:00:00,1,expired,1920.00,closing count
+MV-00112,P004,2026-07-01 21:00:00,1,expired,1920.00,closing count
+MV-00113,P027,2026-07-01 21:00:00,1,expired,1296.00,closing count
+MV-00114,P030,2026-07-01 21:00:00,1,damaged,4160.00,closing count
+MV-00115,P030,2026-07-02 21:00:00,1,damaged,4160.00,closing count
+MV-00116,P027,2026-07-03 21:00:00,1,damaged,1296.00,closing count
+MV-00117,P031,2026-07-03 21:00:00,1,damaged,216.00,closing count
+MV-00118,P004,2026-07-04 21:00:00,1,damaged,1920.00,closing count
+MV-00119,P031,2026-07-04 21:00:00,1,expired,216.00,closing count
+MV-00120,P027,2026-07-05 21:00:00,1,damaged,1296.00,closing count
+MV-00121,P030,2026-07-05 21:00:00,1,expired,4160.00,closing count
+MV-00122,P004,2026-07-06 21:00:00,1,expired,1920.00,closing count
+MV-00123,P004,2026-07-08 21:00:00,1,expired,1920.00,closing count
+MV-00124,P027,2026-07-08 21:00:00,1,damaged,1296.00,closing count
+MV-00125,P030,2026-07-08 21:00:00,1,damaged,4160.00,closing count
+MV-00126,P030,2026-07-09 21:00:00,1,damaged,4160.00,closing count
+MV-00127,P027,2026-07-10 21:00:00,1,damaged,1296.00,closing count
+MV-00128,P031,2026-07-10 21:00:00,1,damaged,216.00,closing count
+MV-00129,P004,2026-07-11 21:00:00,1,expired,1920.00,closing count
+MV-00130,P031,2026-07-11 21:00:00,1,expired,216.00,closing count
+MV-00131,P027,2026-07-12 21:00:00,1,expired,1296.00,closing count
+MV-00132,P030,2026-07-12 21:00:00,1,expired,4160.00,closing count
+MV-00133,P004,2026-07-13 21:00:00,1,damaged,1920.00,closing count
+MV-00134,P004,2026-07-15 21:00:00,1,damaged,1920.00,closing count
+MV-00135,P027,2026-07-15 21:00:00,1,expired,1296.00,closing count
+MV-00136,P030,2026-07-15 21:00:00,1,expired,4160.00,closing count
+MV-00137,P030,2026-07-16 21:00:00,1,expired,4160.00,closing count
+MV-00138,P027,2026-07-17 21:00:00,1,expired,1296.00,closing count
+MV-00139,P031,2026-07-17 21:00:00,1,expired,216.00,closing count
+MV-00140,P004,2026-07-18 21:00:00,1,expired,1920.00,closing count
+MV-00141,P031,2026-07-18 21:00:00,1,expired,216.00,closing count
+MV-00142,P027,2026-07-19 21:00:00,1,expired,1296.00,closing count
+MV-00143,P030,2026-07-19 21:00:00,1,damaged,4160.00,closing count
+MV-00144,P004,2026-07-20 21:00:00,1,damaged,1920.00,closing count
+MV-00145,P004,2026-07-22 21:00:00,1,damaged,1920.00,closing count
+MV-00146,P027,2026-07-22 21:00:00,1,expired,1296.00,closing count
+MV-00147,P030,2026-07-22 21:00:00,1,damaged,4160.00,closing count
+MV-00148,P030,2026-07-23 21:00:00,1,damaged,4160.00,closing count
+MV-00149,P027,2026-07-24 21:00:00,1,damaged,1296.00,closing count
+MV-00150,P031,2026-07-24 21:00:00,1,damaged,216.00,closing count
+MV-00151,P004,2026-07-25 21:00:00,1,expired,1920.00,closing count
+MV-00152,P031,2026-07-25 21:00:00,1,expired,216.00,closing count
+MV-00153,P027,2026-07-26 21:00:00,1,damaged,1296.00,closing count
+MV-00154,P030,2026-07-26 21:00:00,1,expired,4160.00,closing count
+MV-00155,P004,2026-07-27 21:00:00,1,expired,1920.00,closing count
+MV-00156,P004,2026-07-29 21:00:00,1,expired,1920.00,closing count
+MV-00157,P027,2026-07-29 21:00:00,1,damaged,1296.00,closing count
+MV-00158,P030,2026-07-29 21:00:00,1,damaged,4160.00,closing count
+MV-00159,P030,2026-07-30 21:00:00,1,expired,4160.00,closing count
+MV-00160,P027,2026-07-31 21:00:00,1,damaged,1296.00,closing count
+MV-00161,P031,2026-07-31 21:00:00,1,damaged,216.00,closing count
+MV-00162,P004,2026-08-01 21:00:00,1,expired,1920.00,closing count
+MV-00163,P031,2026-08-01 21:00:00,1,damaged,216.00,closing count
+MV-00164,P027,2026-08-02 21:00:00,1,damaged,1296.00,closing count
+MV-00165,P030,2026-08-02 21:00:00,1,damaged,4160.00,closing count
+MV-00166,P004,2026-08-03 21:00:00,1,damaged,1920.00,closing count
+MV-00167,P004,2026-08-05 21:00:00,1,expired,1920.00,closing count
+MV-00168,P027,2026-08-05 21:00:00,1,expired,1296.00,closing count
+MV-00169,P030,2026-08-05 21:00:00,1,damaged,4160.00,closing count
+MV-00170,P030,2026-08-06 21:00:00,1,expired,4160.00,closing count
+MV-00171,P027,2026-08-07 21:00:00,1,damaged,1296.00,closing count
+MV-00172,P031,2026-08-07 21:00:00,1,expired,216.00,closing count
+MV-00173,P004,2026-08-08 21:00:00,1,expired,1920.00,closing count
+MV-00174,P031,2026-08-08 21:00:00,1,expired,216.00,closing count
+MV-00175,P027,2026-08-09 21:00:00,1,damaged,1296.00,closing count
+MV-00176,P030,2026-08-09 21:00:00,1,expired,4160.00,closing count
+MV-00177,P004,2026-08-10 21:00:00,1,damaged,1920.00,closing count
+MV-00178,P004,2026-08-12 21:00:00,1,expired,1920.00,closing count
+MV-00179,P027,2026-08-12 21:00:00,1,damaged,1296.00,closing count
+MV-00180,P030,2026-08-12 21:00:00,1,damaged,4160.00,closing count
+MV-00181,P030,2026-08-13 21:00:00,1,expired,4160.00,closing count
+MV-00182,P027,2026-08-14 21:00:00,1,damaged,1296.00,closing count
+MV-00183,P031,2026-08-14 21:00:00,1,damaged,216.00,closing count
+MV-00184,P004,2026-08-15 21:00:00,1,expired,1920.00,closing count
+MV-00185,P031,2026-08-15 21:00:00,1,damaged,216.00,closing count
+MV-00186,P027,2026-08-16 21:00:00,1,damaged,1296.00,closing count
+MV-00187,P030,2026-08-16 21:00:00,1,damaged,4160.00,closing count
+MV-00188,P004,2026-08-17 21:00:00,1,expired,1920.00,closing count
+MV-00189,P004,2026-08-19 21:00:00,1,expired,1920.00,closing count
+MV-00190,P027,2026-08-19 21:00:00,1,damaged,1296.00,closing count
+MV-00191,P030,2026-08-19 21:00:00,1,expired,4160.00,closing count
+MV-00192,P030,2026-08-20 21:00:00,1,expired,4160.00,closing count
+MV-00193,P027,2026-08-21 21:00:00,1,damaged,1296.00,closing count
+MV-00194,P031,2026-08-21 21:00:00,1,damaged,216.00,closing count
+MV-00195,P004,2026-08-22 21:00:00,1,expired,1920.00,closing count
+MV-00196,P031,2026-08-22 21:00:00,1,damaged,216.00,closing count
+MV-00197,P027,2026-08-23 21:00:00,1,damaged,1296.00,closing count
+MV-00198,P030,2026-08-23 21:00:00,1,expired,4160.00,closing count
+MV-00199,P004,2026-08-24 21:00:00,1,expired,1920.00,closing count
+MV-00200,P004,2026-08-26 21:00:00,1,expired,1920.00,closing count
+MV-00201,P027,2026-08-26 21:00:00,1,damaged,1296.00,closing count
+MV-00202,P030,2026-08-26 21:00:00,1,damaged,4160.00,closing count
+MV-00203,P030,2026-08-27 21:00:00,1,expired,4160.00,closing count
+MV-00204,P027,2026-08-28 21:00:00,1,expired,1296.00,closing count
+MV-00205,P031,2026-08-28 21:00:00,1,expired,216.00,closing count
+MV-00206,P004,2026-08-29 21:00:00,1,expired,1920.00,closing count
+MV-00207,P031,2026-08-29 21:00:00,1,damaged,216.00,closing count
+MV-00208,P027,2026-08-30 21:00:00,1,damaged,1296.00,closing count
+MV-00209,P030,2026-08-30 21:00:00,1,damaged,4160.00,closing count
+MV-00210,P004,2026-08-31 21:00:00,1,damaged,1920.00,closing count
+MV-00211,P004,2026-09-02 21:00:00,1,damaged,1920.00,closing count
+MV-00212,P027,2026-09-02 21:00:00,1,damaged,1296.00,closing count
+MV-00213,P030,2026-09-02 21:00:00,1,damaged,4160.00,closing count
+MV-00214,P030,2026-09-03 21:00:00,1,damaged,4160.00,closing count
+MV-00215,P027,2026-09-04 21:00:00,1,damaged,1296.00,closing count
+MV-00216,P031,2026-09-04 21:00:00,1,damaged,216.00,closing count
+MV-00217,P004,2026-09-05 21:00:00,1,damaged,1920.00,closing count
+MV-00218,P031,2026-09-05 21:00:00,1,expired,216.00,closing count
+MV-00219,P027,2026-09-06 21:00:00,1,expired,1296.00,closing count
+MV-00220,P030,2026-09-06 21:00:00,1,damaged,4160.00,closing count
+MV-00221,P004,2026-09-07 21:00:00,1,expired,1920.00,closing count
+MV-00222,P004,2026-09-09 21:00:00,1,damaged,1920.00,closing count
+MV-00223,P027,2026-09-09 21:00:00,1,expired,1296.00,closing count
+MV-00224,P030,2026-09-09 21:00:00,1,expired,4160.00,closing count
+MV-00225,P030,2026-09-10 21:00:00,1,expired,4160.00,closing count
+MV-00226,P027,2026-09-11 21:00:00,1,expired,1296.00,closing count
+MV-00227,P031,2026-09-11 21:00:00,1,expired,216.00,closing count
+MV-00228,P004,2026-09-12 21:00:00,1,damaged,1920.00,closing count
+MV-00229,P031,2026-09-12 21:00:00,1,damaged,216.00,closing count
+MV-00230,P027,2026-09-13 21:00:00,1,damaged,1296.00,closing count
+MV-00231,P030,2026-09-13 21:00:00,1,expired,4160.00,closing count
+MV-00232,P004,2026-09-14 21:00:00,1,damaged,1920.00,closing count
+MV-00233,P004,2026-09-16 21:00:00,1,expired,1920.00,closing count
+MV-00234,P027,2026-09-16 21:00:00,1,damaged,1296.00,closing count
+MV-00235,P030,2026-09-16 21:00:00,1,damaged,4160.00,closing count
+MV-00236,P030,2026-09-17 21:00:00,1,expired,4160.00,closing count
+MV-00237,P027,2026-09-18 21:00:00,1,expired,1296.00,closing count
+MV-00238,P031,2026-09-18 21:00:00,1,expired,216.00,closing count
+MV-00239,P004,2026-09-19 21:00:00,1,expired,1920.00,closing count
+MV-00240,P031,2026-09-19 21:00:00,1,damaged,216.00,closing count
+MV-00241,P027,2026-09-20 21:00:00,1,expired,1296.00,closing count
+MV-00242,P030,2026-09-20 21:00:00,1,damaged,4160.00,closing count
+MV-00243,P004,2026-09-21 21:00:00,1,damaged,1920.00,closing count
+MV-00244,P004,2026-09-23 21:00:00,1,damaged,1920.00,closing count
+MV-00245,P027,2026-09-23 21:00:00,1,expired,1296.00,closing count
+MV-00246,P030,2026-09-23 21:00:00,1,damaged,4160.00,closing count
+MV-00247,P030,2026-09-24 21:00:00,1,damaged,4160.00,closing count
+MV-00248,P027,2026-09-25 21:00:00,1,damaged,1296.00,closing count
+MV-00249,P031,2026-09-25 21:00:00,1,damaged,216.00,closing count
+MV-00250,P004,2026-09-26 21:00:00,1,damaged,1920.00,closing count
+MV-00251,P031,2026-09-26 21:00:00,1,damaged,216.00,closing count
+MV-00252,P027,2026-09-27 21:00:00,1,expired,1296.00,closing count
+MV-00253,P030,2026-09-27 21:00:00,1,expired,4160.00,closing count
+MV-00254,P004,2026-09-28 21:00:00,1,expired,1920.00,closing count
+MV-00255,P004,2026-09-30 21:00:00,1,damaged,1920.00,closing count
+MV-00256,P027,2026-09-30 21:00:00,1,expired,1296.00,closing count
+MV-00257,P030,2026-09-30 21:00:00,1,expired,4160.00,closing count
+MV-00258,P030,2026-10-01 21:00:00,1,expired,4160.00,closing count
+MV-00259,P027,2026-10-02 21:00:00,1,expired,1296.00,closing count
+MV-00260,P031,2026-10-02 21:00:00,1,expired,216.00,closing count
+MV-00261,P004,2026-10-03 21:00:00,1,expired,1920.00,closing count
+MV-00262,P031,2026-10-03 21:00:00,1,expired,216.00,closing count
+MV-00263,P027,2026-10-04 21:00:00,1,damaged,1296.00,closing count
+MV-00264,P030,2026-10-04 21:00:00,1,expired,4160.00,closing count
+MV-00265,P004,2026-10-05 21:00:00,1,damaged,1920.00,closing count
+MV-00266,P004,2026-10-07 21:00:00,1,expired,1920.00,closing count
+MV-00267,P027,2026-10-07 21:00:00,1,expired,1296.00,closing count
+MV-00268,P030,2026-10-07 21:00:00,1,expired,4160.00,closing count
+MV-00269,P030,2026-10-08 21:00:00,1,expired,4160.00,closing count
+MV-00270,P027,2026-10-09 21:00:00,1,damaged,1296.00,closing count
+MV-00271,P031,2026-10-09 21:00:00,1,damaged,216.00,closing count
+MV-00272,P004,2026-10-10 21:00:00,1,expired,1920.00,closing count
+MV-00273,P031,2026-10-10 21:00:00,1,expired,216.00,closing count
+MV-00274,P027,2026-10-11 21:00:00,1,damaged,1296.00,closing count
+MV-00275,P030,2026-10-11 21:00:00,1,expired,4160.00,closing count
+MV-00276,P004,2026-10-12 21:00:00,2,expired,1920.00,closing count
+MV-00277,P027,2026-10-12 21:00:00,1,expired,1296.00,closing count
+MV-00278,P028,2026-10-12 21:00:00,1,damaged,960.00,closing count
+MV-00279,P030,2026-10-12 21:00:00,1,damaged,4160.00,closing count
+MV-00280,P031,2026-10-12 21:00:00,1,expired,216.00,closing count
+MV-00281,P004,2026-10-13 21:00:00,1,expired,1920.00,closing count
+MV-00282,P027,2026-10-13 21:00:00,1,expired,1296.00,closing count
+MV-00283,P028,2026-10-13 21:00:00,1,expired,960.00,closing count
+MV-00284,P030,2026-10-13 21:00:00,1,expired,4160.00,closing count
+MV-00285,P004,2026-10-14 21:00:00,2,damaged,1920.00,closing count
+MV-00286,P027,2026-10-14 21:00:00,1,expired,1296.00,closing count
+MV-00287,P028,2026-10-14 21:00:00,1,damaged,960.00,closing count
+MV-00288,P029,2026-10-14 21:00:00,1,expired,1200.00,closing count
+MV-00289,P030,2026-10-14 21:00:00,1,expired,4160.00,closing count
+MV-00290,P031,2026-10-14 21:00:00,1,expired,216.00,closing count
+MV-00291,P004,2026-10-15 21:00:00,1,expired,1920.00,closing count
+MV-00292,P027,2026-10-15 21:00:00,1,expired,1296.00,closing count
+MV-00293,P028,2026-10-15 21:00:00,1,damaged,960.00,closing count
+MV-00294,P030,2026-10-15 21:00:00,2,expired,4160.00,closing count
+MV-00295,P031,2026-10-15 21:00:00,1,damaged,216.00,closing count
+MV-00296,P027,2026-10-16 21:00:00,1,expired,1296.00,closing count
+MV-00297,P029,2026-10-16 21:00:00,1,expired,1200.00,closing count
+MV-00298,P031,2026-10-16 21:00:00,2,damaged,216.00,closing count
+MV-00299,P004,2026-10-17 21:00:00,1,expired,1920.00,closing count
+MV-00300,P027,2026-10-17 21:00:00,1,expired,1296.00,closing count
+MV-00301,P028,2026-10-17 21:00:00,1,damaged,960.00,closing count
+MV-00302,P029,2026-10-17 21:00:00,1,expired,1200.00,closing count
+MV-00303,P031,2026-10-17 21:00:00,2,damaged,216.00,closing count
+MV-00304,P027,2026-10-18 21:00:00,1,damaged,1296.00,closing count
+MV-00305,P028,2026-10-18 21:00:00,1,expired,960.00,closing count
+MV-00306,P030,2026-10-18 21:00:00,2,damaged,4160.00,closing count
+MV-00307,P001,2026-04-20 08:00:00,60,receive,1320.00,delivery
+MV-00308,P002,2026-04-20 08:00:00,60,receive,120.00,delivery
+MV-00309,P003,2026-04-20 08:00:00,30,receive,1160.00,delivery
+MV-00310,P004,2026-04-20 08:00:00,30,receive,1920.00,delivery
+MV-00311,P005,2026-04-20 08:00:00,60,receive,200.00,delivery
+MV-00312,P006,2026-04-20 08:00:00,60,receive,200.00,delivery
+MV-00313,P007,2026-04-20 08:00:00,60,receive,880.00,delivery
+MV-00314,P008,2026-04-20 08:00:00,30,receive,1360.00,delivery
+MV-00315,P009,2026-04-20 08:00:00,60,receive,720.00,delivery
+MV-00316,P010,2026-04-20 08:00:00,30,receive,1040.00,delivery
+MV-00317,P011,2026-04-20 08:00:00,30,receive,7840.00,delivery
+MV-00318,P012,2026-04-20 08:00:00,30,receive,1680.00,delivery
+MV-00319,P013,2026-04-20 08:00:00,30,receive,2320.00,delivery
+MV-00320,P014,2026-04-20 08:00:00,30,receive,1840.00,delivery
+MV-00321,P015,2026-04-20 08:00:00,60,receive,160.00,delivery
+MV-00322,P016,2026-04-20 08:00:00,60,receive,40.00,delivery
+MV-00323,P017,2026-04-20 08:00:00,60,receive,48.00,delivery
+MV-00324,P018,2026-04-20 08:00:00,30,receive,2560.00,delivery
+MV-00325,P019,2026-04-20 08:00:00,30,receive,2800.00,delivery
+MV-00326,P020,2026-04-20 08:00:00,30,receive,3120.00,delivery
+MV-00327,P021,2026-04-20 08:00:00,30,receive,1200.00,delivery
+MV-00328,P022,2026-04-20 08:00:00,30,receive,1760.00,delivery
+MV-00329,P023,2026-04-20 08:00:00,60,receive,288.00,delivery
+MV-00330,P024,2026-04-20 08:00:00,60,receive,288.00,delivery
+MV-00331,P025,2026-04-20 08:00:00,60,receive,432.00,delivery
+MV-00332,P026,2026-04-20 08:00:00,60,receive,180.00,delivery
+MV-00333,P027,2026-04-20 08:00:00,20,receive,1296.00,delivery
+MV-00334,P028,2026-04-20 08:00:00,24,receive,960.00,delivery
+MV-00335,P029,2026-04-20 08:00:00,20,receive,1200.00,delivery
+MV-00336,P030,2026-04-20 08:00:00,30,receive,4160.00,delivery
+MV-00337,P031,2026-04-20 08:00:00,24,receive,216.00,delivery
+MV-00338,P032,2026-04-20 08:00:00,30,receive,504.00,delivery
+MV-00339,P033,2026-04-20 08:00:00,30,receive,252.00,delivery
+MV-00340,P034,2026-04-20 08:00:00,30,receive,216.00,delivery
+MV-00341,P035,2026-04-20 08:00:00,30,receive,720.00,delivery
+MV-00342,P036,2026-04-20 08:00:00,30,receive,1280.00,delivery
+MV-00343,P037,2026-04-20 08:00:00,30,receive,1120.00,delivery
+MV-00344,P038,2026-04-20 08:00:00,30,receive,360.00,delivery
+MV-00345,P039,2026-04-20 08:00:00,30,receive,1040.00,delivery
+MV-00346,P040,2026-04-20 08:00:00,30,receive,960.00,delivery
+MV-00347,P006,2026-04-21 08:00:00,60,receive,200.00,delivery
+MV-00348,P026,2026-04-21 08:00:00,60,receive,180.00,delivery
+MV-00349,P027,2026-04-21 08:00:00,20,receive,1296.00,delivery
+MV-00350,P031,2026-04-21 08:00:00,24,receive,216.00,delivery
+MV-00351,P004,2026-04-22 08:00:00,20,receive,1920.00,delivery
+MV-00352,P016,2026-04-22 08:00:00,60,receive,40.00,delivery
+MV-00353,P027,2026-04-22 08:00:00,20,receive,1296.00,delivery
+MV-00354,P028,2026-04-22 08:00:00,30,receive,960.00,delivery
+MV-00355,P029,2026-04-22 08:00:00,30,receive,1200.00,delivery
+MV-00356,P030,2026-04-22 08:00:00,20,receive,4160.00,delivery
+MV-00357,P004,2026-04-23 08:00:00,30,receive,1920.00,delivery
+MV-00358,P015,2026-04-23 08:00:00,60,receive,160.00,delivery
+MV-00359,P017,2026-04-23 08:00:00,60,receive,48.00,delivery
+MV-00360,P023,2026-04-23 08:00:00,60,receive,288.00,delivery
+MV-00361,P002,2026-04-24 08:00:00,60,receive,120.00,delivery
+MV-00362,P005,2026-04-24 08:00:00,60,receive,200.00,delivery
+MV-00363,P007,2026-04-24 08:00:00,60,receive,880.00,delivery
+MV-00364,P025,2026-04-24 08:00:00,60,receive,432.00,delivery
+MV-00365,P026,2026-04-24 08:00:00,60,receive,180.00,delivery
+MV-00366,P031,2026-04-24 08:00:00,24,receive,216.00,delivery
+MV-00367,P001,2026-04-25 08:00:00,60,receive,1320.00,delivery
+MV-00368,P009,2026-04-25 08:00:00,60,receive,720.00,delivery
+MV-00369,P023,2026-04-25 08:00:00,60,receive,288.00,delivery
+MV-00370,P025,2026-04-25 08:00:00,60,receive,432.00,delivery
+MV-00371,P028,2026-04-25 08:00:00,24,receive,960.00,delivery
+MV-00372,P001,2026-04-26 08:00:00,60,receive,1320.00,delivery
+MV-00373,P028,2026-04-26 08:00:00,20,receive,960.00,delivery
+MV-00374,P030,2026-04-26 08:00:00,24,receive,4160.00,delivery
+MV-00375,P003,2026-04-27 08:00:00,30,receive,1160.00,delivery
+MV-00376,P008,2026-04-27 08:00:00,30,receive,1360.00,delivery
+MV-00377,P011,2026-04-27 08:00:00,30,receive,7840.00,delivery
+MV-00378,P020,2026-04-27 08:00:00,30,receive,3120.00,delivery
+MV-00379,P024,2026-04-27 08:00:00,60,receive,288.00,delivery
+MV-00380,P026,2026-04-27 08:00:00,60,receive,180.00,delivery
+MV-00381,P032,2026-04-27 08:00:00,30,receive,504.00,delivery
+MV-00382,P040,2026-04-27 08:00:00,30,receive,960.00,delivery
+MV-00383,P001,2026-04-28 08:00:00,60,receive,1320.00,delivery
+MV-00384,P015,2026-04-28 08:00:00,60,receive,160.00,delivery
+MV-00385,P021,2026-04-28 08:00:00,30,receive,1200.00,delivery
+MV-00386,P024,2026-04-28 08:00:00,60,receive,288.00,delivery
+MV-00387,P025,2026-04-28 08:00:00,60,receive,432.00,delivery
+MV-00388,P028,2026-04-28 08:00:00,30,receive,960.00,delivery
+MV-00389,P036,2026-04-28 08:00:00,30,receive,1280.00,delivery
+MV-00390,P006,2026-04-29 08:00:00,60,receive,200.00,delivery
+MV-00391,P007,2026-04-29 08:00:00,60,receive,880.00,delivery
+MV-00392,P014,2026-04-29 08:00:00,30,receive,1840.00,delivery
+MV-00393,P023,2026-04-29 08:00:00,60,receive,288.00,delivery
+MV-00394,P028,2026-04-29 08:00:00,20,receive,960.00,delivery
+MV-00395,P029,2026-04-29 08:00:00,30,receive,1200.00,delivery
+MV-00396,P037,2026-04-29 08:00:00,30,receive,1120.00,delivery
+MV-00397,P038,2026-04-29 08:00:00,30,receive,360.00,delivery
+MV-00398,P005,2026-04-30 08:00:00,60,receive,200.00,delivery
+MV-00399,P012,2026-04-30 08:00:00,30,receive,1680.00,delivery
+MV-00400,P015,2026-04-30 08:00:00,60,receive,160.00,delivery
+MV-00401,P016,2026-04-30 08:00:00,60,receive,40.00,delivery
+MV-00402,P019,2026-04-30 08:00:00,30,receive,2800.00,delivery
+MV-00403,P022,2026-04-30 08:00:00,30,receive,1760.00,delivery
+MV-00404,P031,2026-04-30 08:00:00,30,receive,216.00,delivery
+MV-00405,P035,2026-04-30 08:00:00,30,receive,720.00,delivery
+MV-00406,P039,2026-04-30 08:00:00,30,receive,1040.00,delivery
+MV-00407,P002,2026-05-01 08:00:00,60,receive,120.00,delivery
+MV-00408,P004,2026-05-01 08:00:00,30,receive,1920.00,delivery
+MV-00409,P013,2026-05-01 08:00:00,30,receive,2320.00,delivery
+MV-00410,P018,2026-05-01 08:00:00,30,receive,2560.00,delivery
+MV-00411,P027,2026-05-01 08:00:00,20,receive,1296.00,delivery
+MV-00412,P029,2026-05-01 08:00:00,30,receive,1200.00,delivery
+MV-00413,P034,2026-05-01 08:00:00,30,receive,216.00,delivery
+MV-00414,P002,2026-05-02 08:00:00,60,receive,120.00,delivery
+MV-00415,P004,2026-05-02 08:00:00,20,receive,1920.00,delivery
+MV-00416,P005,2026-05-02 08:00:00,60,receive,200.00,delivery
+MV-00417,P010,2026-05-02 08:00:00,30,receive,1040.00,delivery
+MV-00418,P016,2026-05-02 08:00:00,60,receive,40.00,delivery
+MV-00419,P025,2026-05-02 08:00:00,60,receive,432.00,delivery
+MV-00420,P027,2026-05-02 08:00:00,24,receive,1296.00,delivery
+MV-00421,P029,2026-05-02 08:00:00,20,receive,1200.00,delivery
+MV-00422,P030,2026-05-02 08:00:00,30,receive,4160.00,delivery
+MV-00423,P031,2026-05-02 08:00:00,20,receive,216.00,delivery
+MV-00424,P009,2026-05-03 08:00:00,60,receive,720.00,delivery
+MV-00425,P017,2026-05-03 08:00:00,60,receive,48.00,delivery
+MV-00426,P026,2026-05-03 08:00:00,60,receive,180.00,delivery
+MV-00427,P030,2026-05-03 08:00:00,30,receive,4160.00,delivery
+MV-00428,P033,2026-05-03 08:00:00,30,receive,252.00,delivery
+MV-00429,P002,2026-05-04 08:00:00,60,receive,120.00,delivery
+MV-00430,P006,2026-05-04 08:00:00,60,receive,200.00,delivery
+MV-00431,P015,2026-05-04 08:00:00,60,receive,160.00,delivery
+MV-00432,P025,2026-05-04 08:00:00,60,receive,432.00,delivery
+MV-00433,P026,2026-05-04 08:00:00,60,receive,180.00,delivery
+MV-00434,P027,2026-05-04 08:00:00,30,receive,1296.00,delivery
+MV-00435,P028,2026-05-04 08:00:00,20,receive,960.00,delivery
+MV-00436,P029,2026-05-04 08:00:00,30,receive,1200.00,delivery
+MV-00437,P030,2026-05-04 08:00:00,20,receive,4160.00,delivery
+MV-00438,P031,2026-05-04 08:00:00,24,receive,216.00,delivery
+MV-00439,P017,2026-05-05 08:00:00,60,receive,48.00,delivery
+MV-00440,P024,2026-05-05 08:00:00,60,receive,288.00,delivery
+MV-00441,P002,2026-05-06 08:00:00,60,receive,120.00,delivery
+MV-00442,P015,2026-05-06 08:00:00,60,receive,160.00,delivery
+MV-00443,P017,2026-05-06 08:00:00,60,receive,48.00,delivery
+MV-00444,P027,2026-05-06 08:00:00,24,receive,1296.00,delivery
+MV-00445,P028,2026-05-06 08:00:00,30,receive,960.00,delivery
+MV-00446,P029,2026-05-06 08:00:00,30,receive,1200.00,delivery
+MV-00447,P006,2026-05-07 08:00:00,60,receive,200.00,delivery
+MV-00448,P007,2026-05-07 08:00:00,60,receive,880.00,delivery
+MV-00449,P023,2026-05-07 08:00:00,60,receive,288.00,delivery
+MV-00450,P024,2026-05-07 08:00:00,60,receive,288.00,delivery
+MV-00451,P030,2026-05-07 08:00:00,20,receive,4160.00,delivery
+MV-00452,P001,2026-05-08 08:00:00,60,receive,1320.00,delivery
+MV-00453,P009,2026-05-08 08:00:00,60,receive,720.00,delivery
+MV-00454,P027,2026-05-08 08:00:00,24,receive,1296.00,delivery
+MV-00455,P031,2026-05-08 08:00:00,30,receive,216.00,delivery
+MV-00456,P001,2026-05-09 08:00:00,60,receive,1320.00,delivery
+MV-00457,P004,2026-05-09 08:00:00,30,receive,1920.00,delivery
+MV-00458,P009,2026-05-09 08:00:00,60,receive,720.00,delivery
+MV-00459,P016,2026-05-09 08:00:00,60,receive,40.00,delivery
+MV-00460,P029,2026-05-09 08:00:00,24,receive,1200.00,delivery
+MV-00461,P031,2026-05-09 08:00:00,30,receive,216.00,delivery
+MV-00462,P004,2026-05-10 08:00:00,20,receive,1920.00,delivery
+MV-00463,P005,2026-05-10 08:00:00,60,receive,200.00,delivery
+MV-00464,P007,2026-05-10 08:00:00,60,receive,880.00,delivery
+MV-00465,P025,2026-05-10 08:00:00,60,receive,432.00,delivery
+MV-00466,P026,2026-05-10 08:00:00,60,receive,180.00,delivery
+MV-00467,P028,2026-05-10 08:00:00,24,receive,960.00,delivery
+MV-00468,P003,2026-05-11 08:00:00,30,receive,1160.00,delivery
+MV-00469,P008,2026-05-11 08:00:00,30,receive,1360.00,delivery
+MV-00470,P009,2026-05-11 08:00:00,60,receive,720.00,delivery
+MV-00471,P020,2026-05-11 08:00:00,30,receive,3120.00,delivery
+MV-00472,P028,2026-05-11 08:00:00,20,receive,960.00,delivery
+MV-00473,P031,2026-05-11 08:00:00,20,receive,216.00,delivery
+MV-00474,P011,2026-05-12 08:00:00,30,receive,7840.00,delivery
+MV-00475,P022,2026-05-12 08:00:00,30,receive,1760.00,delivery
+MV-00476,P023,2026-05-12 08:00:00,60,receive,288.00,delivery
+MV-00477,P024,2026-05-12 08:00:00,60,receive,288.00,delivery
+MV-00478,P029,2026-05-12 08:00:00,24,receive,1200.00,delivery
+MV-00479,P030,2026-05-12 08:00:00,20,receive,4160.00,delivery
+MV-00480,P034,2026-05-12 08:00:00,30,receive,216.00,delivery
+MV-00481,P036,2026-05-12 08:00:00,30,receive,1280.00,delivery
+MV-00482,P040,2026-05-12 08:00:00,30,receive,960.00,delivery
+MV-00483,P005,2026-05-13 08:00:00,60,receive,200.00,delivery
+MV-00484,P007,2026-05-13 08:00:00,60,receive,880.00,delivery
+MV-00485,P009,2026-05-13 08:00:00,60,receive,720.00,delivery
+MV-00486,P012,2026-05-13 08:00:00,30,receive,1680.00,delivery
+MV-00487,P025,2026-05-13 08:00:00,60,receive,432.00,delivery
+MV-00488,P027,2026-05-13 08:00:00,30,receive,1296.00,delivery
+MV-00489,P030,2026-05-13 08:00:00,20,receive,4160.00,delivery
+MV-00490,P004,2026-05-14 08:00:00,20,receive,1920.00,delivery
+MV-00491,P013,2026-05-14 08:00:00,30,receive,2320.00,delivery
+MV-00492,P016,2026-05-14 08:00:00,60,receive,40.00,delivery
+MV-00493,P019,2026-05-14 08:00:00,30,receive,2800.00,delivery
+MV-00494,P038,2026-05-14 08:00:00,30,receive,360.00,delivery
+MV-00495,P004,2026-05-15 08:00:00,24,receive,1920.00,delivery
+MV-00496,P006,2026-05-15 08:00:00,60,receive,200.00,delivery
+MV-00497,P014,2026-05-15 08:00:00,30,receive,1840.00,delivery
+MV-00498,P015,2026-05-15 08:00:00,60,receive,160.00,delivery
+MV-00499,P017,2026-05-15 08:00:00,60,receive,48.00,delivery
+MV-00500,P018,2026-05-15 08:00:00,30,receive,2560.00,delivery
+MV-00501,P024,2026-05-15 08:00:00,60,receive,288.00,delivery
+MV-00502,P026,2026-05-15 08:00:00,60,receive,180.00,delivery
+MV-00503,P027,2026-05-15 08:00:00,20,receive,1296.00,delivery
+MV-00504,P028,2026-05-15 08:00:00,24,receive,960.00,delivery
+MV-00505,P029,2026-05-15 08:00:00,30,receive,1200.00,delivery
+MV-00506,P031,2026-05-15 08:00:00,20,receive,216.00,delivery
+MV-00507,P033,2026-05-15 08:00:00,30,receive,252.00,delivery
+MV-00508,P035,2026-05-15 08:00:00,30,receive,720.00,delivery
+MV-00509,P002,2026-05-16 08:00:00,60,receive,120.00,delivery
+MV-00510,P004,2026-05-16 08:00:00,24,receive,1920.00,delivery
+MV-00511,P010,2026-05-16 08:00:00,30,receive,1040.00,delivery
+MV-00512,P016,2026-05-16 08:00:00,60,receive,40.00,delivery
+MV-00513,P021,2026-05-16 08:00:00,30,receive,1200.00,delivery
+MV-00514,P027,2026-05-16 08:00:00,20,receive,1296.00,delivery
+MV-00515,P028,2026-05-16 08:00:00,24,receive,960.00,delivery
+MV-00516,P030,2026-05-16 08:00:00,24,receive,4160.00,delivery
+MV-00517,P001,2026-05-17 08:00:00,60,receive,1320.00,delivery
+MV-00518,P006,2026-05-17 08:00:00,60,receive,200.00,delivery
+MV-00519,P007,2026-05-17 08:00:00,60,receive,880.00,delivery
+MV-00520,P023,2026-05-17 08:00:00,60,receive,288.00,delivery
+MV-00521,P025,2026-05-17 08:00:00,60,receive,432.00,delivery
+MV-00522,P026,2026-05-17 08:00:00,60,receive,180.00,delivery
+MV-00523,P029,2026-05-17 08:00:00,20,receive,1200.00,delivery
+MV-00524,P031,2026-05-17 08:00:00,24,receive,216.00,delivery
+MV-00525,P032,2026-05-17 08:00:00,30,receive,504.00,delivery
+MV-00526,P037,2026-05-17 08:00:00,30,receive,1120.00,delivery
+MV-00527,P039,2026-05-17 08:00:00,30,receive,1040.00,delivery
+MV-00528,P002,2026-05-18 08:00:00,60,receive,120.00,delivery
+MV-00529,P024,2026-05-18 08:00:00,60,receive,288.00,delivery
+MV-00530,P025,2026-05-18 08:00:00,60,receive,432.00,delivery
+MV-00531,P031,2026-05-18 08:00:00,20,receive,216.00,delivery
+MV-00532,P027,2026-05-19 08:00:00,30,receive,1296.00,delivery
+MV-00533,P029,2026-05-19 08:00:00,30,receive,1200.00,delivery
+MV-00534,P004,2026-05-20 08:00:00,20,receive,1920.00,delivery
+MV-00535,P016,2026-05-20 08:00:00,60,receive,40.00,delivery
+MV-00536,P023,2026-05-20 08:00:00,60,receive,288.00,delivery
+MV-00537,P027,2026-05-20 08:00:00,20,receive,1296.00,delivery
+MV-00538,P001,2026-05-21 08:00:00,60,receive,1320.00,delivery
+MV-00539,P005,2026-05-21 08:00:00,60,receive,200.00,delivery
+MV-00540,P028,2026-05-21 08:00:00,24,receive,960.00,delivery
+MV-00541,P030,2026-05-21 08:00:00,20,receive,4160.00,delivery
+MV-00542,P002,2026-05-22 08:00:00,60,receive,120.00,delivery
+MV-00543,P004,2026-05-22 08:00:00,30,receive,1920.00,delivery
+MV-00544,P006,2026-05-22 08:00:00,60,receive,200.00,delivery
+MV-00545,P007,2026-05-22 08:00:00,60,receive,880.00,delivery
+MV-00546,P015,2026-05-22 08:00:00,60,receive,160.00,delivery
+MV-00547,P016,2026-05-22 08:00:00,60,receive,40.00,delivery
+MV-00548,P017,2026-05-22 08:00:00,60,receive,48.00,delivery
+MV-00549,P009,2026-05-23 08:00:00,60,receive,720.00,delivery
+MV-00550,P026,2026-05-23 08:00:00,60,receive,180.00,delivery
+MV-00551,P029,2026-05-23 08:00:00,24,receive,1200.00,delivery
+MV-00552,P030,2026-05-23 08:00:00,20,receive,4160.00,delivery
+MV-00553,P005,2026-05-24 08:00:00,60,receive,200.00,delivery
+MV-00554,P023,2026-05-24 08:00:00,60,receive,288.00,delivery
+MV-00555,P025,2026-05-24 08:00:00,60,receive,432.00,delivery
+MV-00556,P028,2026-05-24 08:00:00,24,receive,960.00,delivery
+MV-00557,P031,2026-05-24 08:00:00,20,receive,216.00,delivery
+MV-00558,P001,2026-05-25 08:00:00,60,receive,1320.00,delivery
+MV-00559,P002,2026-05-25 08:00:00,60,receive,120.00,delivery
+MV-00560,P010,2026-05-25 08:00:00,30,receive,1040.00,delivery
+MV-00561,P015,2026-05-25 08:00:00,60,receive,160.00,delivery
+MV-00562,P016,2026-05-25 08:00:00,60,receive,40.00,delivery
+MV-00563,P018,2026-05-25 08:00:00,30,receive,2560.00,delivery
+MV-00564,P039,2026-05-25 08:00:00,30,receive,1040.00,delivery
+MV-00565,P001,2026-05-26 08:00:00,60,receive,1320.00,delivery
+MV-00566,P002,2026-05-26 08:00:00,60,receive,120.00,delivery
+MV-00567,P004,2026-05-26 08:00:00,30,receive,1920.00,delivery
+MV-00568,P013,2026-05-26 08:00:00,30,receive,2320.00,delivery
+MV-00569,P016,2026-05-26 08:00:00,60,receive,40.00,delivery
+MV-00570,P020,2026-05-26 08:00:00,30,receive,3120.00,delivery
+MV-00571,P022,2026-05-26 08:00:00,30,receive,1760.00,delivery
+MV-00572,P023,2026-05-26 08:00:00,60,receive,288.00,delivery
+MV-00573,P029,2026-05-26 08:00:00,24,receive,1200.00,delivery
+MV-00574,P030,2026-05-26 08:00:00,20,receive,4160.00,delivery
+MV-00575,P004,2026-05-27 08:00:00,24,receive,1920.00,delivery
+MV-00576,P006,2026-05-27 08:00:00,60,receive,200.00,delivery
+MV-00577,P019,2026-05-27 08:00:00,30,receive,2800.00,delivery
+MV-00578,P024,2026-05-27 08:00:00,60,receive,288.00,delivery
+MV-00579,P027,2026-05-27 08:00:00,20,receive,1296.00,delivery
+MV-00580,P028,2026-05-27 08:00:00,30,receive,960.00,delivery
+MV-00581,P029,2026-05-27 08:00:00,30,receive,1200.00,delivery
+MV-00582,P032,2026-05-27 08:00:00,30,receive,504.00,delivery
+MV-00583,P035,2026-05-27 08:00:00,30,receive,720.00,delivery
+MV-00584,P005,2026-05-28 08:00:00,60,receive,200.00,delivery
+MV-00585,P006,2026-05-28 08:00:00,60,receive,200.00,delivery
+MV-00586,P009,2026-05-28 08:00:00,60,receive,720.00,delivery
+MV-00587,P011,2026-05-28 08:00:00,30,receive,7840.00,delivery
+MV-00588,P014,2026-05-28 08:00:00,30,receive,1840.00,delivery
+MV-00589,P028,2026-05-28 08:00:00,30,receive,960.00,delivery
+MV-00590,P037,2026-05-28 08:00:00,30,receive,1120.00,delivery
+MV-00591,P005,2026-05-29 08:00:00,60,receive,200.00,delivery
+MV-00592,P008,2026-05-29 08:00:00,30,receive,1360.00,delivery
+MV-00593,P012,2026-05-29 08:00:00,30,receive,1680.00,delivery
+MV-00594,P021,2026-05-29 08:00:00,30,receive,1200.00,delivery
+MV-00595,P026,2026-05-29 08:00:00,60,receive,180.00,delivery
+MV-00596,P031,2026-05-29 08:00:00,30,receive,216.00,delivery
+MV-00597,P027,2026-05-30 08:00:00,24,receive,1296.00,delivery
+MV-00598,P029,2026-05-30 08:00:00,24,receive,1200.00,delivery
+MV-00599,P030,2026-05-30 08:00:00,20,receive,4160.00,delivery
+MV-00600,P031,2026-05-30 08:00:00,24,receive,216.00,delivery
+MV-00601,P033,2026-05-30 08:00:00,30,receive,252.00,delivery
+MV-00602,P036,2026-05-30 08:00:00,30,receive,1280.00,delivery
+MV-00603,P040,2026-05-30 08:00:00,30,receive,960.00,delivery
+MV-00604,P003,2026-05-31 08:00:00,30,receive,1160.00,delivery
+MV-00605,P007,2026-05-31 08:00:00,60,receive,880.00,delivery
+MV-00606,P009,2026-05-31 08:00:00,60,receive,720.00,delivery
+MV-00607,P017,2026-05-31 08:00:00,60,receive,48.00,delivery
+MV-00608,P025,2026-05-31 08:00:00,60,receive,432.00,delivery
+MV-00609,P026,2026-05-31 08:00:00,60,receive,180.00,delivery
+MV-00610,P030,2026-05-31 08:00:00,30,receive,4160.00,delivery
+MV-00611,P034,2026-05-31 08:00:00,30,receive,216.00,delivery
+MV-00612,P038,2026-05-31 08:00:00,30,receive,360.00,delivery
+MV-00613,P002,2026-06-01 08:00:00,60,receive,120.00,delivery
+MV-00614,P005,2026-06-01 08:00:00,60,receive,200.00,delivery
+MV-00615,P009,2026-06-01 08:00:00,60,receive,720.00,delivery
+MV-00616,P024,2026-06-01 08:00:00,60,receive,288.00,delivery
+MV-00617,P027,2026-06-01 08:00:00,30,receive,1296.00,delivery
+MV-00618,P029,2026-06-01 08:00:00,24,receive,1200.00,delivery
+MV-00619,P030,2026-06-01 08:00:00,30,receive,4160.00,delivery
+MV-00620,P031,2026-06-01 08:00:00,30,receive,216.00,delivery
+MV-00621,P009,2026-06-02 08:00:00,60,receive,720.00,delivery
+MV-00622,P015,2026-06-02 08:00:00,60,receive,160.00,delivery
+MV-00623,P017,2026-06-02 08:00:00,60,receive,48.00,delivery
+MV-00624,P024,2026-06-02 08:00:00,60,receive,288.00,delivery
+MV-00625,P027,2026-06-02 08:00:00,20,receive,1296.00,delivery
+MV-00626,P028,2026-06-02 08:00:00,24,receive,960.00,delivery
+MV-00627,P026,2026-06-03 08:00:00,60,receive,180.00,delivery
+MV-00628,P030,2026-06-03 08:00:00,30,receive,4160.00,delivery
+MV-00629,P004,2026-06-04 08:00:00,24,receive,1920.00,delivery
+MV-00630,P006,2026-06-04 08:00:00,60,receive,200.00,delivery
+MV-00631,P005,2026-06-05 08:00:00,60,receive,200.00,delivery
+MV-00632,P016,2026-06-05 08:00:00,60,receive,40.00,delivery
+MV-00633,P017,2026-06-05 08:00:00,60,receive,48.00,delivery
+MV-00634,P025,2026-06-05 08:00:00,60,receive,432.00,delivery
+MV-00635,P028,2026-06-05 08:00:00,20,receive,960.00,delivery
+MV-00636,P030,2026-06-05 08:00:00,20,receive,4160.00,delivery
+MV-00637,P031,2026-06-05 08:00:00,30,receive,216.00,delivery
+MV-00638,P001,2026-06-06 08:00:00,60,receive,1320.00,delivery
+MV-00639,P004,2026-06-06 08:00:00,24,receive,1920.00,delivery
+MV-00640,P006,2026-06-06 08:00:00,60,receive,200.00,delivery
+MV-00641,P023,2026-06-06 08:00:00,60,receive,288.00,delivery
+MV-00642,P027,2026-06-06 08:00:00,24,receive,1296.00,delivery
+MV-00643,P031,2026-06-06 08:00:00,30,receive,216.00,delivery
+MV-00644,P001,2026-06-07 08:00:00,60,receive,1320.00,delivery
+MV-00645,P007,2026-06-07 08:00:00,60,receive,880.00,delivery
+MV-00646,P025,2026-06-07 08:00:00,60,receive,432.00,delivery
+MV-00647,P026,2026-06-07 08:00:00,60,receive,180.00,delivery
+MV-00648,P029,2026-06-07 08:00:00,24,receive,1200.00,delivery
+MV-00649,P001,2026-06-08 08:00:00,60,receive,1320.00,delivery
+MV-00650,P003,2026-06-08 08:00:00,30,receive,1160.00,delivery
+MV-00651,P008,2026-06-08 08:00:00,30,receive,1360.00,delivery
+MV-00652,P011,2026-06-08 08:00:00,30,receive,7840.00,delivery
+MV-00653,P012,2026-06-08 08:00:00,30,receive,1680.00,delivery
+MV-00654,P015,2026-06-08 08:00:00,60,receive,160.00,delivery
+MV-00655,P016,2026-06-08 08:00:00,60,receive,40.00,delivery
+MV-00656,P020,2026-06-08 08:00:00,30,receive,3120.00,delivery
+MV-00657,P027,2026-06-08 08:00:00,30,receive,1296.00,delivery
+MV-00658,P029,2026-06-08 08:00:00,24,receive,1200.00,delivery
+MV-00659,P030,2026-06-08 08:00:00,30,receive,4160.00,delivery
+MV-00660,P035,2026-06-08 08:00:00,30,receive,720.00,delivery
+MV-00661,P039,2026-06-08 08:00:00,30,receive,1040.00,delivery
+MV-00662,P002,2026-06-09 08:00:00,60,receive,120.00,delivery
+MV-00663,P006,2026-06-09 08:00:00,60,receive,200.00,delivery
+MV-00664,P007,2026-06-09 08:00:00,60,receive,880.00,delivery
+MV-00665,P023,2026-06-09 08:00:00,60,receive,288.00,delivery
+MV-00666,P028,2026-06-09 08:00:00,24,receive,960.00,delivery
+MV-00667,P029,2026-06-09 08:00:00,30,receive,1200.00,delivery
+MV-00668,P030,2026-06-09 08:00:00,20,receive,4160.00,delivery
+MV-00669,P017,2026-06-10 08:00:00,60,receive,48.00,delivery
+MV-00670,P018,2026-06-10 08:00:00,30,receive,2560.00,delivery
+MV-00671,P022,2026-06-10 08:00:00,30,receive,1760.00,delivery
+MV-00672,P023,2026-06-10 08:00:00,60,receive,288.00,delivery
+MV-00673,P028,2026-06-10 08:00:00,24,receive,960.00,delivery
+MV-00674,P030,2026-06-10 08:00:00,24,receive,4160.00,delivery
+MV-00675,P031,2026-06-10 08:00:00,30,receive,216.00,delivery
+MV-00676,P033,2026-06-10 08:00:00,30,receive,252.00,delivery
+MV-00677,P038,2026-06-10 08:00:00,30,receive,360.00,delivery
+MV-00678,P007,2026-06-11 08:00:00,60,receive,880.00,delivery
+MV-00679,P010,2026-06-11 08:00:00,30,receive,1040.00,delivery
+MV-00680,P015,2026-06-11 08:00:00,60,receive,160.00,delivery
+MV-00681,P017,2026-06-11 08:00:00,60,receive,48.00,delivery
+MV-00682,P021,2026-06-11 08:00:00,30,receive,1200.00,delivery
+MV-00683,P025,2026-06-11 08:00:00,60,receive,432.00,delivery
+MV-00684,P026,2026-06-11 08:00:00,60,receive,180.00,delivery
+MV-00685,P027,2026-06-11 08:00:00,24,receive,1296.00,delivery
+MV-00686,P034,2026-06-11 08:00:00,30,receive,216.00,delivery
+MV-00687,P036,2026-06-11 08:00:00,30,receive,1280.00,delivery
+MV-00688,P037,2026-06-11 08:00:00,30,receive,1120.00,delivery
+MV-00689,P009,2026-06-12 08:00:00,60,receive,720.00,delivery
+MV-00690,P019,2026-06-12 08:00:00,30,receive,2800.00,delivery
+MV-00691,P029,2026-06-12 08:00:00,20,receive,1200.00,delivery
+MV-00692,P031,2026-06-12 08:00:00,30,receive,216.00,delivery
+MV-00693,P032,2026-06-12 08:00:00,30,receive,504.00,delivery
+MV-00694,P004,2026-06-13 08:00:00,20,receive,1920.00,delivery
+MV-00695,P005,2026-06-13 08:00:00,60,receive,200.00,delivery
+MV-00696,P013,2026-06-13 08:00:00,30,receive,2320.00,delivery
+MV-00697,P014,2026-06-13 08:00:00,30,receive,1840.00,delivery
+MV-00698,P024,2026-06-13 08:00:00,60,receive,288.00,delivery
+MV-00699,P026,2026-06-13 08:00:00,60,receive,180.00,delivery
+MV-00700,P027,2026-06-13 08:00:00,24,receive,1296.00,delivery
+MV-00701,P031,2026-06-13 08:00:00,20,receive,216.00,delivery
+MV-00702,P040,2026-06-13 08:00:00,30,receive,960.00,delivery
+MV-00703,P004,2026-06-14 08:00:00,24,receive,1920.00,delivery
+MV-00704,P024,2026-06-14 08:00:00,60,receive,288.00,delivery
+MV-00705,P025,2026-06-14 08:00:00,60,receive,432.00,delivery
+MV-00706,P007,2026-06-15 08:00:00,60,receive,880.00,delivery
+MV-00707,P016,2026-06-15 08:00:00,60,receive,40.00,delivery
+MV-00708,P031,2026-06-15 08:00:00,24,receive,216.00,delivery
+MV-00709,P006,2026-06-16 08:00:00,60,receive,200.00,delivery
+MV-00710,P009,2026-06-16 08:00:00,60,receive,720.00,delivery
+MV-00711,P028,2026-06-16 08:00:00,30,receive,960.00,delivery
+MV-00712,P029,2026-06-16 08:00:00,24,receive,1200.00,delivery
+MV-00713,P004,2026-06-17 08:00:00,20,receive,1920.00,delivery
+MV-00714,P007,2026-06-17 08:00:00,60,receive,880.00,delivery
+MV-00715,P015,2026-06-17 08:00:00,60,receive,160.00,delivery
+MV-00716,P023,2026-06-17 08:00:00,60,receive,288.00,delivery
+MV-00717,P027,2026-06-17 08:00:00,24,receive,1296.00,delivery
+MV-00718,P028,2026-06-17 08:00:00,20,receive,960.00,delivery
+MV-00719,P005,2026-06-18 08:00:00,60,receive,200.00,delivery
+MV-00720,P024,2026-06-18 08:00:00,60,receive,288.00,delivery
+MV-00721,P025,2026-06-18 08:00:00,60,receive,432.00,delivery
+MV-00722,P031,2026-06-18 08:00:00,24,receive,216.00,delivery
+MV-00723,P001,2026-06-19 08:00:00,60,receive,1320.00,delivery
+MV-00724,P015,2026-06-19 08:00:00,60,receive,160.00,delivery
+MV-00725,P029,2026-06-19 08:00:00,20,receive,1200.00,delivery
+MV-00726,P030,2026-06-19 08:00:00,30,receive,4160.00,delivery
+MV-00727,P004,2026-06-20 08:00:00,24,receive,1920.00,delivery
+MV-00728,P023,2026-06-20 08:00:00,60,receive,288.00,delivery
+MV-00729,P025,2026-06-20 08:00:00,60,receive,432.00,delivery
+MV-00730,P026,2026-06-20 08:00:00,60,receive,180.00,delivery
+MV-00731,P027,2026-06-20 08:00:00,20,receive,1296.00,delivery
+MV-00732,P028,2026-06-20 08:00:00,20,receive,960.00,delivery
+MV-00733,P029,2026-06-20 08:00:00,24,receive,1200.00,delivery
+MV-00734,P001,2026-06-21 08:00:00,60,receive,1320.00,delivery
+MV-00735,P002,2026-06-21 08:00:00,60,receive,120.00,delivery
+MV-00736,P005,2026-06-21 08:00:00,60,receive,200.00,delivery
+MV-00737,P009,2026-06-21 08:00:00,60,receive,720.00,delivery
+MV-00738,P016,2026-06-21 08:00:00,60,receive,40.00,delivery
+MV-00739,P017,2026-06-21 08:00:00,60,receive,48.00,delivery
+MV-00740,P027,2026-06-21 08:00:00,20,receive,1296.00,delivery
+MV-00741,P030,2026-06-21 08:00:00,20,receive,4160.00,delivery
+MV-00742,P031,2026-06-21 08:00:00,30,receive,216.00,delivery
+MV-00743,P002,2026-06-22 08:00:00,60,receive,120.00,delivery
+MV-00744,P005,2026-06-22 08:00:00,60,receive,200.00,delivery
+MV-00745,P012,2026-06-22 08:00:00,30,receive,1680.00,delivery
+MV-00746,P014,2026-06-22 08:00:00,30,receive,1840.00,delivery
+MV-00747,P020,2026-06-22 08:00:00,30,receive,3120.00,delivery
+MV-00748,P022,2026-06-22 08:00:00,30,receive,1760.00,delivery
+MV-00749,P024,2026-06-22 08:00:00,60,receive,288.00,delivery
+MV-00750,P026,2026-06-22 08:00:00,60,receive,180.00,delivery
+MV-00751,P029,2026-06-22 08:00:00,20,receive,1200.00,delivery
+MV-00752,P001,2026-06-23 08:00:00,60,receive,1320.00,delivery
+MV-00753,P009,2026-06-23 08:00:00,60,receive,720.00,delivery
+MV-00754,P015,2026-06-23 08:00:00,60,receive,160.00,delivery
+MV-00755,P029,2026-06-23 08:00:00,30,receive,1200.00,delivery
+MV-00756,P030,2026-06-23 08:00:00,24,receive,4160.00,delivery
+MV-00757,P032,2026-06-23 08:00:00,30,receive,504.00,delivery
+MV-00758,P033,2026-06-23 08:00:00,30,receive,252.00,delivery
+MV-00759,P038,2026-06-23 08:00:00,30,receive,360.00,delivery
+MV-00760,P001,2026-06-24 08:00:00,60,receive,1320.00,delivery
+MV-00761,P004,2026-06-24 08:00:00,24,receive,1920.00,delivery
+MV-00762,P006,2026-06-24 08:00:00,60,receive,200.00,delivery
+MV-00763,P010,2026-06-24 08:00:00,30,receive,1040.00,delivery
+MV-00764,P017,2026-06-24 08:00:00,60,receive,48.00,delivery
+MV-00765,P019,2026-06-24 08:00:00,30,receive,2800.00,delivery
+MV-00766,P021,2026-06-24 08:00:00,30,receive,1200.00,delivery
+MV-00767,P029,2026-06-24 08:00:00,24,receive,1200.00,delivery
+MV-00768,P031,2026-06-24 08:00:00,24,receive,216.00,delivery
+MV-00769,P040,2026-06-24 08:00:00,30,receive,960.00,delivery
+MV-00770,P002,2026-06-25 08:00:00,60,receive,120.00,delivery
+MV-00771,P005,2026-06-25 08:00:00,60,receive,200.00,delivery
+MV-00772,P006,2026-06-25 08:00:00,60,receive,200.00,delivery
+MV-00773,P016,2026-06-25 08:00:00,60,receive,40.00,delivery
+MV-00774,P027,2026-06-25 08:00:00,20,receive,1296.00,delivery
+MV-00775,P030,2026-06-25 08:00:00,30,receive,4160.00,delivery
+MV-00776,P031,2026-06-25 08:00:00,24,receive,216.00,delivery
+MV-00777,P039,2026-06-25 08:00:00,30,receive,1040.00,delivery
+MV-00778,P003,2026-06-26 08:00:00,30,receive,1160.00,delivery
+MV-00779,P015,2026-06-26 08:00:00,60,receive,160.00,delivery
+MV-00780,P016,2026-06-26 08:00:00,60,receive,40.00,delivery
+MV-00781,P023,2026-06-26 08:00:00,60,receive,288.00,delivery
+MV-00782,P025,2026-06-26 08:00:00,60,receive,432.00,delivery
+MV-00783,P026,2026-06-26 08:00:00,60,receive,180.00,delivery
+MV-00784,P028,2026-06-26 08:00:00,30,receive,960.00,delivery
+MV-00785,P036,2026-06-26 08:00:00,30,receive,1280.00,delivery
+MV-00786,P004,2026-06-27 08:00:00,24,receive,1920.00,delivery
+MV-00787,P017,2026-06-27 08:00:00,60,receive,48.00,delivery
+MV-00788,P024,2026-06-27 08:00:00,60,receive,288.00,delivery
+MV-00789,P025,2026-06-27 08:00:00,60,receive,432.00,delivery
+MV-00790,P027,2026-06-27 08:00:00,24,receive,1296.00,delivery
+MV-00791,P004,2026-06-28 08:00:00,24,receive,1920.00,delivery
+MV-00792,P007,2026-06-28 08:00:00,60,receive,880.00,delivery
+MV-00793,P008,2026-06-28 08:00:00,30,receive,1360.00,delivery
+MV-00794,P009,2026-06-28 08:00:00,60,receive,720.00,delivery
+MV-00795,P011,2026-06-28 08:00:00,30,receive,7840.00,delivery
+MV-00796,P013,2026-06-28 08:00:00,30,receive,2320.00,delivery
+MV-00797,P018,2026-06-28 08:00:00,30,receive,2560.00,delivery
+MV-00798,P023,2026-06-28 08:00:00,60,receive,288.00,delivery
+MV-00799,P027,2026-06-28 08:00:00,20,receive,1296.00,delivery
+MV-00800,P028,2026-06-28 08:00:00,30,receive,960.00,delivery
+MV-00801,P031,2026-06-28 08:00:00,24,receive,216.00,delivery
+MV-00802,P034,2026-06-28 08:00:00,30,receive,216.00,delivery
+MV-00803,P035,2026-06-28 08:00:00,30,receive,720.00,delivery
+MV-00804,P037,2026-06-28 08:00:00,30,receive,1120.00,delivery
+MV-00805,P002,2026-06-29 08:00:00,60,receive,120.00,delivery
+MV-00806,P005,2026-06-29 08:00:00,60,receive,200.00,delivery
+MV-00807,P006,2026-06-29 08:00:00,60,receive,200.00,delivery
+MV-00808,P028,2026-06-29 08:00:00,20,receive,960.00,delivery
+MV-00809,P030,2026-06-29 08:00:00,30,receive,4160.00,delivery
+MV-00810,P031,2026-06-29 08:00:00,24,receive,216.00,delivery
+MV-00811,P016,2026-06-30 08:00:00,60,receive,40.00,delivery
+MV-00812,P023,2026-06-30 08:00:00,60,receive,288.00,delivery
+MV-00813,P024,2026-06-30 08:00:00,60,receive,288.00,delivery
+MV-00814,P026,2026-06-30 08:00:00,60,receive,180.00,delivery
+MV-00815,P029,2026-06-30 08:00:00,24,receive,1200.00,delivery
+MV-00816,P031,2026-06-30 08:00:00,30,receive,216.00,delivery
+MV-00817,P001,2026-07-01 08:00:00,60,receive,1320.00,delivery
+MV-00818,P030,2026-07-01 08:00:00,20,receive,4160.00,delivery
+MV-00819,P004,2026-07-02 08:00:00,24,receive,1920.00,delivery
+MV-00820,P007,2026-07-02 08:00:00,60,receive,880.00,delivery
+MV-00821,P017,2026-07-02 08:00:00,60,receive,48.00,delivery
+MV-00822,P025,2026-07-02 08:00:00,60,receive,432.00,delivery
+MV-00823,P004,2026-07-03 08:00:00,20,receive,1920.00,delivery
+MV-00824,P009,2026-07-03 08:00:00,60,receive,720.00,delivery
+MV-00825,P015,2026-07-03 08:00:00,60,receive,160.00,delivery
+MV-00826,P027,2026-07-03 08:00:00,24,receive,1296.00,delivery
+MV-00827,P015,2026-07-04 08:00:00,60,receive,160.00,delivery
+MV-00828,P016,2026-07-04 08:00:00,60,receive,40.00,delivery
+MV-00829,P017,2026-07-04 08:00:00,60,receive,48.00,delivery
+MV-00830,P027,2026-07-04 08:00:00,20,receive,1296.00,delivery
+MV-00831,P028,2026-07-04 08:00:00,24,receive,960.00,delivery
+MV-00832,P029,2026-07-04 08:00:00,24,receive,1200.00,delivery
+MV-00833,P007,2026-07-05 08:00:00,60,receive,880.00,delivery
+MV-00834,P009,2026-07-05 08:00:00,60,receive,720.00,delivery
+MV-00835,P028,2026-07-05 08:00:00,20,receive,960.00,delivery
+MV-00836,P029,2026-07-05 08:00:00,30,receive,1200.00,delivery
+MV-00837,P030,2026-07-05 08:00:00,24,receive,4160.00,delivery
+MV-00838,P031,2026-07-05 08:00:00,24,receive,216.00,delivery
+MV-00839,P001,2026-07-06 08:00:00,60,receive,1320.00,delivery
+MV-00840,P004,2026-07-06 08:00:00,24,receive,1920.00,delivery
+MV-00841,P010,2026-07-06 08:00:00,30,receive,1040.00,delivery
+MV-00842,P027,2026-07-06 08:00:00,20,receive,1296.00,delivery
+MV-00843,P028,2026-07-06 08:00:00,24,receive,960.00,delivery
+MV-00844,P029,2026-07-06 08:00:00,30,receive,1200.00,delivery
+MV-00845,P033,2026-07-06 08:00:00,30,receive,252.00,delivery
+MV-00846,P006,2026-07-07 08:00:00,60,receive,200.00,delivery
+MV-00847,P011,2026-07-07 08:00:00,30,receive,7840.00,delivery
+MV-00848,P012,2026-07-07 08:00:00,30,receive,1680.00,delivery
+MV-00849,P025,2026-07-07 08:00:00,60,receive,432.00,delivery
+MV-00850,P026,2026-07-07 08:00:00,60,receive,180.00,delivery
+MV-00851,P039,2026-07-07 08:00:00,30,receive,1040.00,delivery
+MV-00852,P040,2026-07-07 08:00:00,30,receive,960.00,delivery
+MV-00853,P002,2026-07-08 08:00:00,60,receive,120.00,delivery
+MV-00854,P005,2026-07-08 08:00:00,60,receive,200.00,delivery
+MV-00855,P007,2026-07-08 08:00:00,60,receive,880.00,delivery
+MV-00856,P008,2026-07-08 08:00:00,30,receive,1360.00,delivery
+MV-00857,P017,2026-07-08 08:00:00,60,receive,48.00,delivery
+MV-00858,P020,2026-07-08 08:00:00,30,receive,3120.00,delivery
+MV-00859,P026,2026-07-08 08:00:00,60,receive,180.00,delivery
+MV-00860,P027,2026-07-08 08:00:00,24,receive,1296.00,delivery
+MV-00861,P029,2026-07-08 08:00:00,30,receive,1200.00,delivery
+MV-00862,P030,2026-07-08 08:00:00,24,receive,4160.00,delivery
+MV-00863,P037,2026-07-08 08:00:00,30,receive,1120.00,delivery
+MV-00864,P003,2026-07-09 08:00:00,30,receive,1160.00,delivery
+MV-00865,P004,2026-07-09 08:00:00,20,receive,1920.00,delivery
+MV-00866,P009,2026-07-09 08:00:00,60,receive,720.00,delivery
+MV-00867,P014,2026-07-09 08:00:00,30,receive,1840.00,delivery
+MV-00868,P016,2026-07-09 08:00:00,60,receive,40.00,delivery
+MV-00869,P028,2026-07-09 08:00:00,24,receive,960.00,delivery
+MV-00870,P034,2026-07-09 08:00:00,30,receive,216.00,delivery
+MV-00871,P038,2026-07-09 08:00:00,30,receive,360.00,delivery
+MV-00872,P013,2026-07-10 08:00:00,30,receive,2320.00,delivery
+MV-00873,P015,2026-07-10 08:00:00,60,receive,160.00,delivery
+MV-00874,P022,2026-07-10 08:00:00,30,receive,1760.00,delivery
+MV-00875,P031,2026-07-10 08:00:00,30,receive,216.00,delivery
+MV-00876,P019,2026-07-11 08:00:00,30,receive,2800.00,delivery
+MV-00877,P024,2026-07-11 08:00:00,60,receive,288.00,delivery
+MV-00878,P027,2026-07-11 08:00:00,20,receive,1296.00,delivery
+MV-00879,P028,2026-07-11 08:00:00,24,receive,960.00,delivery
+MV-00880,P030,2026-07-11 08:00:00,24,receive,4160.00,delivery
+MV-00881,P032,2026-07-11 08:00:00,30,receive,504.00,delivery
+MV-00882,P002,2026-07-12 08:00:00,60,receive,120.00,delivery
+MV-00883,P015,2026-07-12 08:00:00,60,receive,160.00,delivery
+MV-00884,P018,2026-07-12 08:00:00,30,receive,2560.00,delivery
+MV-00885,P021,2026-07-12 08:00:00,30,receive,1200.00,delivery
+MV-00886,P023,2026-07-12 08:00:00,60,receive,288.00,delivery
+MV-00887,P031,2026-07-12 08:00:00,24,receive,216.00,delivery
+MV-00888,P035,2026-07-12 08:00:00,30,receive,720.00,delivery
+MV-00889,P036,2026-07-12 08:00:00,30,receive,1280.00,delivery
+MV-00890,P004,2026-07-13 08:00:00,24,receive,1920.00,delivery
+MV-00891,P015,2026-07-13 08:00:00,60,receive,160.00,delivery
+MV-00892,P023,2026-07-13 08:00:00,60,receive,288.00,delivery
+MV-00893,P027,2026-07-13 08:00:00,24,receive,1296.00,delivery
+MV-00894,P029,2026-07-13 08:00:00,24,receive,1200.00,delivery
+MV-00895,P002,2026-07-14 08:00:00,60,receive,120.00,delivery
+MV-00896,P006,2026-07-14 08:00:00,60,receive,200.00,delivery
+MV-00897,P016,2026-07-14 08:00:00,60,receive,40.00,delivery
+MV-00898,P024,2026-07-14 08:00:00,60,receive,288.00,delivery
+MV-00899,P028,2026-07-14 08:00:00,30,receive,960.00,delivery
+MV-00900,P004,2026-07-15 08:00:00,20,receive,1920.00,delivery
+MV-00901,P007,2026-07-15 08:00:00,60,receive,880.00,delivery
+MV-00902,P017,2026-07-15 08:00:00,60,receive,48.00,delivery
+MV-00903,P023,2026-07-15 08:00:00,60,receive,288.00,delivery
+MV-00904,P027,2026-07-15 08:00:00,24,receive,1296.00,delivery
+MV-00905,P030,2026-07-15 08:00:00,24,receive,4160.00,delivery
+MV-00906,P001,2026-07-16 08:00:00,60,receive,1320.00,delivery
+MV-00907,P005,2026-07-16 08:00:00,60,receive,200.00,delivery
+MV-00908,P026,2026-07-16 08:00:00,60,receive,180.00,delivery
+MV-00909,P031,2026-07-16 08:00:00,20,receive,216.00,delivery
+MV-00910,P001,2026-07-17 08:00:00,60,receive,1320.00,delivery
+MV-00911,P015,2026-07-17 08:00:00,60,receive,160.00,delivery
+MV-00912,P024,2026-07-17 08:00:00,60,receive,288.00,delivery
+MV-00913,P028,2026-07-17 08:00:00,30,receive,960.00,delivery
+MV-00914,P004,2026-07-18 08:00:00,20,receive,1920.00,delivery
+MV-00915,P009,2026-07-18 08:00:00,60,receive,720.00,delivery
+MV-00916,P017,2026-07-18 08:00:00,60,receive,48.00,delivery
+MV-00917,P025,2026-07-18 08:00:00,60,receive,432.00,delivery
+MV-00918,P027,2026-07-18 08:00:00,24,receive,1296.00,delivery
+MV-00919,P028,2026-07-18 08:00:00,24,receive,960.00,delivery
+MV-00920,P030,2026-07-18 08:00:00,24,receive,4160.00,delivery
+MV-00921,P031,2026-07-18 08:00:00,24,receive,216.00,delivery
+MV-00922,P029,2026-07-19 08:00:00,20,receive,1200.00,delivery
+MV-00923,P031,2026-07-19 08:00:00,20,receive,216.00,delivery
+MV-00924,P002,2026-07-20 08:00:00,60,receive,120.00,delivery
+MV-00925,P014,2026-07-20 08:00:00,30,receive,1840.00,delivery
+MV-00926,P023,2026-07-20 08:00:00,60,receive,288.00,delivery
+MV-00927,P031,2026-07-20 08:00:00,20,receive,216.00,delivery
+MV-00928,P032,2026-07-20 08:00:00,30,receive,504.00,delivery
+MV-00929,P036,2026-07-20 08:00:00,30,receive,1280.00,delivery
+MV-00930,P001,2026-07-21 08:00:00,60,receive,1320.00,delivery
+MV-00931,P006,2026-07-21 08:00:00,60,receive,200.00,delivery
+MV-00932,P017,2026-07-21 08:00:00,60,receive,48.00,delivery
+MV-00933,P019,2026-07-21 08:00:00,30,receive,2800.00,delivery
+MV-00934,P024,2026-07-21 08:00:00,60,receive,288.00,delivery
+MV-00935,P025,2026-07-21 08:00:00,60,receive,432.00,delivery
+MV-00936,P029,2026-07-21 08:00:00,20,receive,1200.00,delivery
+MV-00937,P031,2026-07-21 08:00:00,30,receive,216.00,delivery
+MV-00938,P038,2026-07-21 08:00:00,30,receive,360.00,delivery
+MV-00939,P004,2026-07-22 08:00:00,30,receive,1920.00,delivery
+MV-00940,P009,2026-07-22 08:00:00,60,receive,720.00,delivery
+MV-00941,P010,2026-07-22 08:00:00,30,receive,1040.00,delivery
+MV-00942,P012,2026-07-22 08:00:00,30,receive,1680.00,delivery
+MV-00943,P013,2026-07-22 08:00:00,30,receive,2320.00,delivery
+MV-00944,P018,2026-07-22 08:00:00,30,receive,2560.00,delivery
+MV-00945,P022,2026-07-22 08:00:00,30,receive,1760.00,delivery
+MV-00946,P025,2026-07-22 08:00:00,60,receive,432.00,delivery
+MV-00947,P030,2026-07-22 08:00:00,20,receive,4160.00,delivery
+MV-00948,P033,2026-07-22 08:00:00,30,receive,252.00,delivery
+MV-00949,P039,2026-07-22 08:00:00,30,receive,1040.00,delivery
+MV-00950,P004,2026-07-23 08:00:00,30,receive,1920.00,delivery
+MV-00951,P011,2026-07-23 08:00:00,30,receive,7840.00,delivery
+MV-00952,P015,2026-07-23 08:00:00,60,receive,160.00,delivery
+MV-00953,P020,2026-07-23 08:00:00,30,receive,3120.00,delivery
+MV-00954,P028,2026-07-23 08:00:00,30,receive,960.00,delivery
+MV-00955,P034,2026-07-23 08:00:00,30,receive,216.00,delivery
+MV-00956,P035,2026-07-23 08:00:00,30,receive,720.00,delivery
+MV-00957,P004,2026-07-24 08:00:00,20,receive,1920.00,delivery
+MV-00958,P009,2026-07-24 08:00:00,60,receive,720.00,delivery
+MV-00959,P017,2026-07-24 08:00:00,60,receive,48.00,delivery
+MV-00960,P021,2026-07-24 08:00:00,30,receive,1200.00,delivery
+MV-00961,P023,2026-07-24 08:00:00,60,receive,288.00,delivery
+MV-00962,P026,2026-07-24 08:00:00,60,receive,180.00,delivery
+MV-00963,P027,2026-07-24 08:00:00,20,receive,1296.00,delivery
+MV-00964,P028,2026-07-24 08:00:00,30,receive,960.00,delivery
+MV-00965,P029,2026-07-24 08:00:00,30,receive,1200.00,delivery
+MV-00966,P030,2026-07-24 08:00:00,24,receive,4160.00,delivery
+MV-00967,P001,2026-07-25 08:00:00,60,receive,1320.00,delivery
+MV-00968,P005,2026-07-25 08:00:00,60,receive,200.00,delivery
+MV-00969,P007,2026-07-25 08:00:00,60,receive,880.00,delivery
+MV-00970,P026,2026-07-25 08:00:00,60,receive,180.00,delivery
+MV-00971,P027,2026-07-25 08:00:00,20,receive,1296.00,delivery
+MV-00972,P028,2026-07-25 08:00:00,24,receive,960.00,delivery
+MV-00973,P029,2026-07-25 08:00:00,20,receive,1200.00,delivery
+MV-00974,P037,2026-07-25 08:00:00,30,receive,1120.00,delivery
+MV-00975,P040,2026-07-25 08:00:00,30,receive,960.00,delivery
+MV-00976,P002,2026-07-26 08:00:00,60,receive,120.00,delivery
+MV-00977,P003,2026-07-26 08:00:00,30,receive,1160.00,delivery
+MV-00978,P008,2026-07-26 08:00:00,30,receive,1360.00,delivery
+MV-00979,P016,2026-07-26 08:00:00,60,receive,40.00,delivery
+MV-00980,P004,2026-07-27 08:00:00,30,receive,1920.00,delivery
+MV-00981,P005,2026-07-27 08:00:00,60,receive,200.00,delivery
+MV-00982,P006,2026-07-27 08:00:00,60,receive,200.00,delivery
+MV-00983,P029,2026-07-27 08:00:00,30,receive,1200.00,delivery
+MV-00984,P030,2026-07-27 08:00:00,20,receive,4160.00,delivery
+MV-00985,P001,2026-07-28 08:00:00,60,receive,1320.00,delivery
+MV-00986,P004,2026-07-28 08:00:00,30,receive,1920.00,delivery
+MV-00987,P006,2026-07-28 08:00:00,60,receive,200.00,delivery
+MV-00988,P009,2026-07-28 08:00:00,60,receive,720.00,delivery
+MV-00989,P015,2026-07-28 08:00:00,60,receive,160.00,delivery
+MV-00990,P016,2026-07-28 08:00:00,60,receive,40.00,delivery
+MV-00991,P017,2026-07-28 08:00:00,60,receive,48.00,delivery
+MV-00992,P025,2026-07-28 08:00:00,60,receive,432.00,delivery
+MV-00993,P028,2026-07-28 08:00:00,30,receive,960.00,delivery
+MV-00994,P030,2026-07-28 08:00:00,24,receive,4160.00,delivery
+MV-00995,P007,2026-07-29 08:00:00,60,receive,880.00,delivery
+MV-00996,P023,2026-07-29 08:00:00,60,receive,288.00,delivery
+MV-00997,P026,2026-07-29 08:00:00,60,receive,180.00,delivery
+MV-00998,P027,2026-07-29 08:00:00,20,receive,1296.00,delivery
+MV-00999,P029,2026-07-29 08:00:00,30,receive,1200.00,delivery
+MV-01000,P031,2026-07-29 08:00:00,24,receive,216.00,delivery
+MV-01001,P001,2026-07-30 08:00:00,60,receive,1320.00,delivery
+MV-01002,P004,2026-07-30 08:00:00,24,receive,1920.00,delivery
+MV-01003,P025,2026-07-30 08:00:00,60,receive,432.00,delivery
+MV-01004,P026,2026-07-31 08:00:00,60,receive,180.00,delivery
+MV-01005,P028,2026-07-31 08:00:00,24,receive,960.00,delivery
+MV-01006,P031,2026-07-31 08:00:00,20,receive,216.00,delivery
+MV-01007,P002,2026-08-01 08:00:00,60,receive,120.00,delivery
+MV-01008,P024,2026-08-01 08:00:00,60,receive,288.00,delivery
+MV-01009,P027,2026-08-01 08:00:00,30,receive,1296.00,delivery
+MV-01010,P029,2026-08-01 08:00:00,30,receive,1200.00,delivery
+MV-01011,P031,2026-08-01 08:00:00,20,receive,216.00,delivery
+MV-01012,P009,2026-08-02 08:00:00,60,receive,720.00,delivery
+MV-01013,P015,2026-08-02 08:00:00,60,receive,160.00,delivery
+MV-01014,P024,2026-08-02 08:00:00,60,receive,288.00,delivery
+MV-01015,P027,2026-08-02 08:00:00,20,receive,1296.00,delivery
+MV-01016,P028,2026-08-02 08:00:00,30,receive,960.00,delivery
+MV-01017,P002,2026-08-03 08:00:00,60,receive,120.00,delivery
+MV-01018,P014,2026-08-03 08:00:00,30,receive,1840.00,delivery
+MV-01019,P016,2026-08-03 08:00:00,60,receive,40.00,delivery
+MV-01020,P018,2026-08-03 08:00:00,30,receive,2560.00,delivery
+MV-01021,P025,2026-08-03 08:00:00,60,receive,432.00,delivery
+MV-01022,P026,2026-08-03 08:00:00,60,receive,180.00,delivery
+MV-01023,P001,2026-08-04 08:00:00,60,receive,1320.00,delivery
+MV-01024,P004,2026-08-04 08:00:00,30,receive,1920.00,delivery
+MV-01025,P007,2026-08-04 08:00:00,60,receive,880.00,delivery
+MV-01026,P009,2026-08-04 08:00:00,60,receive,720.00,delivery
+MV-01027,P019,2026-08-04 08:00:00,30,receive,2800.00,delivery
+MV-01028,P021,2026-08-04 08:00:00,30,receive,1200.00,delivery
+MV-01029,P023,2026-08-04 08:00:00,60,receive,288.00,delivery
+MV-01030,P026,2026-08-04 08:00:00,60,receive,180.00,delivery
+MV-01031,P027,2026-08-04 08:00:00,24,receive,1296.00,delivery
+MV-01032,P029,2026-08-04 08:00:00,20,receive,1200.00,delivery
+MV-01033,P031,2026-08-04 08:00:00,30,receive,216.00,delivery
+MV-01034,P005,2026-08-05 08:00:00,60,receive,200.00,delivery
+MV-01035,P012,2026-08-05 08:00:00,30,receive,1680.00,delivery
+MV-01036,P029,2026-08-05 08:00:00,20,receive,1200.00,delivery
+MV-01037,P030,2026-08-05 08:00:00,30,receive,4160.00,delivery
+MV-01038,P039,2026-08-05 08:00:00,30,receive,1040.00,delivery
+MV-01039,P006,2026-08-06 08:00:00,60,receive,200.00,delivery
+MV-01040,P008,2026-08-06 08:00:00,30,receive,1360.00,delivery
+MV-01041,P020,2026-08-06 08:00:00,30,receive,3120.00,delivery
+MV-01042,P023,2026-08-06 08:00:00,60,receive,288.00,delivery
+MV-01043,P030,2026-08-06 08:00:00,20,receive,4160.00,delivery
+MV-01044,P031,2026-08-06 08:00:00,20,receive,216.00,delivery
+MV-01045,P036,2026-08-06 08:00:00,30,receive,1280.00,delivery
+MV-01046,P038,2026-08-06 08:00:00,30,receive,360.00,delivery
+MV-01047,P001,2026-08-07 08:00:00,60,receive,1320.00,delivery
+MV-01048,P003,2026-08-07 08:00:00,30,receive,1160.00,delivery
+MV-01049,P004,2026-08-07 08:00:00,24,receive,1920.00,delivery
+MV-01050,P010,2026-08-07 08:00:00,30,receive,1040.00,delivery
+MV-01051,P015,2026-08-07 08:00:00,60,receive,160.00,delivery
+MV-01052,P017,2026-08-07 08:00:00,60,receive,48.00,delivery
+MV-01053,P032,2026-08-07 08:00:00,30,receive,504.00,delivery
+MV-01054,P034,2026-08-07 08:00:00,30,receive,216.00,delivery
+MV-01055,P035,2026-08-07 08:00:00,30,receive,720.00,delivery
+MV-01056,P040,2026-08-07 08:00:00,30,receive,960.00,delivery
+MV-01057,P004,2026-08-08 08:00:00,20,receive,1920.00,delivery
+MV-01058,P006,2026-08-08 08:00:00,60,receive,200.00,delivery
+MV-01059,P009,2026-08-08 08:00:00,60,receive,720.00,delivery
+MV-01060,P015,2026-08-08 08:00:00,60,receive,160.00,delivery
+MV-01061,P017,2026-08-08 08:00:00,60,receive,48.00,delivery
+MV-01062,P024,2026-08-08 08:00:00,60,receive,288.00,delivery
+MV-01063,P025,2026-08-08 08:00:00,60,receive,432.00,delivery
+MV-01064,P027,2026-08-08 08:00:00,20,receive,1296.00,delivery
+MV-01065,P028,2026-08-08 08:00:00,20,receive,960.00,delivery
+MV-01066,P030,2026-08-08 08:00:00,30,receive,4160.00,delivery
+MV-01067,P033,2026-08-08 08:00:00,30,receive,252.00,delivery
+MV-01068,P007,2026-08-09 08:00:00,60,receive,880.00,delivery
+MV-01069,P011,2026-08-09 08:00:00,30,receive,7840.00,delivery
+MV-01070,P013,2026-08-09 08:00:00,30,receive,2320.00,delivery
+MV-01071,P022,2026-08-09 08:00:00,30,receive,1760.00,delivery
+MV-01072,P028,2026-08-09 08:00:00,20,receive,960.00,delivery
+MV-01073,P029,2026-08-09 08:00:00,30,receive,1200.00,delivery
+MV-01074,P037,2026-08-09 08:00:00,30,receive,1120.00,delivery
+MV-01075,P004,2026-08-10 08:00:00,30,receive,1920.00,delivery
+MV-01076,P006,2026-08-10 08:00:00,60,receive,200.00,delivery
+MV-01077,P009,2026-08-10 08:00:00,60,receive,720.00,delivery
+MV-01078,P023,2026-08-10 08:00:00,60,receive,288.00,delivery
+MV-01079,P028,2026-08-10 08:00:00,24,receive,960.00,delivery
+MV-01080,P030,2026-08-10 08:00:00,24,receive,4160.00,delivery
+MV-01081,P001,2026-08-11 08:00:00,60,receive,1320.00,delivery
+MV-01082,P004,2026-08-11 08:00:00,30,receive,1920.00,delivery
+MV-01083,P006,2026-08-11 08:00:00,60,receive,200.00,delivery
+MV-01084,P007,2026-08-11 08:00:00,60,receive,880.00,delivery
+MV-01085,P015,2026-08-11 08:00:00,60,receive,160.00,delivery
+MV-01086,P026,2026-08-11 08:00:00,60,receive,180.00,delivery
+MV-01087,P029,2026-08-11 08:00:00,30,receive,1200.00,delivery
+MV-01088,P031,2026-08-11 08:00:00,20,receive,216.00,delivery
+MV-01089,P005,2026-08-12 08:00:00,60,receive,200.00,delivery
+MV-01090,P016,2026-08-12 08:00:00,60,receive,40.00,delivery
+MV-01091,P030,2026-08-12 08:00:00,30,receive,4160.00,delivery
+MV-01092,P004,2026-08-13 08:00:00,24,receive,1920.00,delivery
+MV-01093,P009,2026-08-13 08:00:00,60,receive,720.00,delivery
+MV-01094,P016,2026-08-13 08:00:00,60,receive,40.00,delivery
+MV-01095,P027,2026-08-13 08:00:00,24,receive,1296.00,delivery
+MV-01096,P002,2026-08-14 08:00:00,60,receive,120.00,delivery
+MV-01097,P002,2026-08-15 08:00:00,60,receive,120.00,delivery
+MV-01098,P005,2026-08-15 08:00:00,60,receive,200.00,delivery
+MV-01099,P017,2026-08-15 08:00:00,60,receive,48.00,delivery
+MV-01100,P025,2026-08-15 08:00:00,60,receive,432.00,delivery
+MV-01101,P026,2026-08-15 08:00:00,60,receive,180.00,delivery
+MV-01102,P027,2026-08-15 08:00:00,30,receive,1296.00,delivery
+MV-01103,P028,2026-08-15 08:00:00,24,receive,960.00,delivery
+MV-01104,P029,2026-08-15 08:00:00,20,receive,1200.00,delivery
+MV-01105,P024,2026-08-16 08:00:00,60,receive,288.00,delivery
+MV-01106,P031,2026-08-16 08:00:00,24,receive,216.00,delivery
+MV-01107,P005,2026-08-17 08:00:00,60,receive,200.00,delivery
+MV-01108,P009,2026-08-17 08:00:00,60,receive,720.00,delivery
+MV-01109,P013,2026-08-17 08:00:00,30,receive,2320.00,delivery
+MV-01110,P014,2026-08-17 08:00:00,30,receive,1840.00,delivery
+MV-01111,P017,2026-08-17 08:00:00,60,receive,48.00,delivery
+MV-01112,P027,2026-08-17 08:00:00,20,receive,1296.00,delivery
+MV-01113,P028,2026-08-17 08:00:00,20,receive,960.00,delivery
+MV-01114,P004,2026-08-18 08:00:00,20,receive,1920.00,delivery
+MV-01115,P022,2026-08-18 08:00:00,30,receive,1760.00,delivery
+MV-01116,P023,2026-08-18 08:00:00,60,receive,288.00,delivery
+MV-01117,P024,2026-08-18 08:00:00,60,receive,288.00,delivery
+MV-01118,P029,2026-08-18 08:00:00,20,receive,1200.00,delivery
+MV-01119,P030,2026-08-18 08:00:00,24,receive,4160.00,delivery
+MV-01120,P031,2026-08-18 08:00:00,24,receive,216.00,delivery
+MV-01121,P037,2026-08-18 08:00:00,30,receive,1120.00,delivery
+MV-01122,P038,2026-08-18 08:00:00,30,receive,360.00,delivery
+MV-01123,P002,2026-08-19 08:00:00,60,receive,120.00,delivery
+MV-01124,P003,2026-08-19 08:00:00,30,receive,1160.00,delivery
+MV-01125,P006,2026-08-19 08:00:00,60,receive,200.00,delivery
+MV-01126,P007,2026-08-19 08:00:00,60,receive,880.00,delivery
+MV-01127,P009,2026-08-19 08:00:00,60,receive,720.00,delivery
+MV-01128,P015,2026-08-19 08:00:00,60,receive,160.00,delivery
+MV-01129,P016,2026-08-19 08:00:00,60,receive,40.00,delivery
+MV-01130,P020,2026-08-19 08:00:00,30,receive,3120.00,delivery
+MV-01131,P026,2026-08-19 08:00:00,60,receive,180.00,delivery
+MV-01132,P031,2026-08-19 08:00:00,24,receive,216.00,delivery
+MV-01133,P035,2026-08-19 08:00:00,30,receive,720.00,delivery
+MV-01134,P001,2026-08-20 08:00:00,60,receive,1320.00,delivery
+MV-01135,P007,2026-08-20 08:00:00,60,receive,880.00,delivery
+MV-01136,P011,2026-08-20 08:00:00,30,receive,7840.00,delivery
+MV-01137,P012,2026-08-20 08:00:00,30,receive,1680.00,delivery
+MV-01138,P025,2026-08-20 08:00:00,60,receive,432.00,delivery
+MV-01139,P028,2026-08-20 08:00:00,30,receive,960.00,delivery
+MV-01140,P030,2026-08-20 08:00:00,20,receive,4160.00,delivery
+MV-01141,P004,2026-08-21 08:00:00,30,receive,1920.00,delivery
+MV-01142,P019,2026-08-21 08:00:00,30,receive,2800.00,delivery
+MV-01143,P023,2026-08-21 08:00:00,60,receive,288.00,delivery
+MV-01144,P026,2026-08-21 08:00:00,60,receive,180.00,delivery
+MV-01145,P027,2026-08-21 08:00:00,30,receive,1296.00,delivery
+MV-01146,P029,2026-08-21 08:00:00,24,receive,1200.00,delivery
+MV-01147,P030,2026-08-21 08:00:00,24,receive,4160.00,delivery
+MV-01148,P033,2026-08-21 08:00:00,30,receive,252.00,delivery
+MV-01149,P002,2026-08-22 08:00:00,60,receive,120.00,delivery
+MV-01150,P005,2026-08-22 08:00:00,60,receive,200.00,delivery
+MV-01151,P008,2026-08-22 08:00:00,30,receive,1360.00,delivery
+MV-01152,P017,2026-08-22 08:00:00,60,receive,48.00,delivery
+MV-01153,P018,2026-08-22 08:00:00,30,receive,2560.00,delivery
+MV-01154,P021,2026-08-22 08:00:00,30,receive,1200.00,delivery
+MV-01155,P024,2026-08-22 08:00:00,60,receive,288.00,delivery
+MV-01156,P025,2026-08-22 08:00:00,60,receive,432.00,delivery
+MV-01157,P027,2026-08-22 08:00:00,20,receive,1296.00,delivery
+MV-01158,P028,2026-08-22 08:00:00,30,receive,960.00,delivery
+MV-01159,P006,2026-08-23 08:00:00,60,receive,200.00,delivery
+MV-01160,P010,2026-08-23 08:00:00,30,receive,1040.00,delivery
+MV-01161,P016,2026-08-23 08:00:00,60,receive,40.00,delivery
+MV-01162,P032,2026-08-23 08:00:00,30,receive,504.00,delivery
+MV-01163,P034,2026-08-23 08:00:00,30,receive,216.00,delivery
+MV-01164,P036,2026-08-23 08:00:00,30,receive,1280.00,delivery
+MV-01165,P039,2026-08-23 08:00:00,30,receive,1040.00,delivery
+MV-01166,P040,2026-08-23 08:00:00,30,receive,960.00,delivery
+MV-01167,P004,2026-08-24 08:00:00,30,receive,1920.00,delivery
+MV-01168,P007,2026-08-24 08:00:00,60,receive,880.00,delivery
+MV-01169,P029,2026-08-24 08:00:00,20,receive,1200.00,delivery
+MV-01170,P030,2026-08-24 08:00:00,30,receive,4160.00,delivery
+MV-01171,P004,2026-08-25 08:00:00,20,receive,1920.00,delivery
+MV-01172,P005,2026-08-25 08:00:00,60,receive,200.00,delivery
+MV-01173,P029,2026-08-26 08:00:00,20,receive,1200.00,delivery
+MV-01174,P001,2026-08-27 08:00:00,60,receive,1320.00,delivery
+MV-01175,P009,2026-08-27 08:00:00,60,receive,720.00,delivery
+MV-01176,P017,2026-08-27 08:00:00,60,receive,48.00,delivery
+MV-01177,P026,2026-08-27 08:00:00,60,receive,180.00,delivery
+MV-01178,P009,2026-08-28 08:00:00,60,receive,720.00,delivery
+MV-01179,P016,2026-08-28 08:00:00,60,receive,40.00,delivery
+MV-01180,P027,2026-08-28 08:00:00,24,receive,1296.00,delivery
+MV-01181,P028,2026-08-28 08:00:00,24,receive,960.00,delivery
+MV-01182,P029,2026-08-28 08:00:00,24,receive,1200.00,delivery
+MV-01183,P031,2026-08-28 08:00:00,24,receive,216.00,delivery
+MV-01184,P002,2026-08-29 08:00:00,60,receive,120.00,delivery
+MV-01185,P004,2026-08-29 08:00:00,24,receive,1920.00,delivery
+MV-01186,P006,2026-08-29 08:00:00,60,receive,200.00,delivery
+MV-01187,P007,2026-08-29 08:00:00,60,receive,880.00,delivery
+MV-01188,P015,2026-08-29 08:00:00,60,receive,160.00,delivery
+MV-01189,P017,2026-08-29 08:00:00,60,receive,48.00,delivery
+MV-01190,P023,2026-08-29 08:00:00,60,receive,288.00,delivery
+MV-01191,P024,2026-08-29 08:00:00,60,receive,288.00,delivery
+MV-01192,P028,2026-08-29 08:00:00,24,receive,960.00,delivery
+MV-01193,P030,2026-08-29 08:00:00,30,receive,4160.00,delivery
+MV-01194,P031,2026-08-29 08:00:00,20,receive,216.00,delivery
+MV-01195,P023,2026-08-30 08:00:00,60,receive,288.00,delivery
+MV-01196,P025,2026-08-30 08:00:00,60,receive,432.00,delivery
+MV-01197,P026,2026-08-30 08:00:00,60,receive,180.00,delivery
+MV-01198,P027,2026-08-30 08:00:00,20,receive,1296.00,delivery
+MV-01199,P030,2026-08-30 08:00:00,30,receive,4160.00,delivery
+MV-01200,P031,2026-08-30 08:00:00,30,receive,216.00,delivery
+MV-01201,P003,2026-08-31 08:00:00,30,receive,1160.00,delivery
+MV-01202,P004,2026-08-31 08:00:00,24,receive,1920.00,delivery
+MV-01203,P006,2026-08-31 08:00:00,60,receive,200.00,delivery
+MV-01204,P007,2026-08-31 08:00:00,60,receive,880.00,delivery
+MV-01205,P016,2026-08-31 08:00:00,60,receive,40.00,delivery
+MV-01206,P022,2026-08-31 08:00:00,30,receive,1760.00,delivery
+MV-01207,P024,2026-08-31 08:00:00,60,receive,288.00,delivery
+MV-01208,P027,2026-08-31 08:00:00,20,receive,1296.00,delivery
+MV-01209,P031,2026-08-31 08:00:00,24,receive,216.00,delivery
+MV-01210,P032,2026-08-31 08:00:00,30,receive,504.00,delivery
+MV-01211,P034,2026-08-31 08:00:00,30,receive,216.00,delivery
+MV-01212,P035,2026-08-31 08:00:00,30,receive,720.00,delivery
+MV-01213,P001,2026-09-01 08:00:00,60,receive,1320.00,delivery
+MV-01214,P004,2026-09-01 08:00:00,20,receive,1920.00,delivery
+MV-01215,P015,2026-09-01 08:00:00,60,receive,160.00,delivery
+MV-01216,P018,2026-09-01 08:00:00,30,receive,2560.00,delivery
+MV-01217,P027,2026-09-01 08:00:00,20,receive,1296.00,delivery
+MV-01218,P028,2026-09-01 08:00:00,20,receive,960.00,delivery
+MV-01219,P029,2026-09-01 08:00:00,24,receive,1200.00,delivery
+MV-01220,P030,2026-09-01 08:00:00,30,receive,4160.00,delivery
+MV-01221,P039,2026-09-01 08:00:00,30,receive,1040.00,delivery
+MV-01222,P010,2026-09-02 08:00:00,30,receive,1040.00,delivery
+MV-01223,P012,2026-09-02 08:00:00,30,receive,1680.00,delivery
+MV-01224,P028,2026-09-02 08:00:00,20,receive,960.00,delivery
+MV-01225,P031,2026-09-02 08:00:00,30,receive,216.00,delivery
+MV-01226,P037,2026-09-02 08:00:00,30,receive,1120.00,delivery
+MV-01227,P004,2026-09-03 08:00:00,20,receive,1920.00,delivery
+MV-01228,P009,2026-09-03 08:00:00,60,receive,720.00,delivery
+MV-01229,P011,2026-09-03 08:00:00,30,receive,7840.00,delivery
+MV-01230,P014,2026-09-03 08:00:00,30,receive,1840.00,delivery
+MV-01231,P024,2026-09-03 08:00:00,60,receive,288.00,delivery
+MV-01232,P026,2026-09-03 08:00:00,60,receive,180.00,delivery
+MV-01233,P038,2026-09-03 08:00:00,30,receive,360.00,delivery
+MV-01234,P002,2026-09-04 08:00:00,60,receive,120.00,delivery
+MV-01235,P005,2026-09-04 08:00:00,60,receive,200.00,delivery
+MV-01236,P009,2026-09-04 08:00:00,60,receive,720.00,delivery
+MV-01237,P020,2026-09-04 08:00:00,30,receive,3120.00,delivery
+MV-01238,P023,2026-09-04 08:00:00,60,receive,288.00,delivery
+MV-01239,P028,2026-09-04 08:00:00,30,receive,960.00,delivery
+MV-01240,P040,2026-09-04 08:00:00,30,receive,960.00,delivery
+MV-01241,P017,2026-09-05 08:00:00,60,receive,48.00,delivery
+MV-01242,P019,2026-09-05 08:00:00,30,receive,2800.00,delivery
+MV-01243,P021,2026-09-05 08:00:00,30,receive,1200.00,delivery
+MV-01244,P025,2026-09-05 08:00:00,60,receive,432.00,delivery
+MV-01245,P029,2026-09-05 08:00:00,20,receive,1200.00,delivery
+MV-01246,P030,2026-09-05 08:00:00,24,receive,4160.00,delivery
+MV-01247,P033,2026-09-05 08:00:00,30,receive,252.00,delivery
+MV-01248,P036,2026-09-05 08:00:00,30,receive,1280.00,delivery
+MV-01249,P006,2026-09-06 08:00:00,60,receive,200.00,delivery
+MV-01250,P008,2026-09-06 08:00:00,30,receive,1360.00,delivery
+MV-01251,P013,2026-09-06 08:00:00,30,receive,2320.00,delivery
+MV-01252,P026,2026-09-06 08:00:00,60,receive,180.00,delivery
+MV-01253,P027,2026-09-06 08:00:00,24,receive,1296.00,delivery
+MV-01254,P007,2026-09-07 08:00:00,60,receive,880.00,delivery
+MV-01255,P016,2026-09-07 08:00:00,60,receive,40.00,delivery
+MV-01256,P028,2026-09-07 08:00:00,20,receive,960.00,delivery
+MV-01257,P029,2026-09-07 08:00:00,24,receive,1200.00,delivery
+MV-01258,P031,2026-09-07 08:00:00,30,receive,216.00,delivery
+MV-01259,P002,2026-09-08 08:00:00,60,receive,120.00,delivery
+MV-01260,P004,2026-09-08 08:00:00,20,receive,1920.00,delivery
+MV-01261,P015,2026-09-08 08:00:00,60,receive,160.00,delivery
+MV-01262,P023,2026-09-08 08:00:00,60,receive,288.00,delivery
+MV-01263,P024,2026-09-08 08:00:00,60,receive,288.00,delivery
+MV-01264,P028,2026-09-08 08:00:00,24,receive,960.00,delivery
+MV-01265,P029,2026-09-08 08:00:00,20,receive,1200.00,delivery
+MV-01266,P030,2026-09-08 08:00:00,24,receive,4160.00,delivery
+MV-01267,P031,2026-09-08 08:00:00,24,receive,216.00,delivery
+MV-01268,P002,2026-09-09 08:00:00,60,receive,120.00,delivery
+MV-01269,P004,2026-09-09 08:00:00,24,receive,1920.00,delivery
+MV-01270,P007,2026-09-09 08:00:00,60,receive,880.00,delivery
+MV-01271,P023,2026-09-09 08:00:00,60,receive,288.00,delivery
+MV-01272,P004,2026-09-10 08:00:00,30,receive,1920.00,delivery
+MV-01273,P005,2026-09-10 08:00:00,60,receive,200.00,delivery
+MV-01274,P006,2026-09-10 08:00:00,60,receive,200.00,delivery
+MV-01275,P017,2026-09-10 08:00:00,60,receive,48.00,delivery
+MV-01276,P025,2026-09-10 08:00:00,60,receive,432.00,delivery
+MV-01277,P029,2026-09-10 08:00:00,20,receive,1200.00,delivery
+MV-01278,P015,2026-09-11 08:00:00,60,receive,160.00,delivery
+MV-01279,P009,2026-09-12 08:00:00,60,receive,720.00,delivery
+MV-01280,P026,2026-09-12 08:00:00,60,receive,180.00,delivery
+MV-01281,P027,2026-09-12 08:00:00,30,receive,1296.00,delivery
+MV-01282,P030,2026-09-12 08:00:00,30,receive,4160.00,delivery
+MV-01283,P001,2026-09-13 08:00:00,60,receive,1320.00,delivery
+MV-01284,P027,2026-09-13 08:00:00,24,receive,1296.00,delivery
+MV-01285,P028,2026-09-13 08:00:00,30,receive,960.00,delivery
+MV-01286,P030,2026-09-13 08:00:00,30,receive,4160.00,delivery
+MV-01287,P015,2026-09-14 08:00:00,60,receive,160.00,delivery
+MV-01288,P019,2026-09-14 08:00:00,30,receive,2800.00,delivery
+MV-01289,P027,2026-09-14 08:00:00,24,receive,1296.00,delivery
+MV-01290,P004,2026-09-15 08:00:00,30,receive,1920.00,delivery
+MV-01291,P009,2026-09-15 08:00:00,60,receive,720.00,delivery
+MV-01292,P014,2026-09-15 08:00:00,30,receive,1840.00,delivery
+MV-01293,P016,2026-09-15 08:00:00,60,receive,40.00,delivery
+MV-01294,P017,2026-09-15 08:00:00,60,receive,48.00,delivery
+MV-01295,P018,2026-09-15 08:00:00,30,receive,2560.00,delivery
+MV-01296,P020,2026-09-15 08:00:00,30,receive,3120.00,delivery
+MV-01297,P024,2026-09-15 08:00:00,60,receive,288.00,delivery
+MV-01298,P026,2026-09-15 08:00:00,60,receive,180.00,delivery
+MV-01299,P028,2026-09-15 08:00:00,24,receive,960.00,delivery
+MV-01300,P029,2026-09-15 08:00:00,24,receive,1200.00,delivery
+MV-01301,P036,2026-09-15 08:00:00,30,receive,1280.00,delivery
+MV-01302,P001,2026-09-16 08:00:00,60,receive,1320.00,delivery
+MV-01303,P005,2026-09-16 08:00:00,60,receive,200.00,delivery
+MV-01304,P011,2026-09-16 08:00:00,30,receive,7840.00,delivery
+MV-01305,P016,2026-09-16 08:00:00,60,receive,40.00,delivery
+MV-01306,P029,2026-09-16 08:00:00,20,receive,1200.00,delivery
+MV-01307,P030,2026-09-16 08:00:00,30,receive,4160.00,delivery
+MV-01308,P031,2026-09-16 08:00:00,20,receive,216.00,delivery
+MV-01309,P033,2026-09-16 08:00:00,30,receive,252.00,delivery
+MV-01310,P038,2026-09-16 08:00:00,30,receive,360.00,delivery
+MV-01311,P040,2026-09-16 08:00:00,30,receive,960.00,delivery
+MV-01312,P004,2026-09-17 08:00:00,24,receive,1920.00,delivery
+MV-01313,P005,2026-09-17 08:00:00,60,receive,200.00,delivery
+MV-01314,P006,2026-09-17 08:00:00,60,receive,200.00,delivery
+MV-01315,P010,2026-09-17 08:00:00,30,receive,1040.00,delivery
+MV-01316,P021,2026-09-17 08:00:00,30,receive,1200.00,delivery
+MV-01317,P024,2026-09-17 08:00:00,60,receive,288.00,delivery
+MV-01318,P025,2026-09-17 08:00:00,60,receive,432.00,delivery
+MV-01319,P027,2026-09-17 08:00:00,30,receive,1296.00,delivery
+MV-01320,P034,2026-09-17 08:00:00,30,receive,216.00,delivery
+MV-01321,P035,2026-09-17 08:00:00,30,receive,720.00,delivery
+MV-01322,P003,2026-09-18 08:00:00,30,receive,1160.00,delivery
+MV-01323,P007,2026-09-18 08:00:00,60,receive,880.00,delivery
+MV-01324,P008,2026-09-18 08:00:00,30,receive,1360.00,delivery
+MV-01325,P013,2026-09-18 08:00:00,30,receive,2320.00,delivery
+MV-01326,P015,2026-09-18 08:00:00,60,receive,160.00,delivery
+MV-01327,P023,2026-09-18 08:00:00,60,receive,288.00,delivery
+MV-01328,P026,2026-09-18 08:00:00,60,receive,180.00,delivery
+MV-01329,P032,2026-09-18 08:00:00,30,receive,504.00,delivery
+MV-01330,P002,2026-09-19 08:00:00,60,receive,120.00,delivery
+MV-01331,P004,2026-09-19 08:00:00,24,receive,1920.00,delivery
+MV-01332,P012,2026-09-19 08:00:00,30,receive,1680.00,delivery
+MV-01333,P023,2026-09-19 08:00:00,60,receive,288.00,delivery
+MV-01334,P030,2026-09-19 08:00:00,24,receive,4160.00,delivery
+MV-01335,P031,2026-09-19 08:00:00,20,receive,216.00,delivery
+MV-01336,P006,2026-09-20 08:00:00,60,receive,200.00,delivery
+MV-01337,P022,2026-09-20 08:00:00,30,receive,1760.00,delivery
+MV-01338,P028,2026-09-20 08:00:00,30,receive,960.00,delivery
+MV-01339,P030,2026-09-20 08:00:00,20,receive,4160.00,delivery
+MV-01340,P037,2026-09-20 08:00:00,30,receive,1120.00,delivery
+MV-01341,P039,2026-09-20 08:00:00,30,receive,1040.00,delivery
+MV-01342,P004,2026-09-21 08:00:00,24,receive,1920.00,delivery
+MV-01343,P005,2026-09-21 08:00:00,60,receive,200.00,delivery
+MV-01344,P025,2026-09-21 08:00:00,60,receive,432.00,delivery
+MV-01345,P030,2026-09-21 08:00:00,24,receive,4160.00,delivery
+MV-01346,P031,2026-09-21 08:00:00,20,receive,216.00,delivery
+MV-01347,P015,2026-09-22 08:00:00,60,receive,160.00,delivery
+MV-01348,P016,2026-09-22 08:00:00,60,receive,40.00,delivery
+MV-01349,P027,2026-09-22 08:00:00,24,receive,1296.00,delivery
+MV-01350,P029,2026-09-22 08:00:00,24,receive,1200.00,delivery
+MV-01351,P031,2026-09-22 08:00:00,30,receive,216.00,delivery
+MV-01352,P004,2026-09-23 08:00:00,30,receive,1920.00,delivery
+MV-01353,P005,2026-09-23 08:00:00,60,receive,200.00,delivery
+MV-01354,P016,2026-09-23 08:00:00,60,receive,40.00,delivery
+MV-01355,P029,2026-09-23 08:00:00,24,receive,1200.00,delivery
+MV-01356,P009,2026-09-24 08:00:00,60,receive,720.00,delivery
+MV-01357,P024,2026-09-24 08:00:00,60,receive,288.00,delivery
+MV-01358,P029,2026-09-24 08:00:00,20,receive,1200.00,delivery
+MV-01359,P006,2026-09-25 08:00:00,60,receive,200.00,delivery
+MV-01360,P007,2026-09-25 08:00:00,60,receive,880.00,delivery
+MV-01361,P017,2026-09-25 08:00:00,60,receive,48.00,delivery
+MV-01362,P023,2026-09-25 08:00:00,60,receive,288.00,delivery
+MV-01363,P026,2026-09-25 08:00:00,60,receive,180.00,delivery
+MV-01364,P027,2026-09-25 08:00:00,24,receive,1296.00,delivery
+MV-01365,P001,2026-09-26 08:00:00,60,receive,1320.00,delivery
+MV-01366,P002,2026-09-26 08:00:00,60,receive,120.00,delivery
+MV-01367,P028,2026-09-26 08:00:00,30,receive,960.00,delivery
+MV-01368,P030,2026-09-26 08:00:00,30,receive,4160.00,delivery
+MV-01369,P031,2026-09-26 08:00:00,20,receive,216.00,delivery
+MV-01370,P004,2026-09-27 08:00:00,20,receive,1920.00,delivery
+MV-01371,P006,2026-09-27 08:00:00,60,receive,200.00,delivery
+MV-01372,P023,2026-09-27 08:00:00,60,receive,288.00,delivery
+MV-01373,P026,2026-09-27 08:00:00,60,receive,180.00,delivery
+MV-01374,P028,2026-09-27 08:00:00,24,receive,960.00,delivery
+MV-01375,P030,2026-09-27 08:00:00,30,receive,4160.00,delivery
+MV-01376,P004,2026-09-28 08:00:00,24,receive,1920.00,delivery
+MV-01377,P007,2026-09-28 08:00:00,60,receive,880.00,delivery
+MV-01378,P009,2026-09-28 08:00:00,60,receive,720.00,delivery
+MV-01379,P011,2026-09-28 08:00:00,30,receive,7840.00,delivery
+MV-01380,P015,2026-09-28 08:00:00,60,receive,160.00,delivery
+MV-01381,P019,2026-09-28 08:00:00,30,receive,2800.00,delivery
+MV-01382,P025,2026-09-28 08:00:00,60,receive,432.00,delivery
+MV-01383,P028,2026-09-28 08:00:00,20,receive,960.00,delivery
+MV-01384,P033,2026-09-28 08:00:00,30,receive,252.00,delivery
+MV-01385,P034,2026-09-28 08:00:00,30,receive,216.00,delivery
+MV-01386,P003,2026-09-29 08:00:00,30,receive,1160.00,delivery
+MV-01387,P005,2026-09-29 08:00:00,60,receive,200.00,delivery
+MV-01388,P006,2026-09-29 08:00:00,60,receive,200.00,delivery
+MV-01389,P012,2026-09-29 08:00:00,30,receive,1680.00,delivery
+MV-01390,P026,2026-09-29 08:00:00,60,receive,180.00,delivery
+MV-01391,P029,2026-09-29 08:00:00,30,receive,1200.00,delivery
+MV-01392,P030,2026-09-29 08:00:00,20,receive,4160.00,delivery
+MV-01393,P031,2026-09-29 08:00:00,20,receive,216.00,delivery
+MV-01394,P032,2026-09-29 08:00:00,30,receive,504.00,delivery
+MV-01395,P001,2026-09-30 08:00:00,60,receive,1320.00,delivery
+MV-01396,P005,2026-09-30 08:00:00,60,receive,200.00,delivery
+MV-01397,P006,2026-09-30 08:00:00,60,receive,200.00,delivery
+MV-01398,P014,2026-09-30 08:00:00,30,receive,1840.00,delivery
+MV-01399,P016,2026-09-30 08:00:00,60,receive,40.00,delivery
+MV-01400,P024,2026-09-30 08:00:00,60,receive,288.00,delivery
+MV-01401,P031,2026-09-30 08:00:00,20,receive,216.00,delivery
+MV-01402,P040,2026-09-30 08:00:00,30,receive,960.00,delivery
+MV-01403,P002,2026-10-01 08:00:00,60,receive,120.00,delivery
+MV-01404,P004,2026-10-01 08:00:00,30,receive,1920.00,delivery
+MV-01405,P016,2026-10-01 08:00:00,60,receive,40.00,delivery
+MV-01406,P022,2026-10-01 08:00:00,30,receive,1760.00,delivery
+MV-01407,P030,2026-10-01 08:00:00,24,receive,4160.00,delivery
+MV-01408,P002,2026-10-02 08:00:00,60,receive,120.00,delivery
+MV-01409,P009,2026-10-02 08:00:00,60,receive,720.00,delivery
+MV-01410,P010,2026-10-02 08:00:00,30,receive,1040.00,delivery
+MV-01411,P021,2026-10-02 08:00:00,30,receive,1200.00,delivery
+MV-01412,P027,2026-10-02 08:00:00,20,receive,1296.00,delivery
+MV-01413,P028,2026-10-02 08:00:00,20,receive,960.00,delivery
+MV-01414,P029,2026-10-02 08:00:00,24,receive,1200.00,delivery
+MV-01415,P035,2026-10-02 08:00:00,30,receive,720.00,delivery
+MV-01416,P039,2026-10-02 08:00:00,30,receive,1040.00,delivery
+MV-01417,P008,2026-10-03 08:00:00,30,receive,1360.00,delivery
+MV-01418,P017,2026-10-03 08:00:00,60,receive,48.00,delivery
+MV-01419,P025,2026-10-03 08:00:00,60,receive,432.00,delivery
+MV-01420,P028,2026-10-03 08:00:00,30,receive,960.00,delivery
+MV-01421,P030,2026-10-03 08:00:00,24,receive,4160.00,delivery
+MV-01422,P031,2026-10-03 08:00:00,24,receive,216.00,delivery
+MV-01423,P037,2026-10-03 08:00:00,30,receive,1120.00,delivery
+MV-01424,P007,2026-10-04 08:00:00,60,receive,880.00,delivery
+MV-01425,P013,2026-10-04 08:00:00,30,receive,2320.00,delivery
+MV-01426,P015,2026-10-04 08:00:00,60,receive,160.00,delivery
+MV-01427,P018,2026-10-04 08:00:00,30,receive,2560.00,delivery
+MV-01428,P020,2026-10-04 08:00:00,30,receive,3120.00,delivery
+MV-01429,P023,2026-10-04 08:00:00,60,receive,288.00,delivery
+MV-01430,P027,2026-10-04 08:00:00,24,receive,1296.00,delivery
+MV-01431,P036,2026-10-04 08:00:00,30,receive,1280.00,delivery
+MV-01432,P038,2026-10-04 08:00:00,30,receive,360.00,delivery
+MV-01433,P001,2026-10-05 08:00:00,60,receive,1320.00,delivery
+MV-01434,P004,2026-10-05 08:00:00,24,receive,1920.00,delivery
+MV-01435,P015,2026-10-05 08:00:00,60,receive,160.00,delivery
+MV-01436,P027,2026-10-05 08:00:00,24,receive,1296.00,delivery
+MV-01437,P029,2026-10-05 08:00:00,30,receive,1200.00,delivery
+MV-01438,P030,2026-10-05 08:00:00,20,receive,4160.00,delivery
+MV-01439,P031,2026-10-05 08:00:00,24,receive,216.00,delivery
+MV-01440,P004,2026-10-06 08:00:00,30,receive,1920.00,delivery
+MV-01441,P009,2026-10-06 08:00:00,60,receive,720.00,delivery
+MV-01442,P015,2026-10-06 08:00:00,60,receive,160.00,delivery
+MV-01443,P016,2026-10-06 08:00:00,60,receive,40.00,delivery
+MV-01444,P023,2026-10-06 08:00:00,60,receive,288.00,delivery
+MV-01445,P024,2026-10-06 08:00:00,60,receive,288.00,delivery
+MV-01446,P026,2026-10-06 08:00:00,60,receive,180.00,delivery
+MV-01447,P027,2026-10-06 08:00:00,24,receive,1296.00,delivery
+MV-01448,P029,2026-10-06 08:00:00,24,receive,1200.00,delivery
+MV-01449,P002,2026-10-07 08:00:00,60,receive,120.00,delivery
+MV-01450,P006,2026-10-07 08:00:00,60,receive,200.00,delivery
+MV-01451,P023,2026-10-07 08:00:00,60,receive,288.00,delivery
+MV-01452,P030,2026-10-07 08:00:00,24,receive,4160.00,delivery
+MV-01453,P005,2026-10-08 08:00:00,60,receive,200.00,delivery
+MV-01454,P007,2026-10-08 08:00:00,60,receive,880.00,delivery
+MV-01455,P024,2026-10-08 08:00:00,60,receive,288.00,delivery
+MV-01456,P028,2026-10-08 08:00:00,24,receive,960.00,delivery
+MV-01457,P029,2026-10-08 08:00:00,20,receive,1200.00,delivery
+MV-01458,P030,2026-10-08 08:00:00,24,receive,4160.00,delivery
+MV-01459,P001,2026-10-09 08:00:00,60,receive,1320.00,delivery
+MV-01460,P006,2026-10-09 08:00:00,60,receive,200.00,delivery
+MV-01461,P007,2026-10-09 08:00:00,60,receive,880.00,delivery
+MV-01462,P009,2026-10-09 08:00:00,60,receive,720.00,delivery
+MV-01463,P017,2026-10-09 08:00:00,60,receive,48.00,delivery
+MV-01464,P004,2026-10-10 08:00:00,30,receive,1920.00,delivery
+MV-01465,P025,2026-10-10 08:00:00,60,receive,432.00,delivery
+MV-01466,P028,2026-10-10 08:00:00,20,receive,960.00,delivery
+MV-01467,P002,2026-10-11 08:00:00,60,receive,120.00,delivery
+MV-01468,P016,2026-10-11 08:00:00,60,receive,40.00,delivery
+MV-01469,P028,2026-10-11 08:00:00,20,receive,960.00,delivery
+MV-01470,P031,2026-10-11 08:00:00,20,receive,216.00,delivery
+MV-01471,P001,2026-10-12 08:00:00,60,receive,1320.00,delivery
+MV-01472,P004,2026-10-12 08:00:00,20,receive,1920.00,delivery
+MV-01473,P005,2026-10-12 08:00:00,60,receive,200.00,delivery
+MV-01474,P008,2026-10-12 08:00:00,30,receive,1360.00,delivery
+MV-01475,P010,2026-10-12 08:00:00,30,receive,1040.00,delivery
+MV-01476,P019,2026-10-12 08:00:00,30,receive,2800.00,delivery
+MV-01477,P023,2026-10-12 08:00:00,60,receive,288.00,delivery
+MV-01478,P026,2026-10-12 08:00:00,60,receive,180.00,delivery
+MV-01479,P033,2026-10-12 08:00:00,30,receive,252.00,delivery
+MV-01480,P036,2026-10-12 08:00:00,30,receive,1280.00,delivery
+MV-01481,P009,2026-10-13 08:00:00,60,receive,720.00,delivery
+MV-01482,P012,2026-10-13 08:00:00,30,receive,1680.00,delivery
+MV-01483,P013,2026-10-13 08:00:00,30,receive,2320.00,delivery
+MV-01484,P024,2026-10-13 08:00:00,60,receive,288.00,delivery
+MV-01485,P025,2026-10-13 08:00:00,60,receive,432.00,delivery
+MV-01486,P029,2026-10-13 08:00:00,24,receive,1200.00,delivery
+MV-01487,P030,2026-10-13 08:00:00,30,receive,4160.00,delivery
+MV-01488,P035,2026-10-13 08:00:00,30,receive,720.00,delivery
+MV-01489,P037,2026-10-13 08:00:00,30,receive,1120.00,delivery
+MV-01490,P004,2026-10-14 08:00:00,20,receive,1920.00,delivery
+MV-01491,P015,2026-10-14 08:00:00,60,receive,160.00,delivery
+MV-01492,P026,2026-10-14 08:00:00,60,receive,180.00,delivery
+MV-01493,P027,2026-10-14 08:00:00,24,receive,1296.00,delivery
+MV-01494,P031,2026-10-14 08:00:00,30,receive,216.00,delivery
+MV-01495,P002,2026-10-15 08:00:00,60,receive,120.00,delivery
+MV-01496,P005,2026-10-15 08:00:00,60,receive,200.00,delivery
+MV-01497,P006,2026-10-15 08:00:00,60,receive,200.00,delivery
+MV-01498,P016,2026-10-15 08:00:00,60,receive,40.00,delivery
+MV-01499,P018,2026-10-15 08:00:00,30,receive,2560.00,delivery
+MV-01500,P024,2026-10-15 08:00:00,60,receive,288.00,delivery
+MV-01501,P029,2026-10-15 08:00:00,30,receive,1200.00,delivery
+MV-01502,P031,2026-10-15 08:00:00,24,receive,216.00,delivery
+MV-01503,P034,2026-10-15 08:00:00,30,receive,216.00,delivery
+MV-01504,P011,2026-10-16 08:00:00,30,receive,7840.00,delivery
+MV-01505,P015,2026-10-16 08:00:00,60,receive,160.00,delivery
+MV-01506,P017,2026-10-16 08:00:00,60,receive,48.00,delivery
+MV-01507,P020,2026-10-16 08:00:00,30,receive,3120.00,delivery
+MV-01508,P027,2026-10-16 08:00:00,24,receive,1296.00,delivery
+MV-01509,P028,2026-10-16 08:00:00,24,receive,960.00,delivery
+MV-01510,P031,2026-10-16 08:00:00,30,receive,216.00,delivery
+MV-01511,P040,2026-10-16 08:00:00,30,receive,960.00,delivery
+MV-01512,P003,2026-10-17 08:00:00,30,receive,1160.00,delivery
+MV-01513,P004,2026-10-17 08:00:00,24,receive,1920.00,delivery
+MV-01514,P006,2026-10-17 08:00:00,60,receive,200.00,delivery
+MV-01515,P014,2026-10-17 08:00:00,30,receive,1840.00,delivery
+MV-01516,P022,2026-10-17 08:00:00,30,receive,1760.00,delivery
+MV-01517,P023,2026-10-17 08:00:00,60,receive,288.00,delivery
+MV-01518,P029,2026-10-17 08:00:00,30,receive,1200.00,delivery
+MV-01519,P039,2026-10-17 08:00:00,30,receive,1040.00,delivery
+MV-01520,P001,2026-10-18 08:00:00,60,receive,1320.00,delivery
+MV-01521,P002,2026-10-18 08:00:00,60,receive,120.00,delivery
+MV-01522,P007,2026-10-18 08:00:00,60,receive,880.00,delivery
+MV-01523,P016,2026-10-18 08:00:00,60,receive,40.00,delivery
+MV-01524,P021,2026-10-18 08:00:00,30,receive,1200.00,delivery
+MV-01525,P028,2026-10-18 08:00:00,20,receive,960.00,delivery
+MV-01526,P030,2026-10-18 08:00:00,24,receive,4160.00,delivery
+MV-01527,P032,2026-10-18 08:00:00,30,receive,504.00,delivery
+MV-01528,P038,2026-10-18 08:00:00,30,receive,360.00,delivery

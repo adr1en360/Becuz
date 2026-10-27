@@ -42,7 +42,7 @@ def run(wh) -> tuple[dict, list[dict]]:
 class RecoveryTests(unittest.TestCase):
     def test_a_mismatched_claim_is_sent_back_retested_and_then_supported(self) -> None:
         # The Investigator's first measurement of the supplier cause comes back 500 naira off.
-        wh = OnceWrong("s01", "final_cost - c.base_cost", lambda rows: [{"effect_ngn": rows[0]["effect_ngn"] - 500}])
+        wh = OnceWrong("s01", "x.period_cost - x.period_qty * x.base_cost", lambda rows: [{"effect_ngn": rows[0]["effect_ngn"] - 500}])
         report, trace = run(wh)
         checks = [(l["action"], l["retry_count"]) for l in trace
                   if l["agent_name"] == "Checker" and l["input_summary"] == "supplier_cost_rise" and l["action"] != "judge"]
@@ -50,7 +50,7 @@ class RecoveryTests(unittest.TestCase):
         retest = [l for l in trace if l["agent_name"] == "Investigator" and l["input_summary"] == "supplier_cost_rise"]
         self.assertEqual([l["retry_count"] for l in retest], [0, 1])
         cause = next(c for c in report["causes"] if c["cause_id"] == "supplier_cost_rise")
-        self.assertEqual((cause["impact_ngn"], cause["retries"], report["stats"]["retries"]), (-46992.0, 1, 1))
+        self.assertEqual((cause["impact_ngn"], cause["retries"], report["stats"]["retries"]), (-45408.0, 1, 1))
 
     def test_a_transient_failure_retries_only_that_query_and_is_traced(self) -> None:
         def timeout(rows):

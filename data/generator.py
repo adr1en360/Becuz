@@ -1,7 +1,12 @@
-"""Seeded synthetic shop generator: 8 weeks of records for one Nigerian mini-mart.
+"""Seeded synthetic shop generator: 20 weeks of records for one Nigerian mini-mart.
 
 Writes one CSV per table plus answer_key.json into data/scenarios/<scenario>/.
 All data is synthetic. Causes are planted only in the final week.
+
+Costs follow real rhythms rather than one Monday lump: rent, salaries and the waste levy are paid
+monthly with a cover period (cover_start to cover_end) that the USL spreads per day; diesel, transport
+and electricity tokens are paid on varying days with no cover period; supplier deliveries land on
+varying weekdays, and a sale is costed at the latest invoice on or before its day.
 
     uv run python -m data.generator s01
 """
@@ -15,19 +20,19 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent / "scenarios"
-START = date(2026, 8, 24)  # a Monday; 8 weeks, the last week is the one investigated
-WEEKS = 8
+START = date(2026, 4, 20)  # a Monday; 26 weeks to Sunday 18 Oct 2026, the last week is the one investigated
+WEEKS = 26  # enough for a 28-day period plus its 4 baseline windows, with room to start it earlier
 FINAL = WEEKS - 1
 BASELINE = range(FINAL - 4, FINAL)  # the 4 weeks before the final week
 POS_CHARGE = 0.005  # flat in every week, so pos_charge_rise is always a red herring
 
 SCENARIOS = {
     "s01": {  # demo: four causes at once
-        "seed": 101,
+        "seed": 101, "steady": True,
         "causes": ["supplier_cost_rise", "promo_overrun", "wastage_spike", "transfer_leakage"],
         "red_herrings": ["pos_charge_rise"],
     },
-    # Steady scenarios: only the planted causes change the final week.
+    # Every scenario is steady: only the planted causes change the final week.
     "s02": {"seed": 202, "steady": True, "causes": ["supplier_cost_rise"], "red_herrings": ["pos_charge_rise"]},
     "s03": {"seed": 303, "steady": True, "causes": ["promo_overrun", "wastage_spike"], "red_herrings": ["pos_charge_rise"]},
     # "Sales fell" is plausible but false: sales hold steady while transfers go missing.
@@ -90,6 +95,11 @@ PROMO_PCT = 15
 LEAKY_STAFF = "ST01"
 LEAKED_TRANSFERS = 6
 
+# Monthly costs, each paid with a cover period of the calendar month it pays for.
+RENT_NGN = 150000
+SALARIES_NGN = {"ST01": 85000, "ST02": 80000}
+LEVY_NGN = 5000
+
 
 def day(d: int) -> date:
     return START + timedelta(days=d)
@@ -115,7 +125,7 @@ def generate(scenario: str, out: Path) -> dict:
     rng = random.Random(spec["seed"])
     tables: dict[str, list[dict]] = {name: [] for name in (
         "products", "staff", "sales", "sale_lines", "promos", "stock_movements",
-        "bank_statement", "supplier_invoices", "expenses", "fx_rates")}
+        "bank_statement", "supplier_invoices", "expenses", "fx_rates", "calendar")}
 
     products = []
     for i, (name, category, unit, price, perishable, weight) in enumerate(PRODUCTS, start=1):
@@ -129,30 +139,46 @@ def generate(scenario: str, out: Path) -> dict:
     for sid, name, role in STAFF:
         tables["staff"].append({"staff_id": sid, "name": name, "role": role})
 
-    # Promo runs one baseline week; with promo_overrun the till keeps applying it in the final week.
-    promo_start, promo_end = day(7 * (FINAL - 1)), day(7 * FINAL - 1)
+    # Promo runs one week well before the baseline; with promo_overrun the till keeps applying it in the final week.
+    promo_start, promo_end = day(7 * (FINAL - 6)), day(7 * (FINAL - 5) - 1)
     tables["promos"].append({"promo_id": "PR01", "product_id": PROMO_PRODUCT, "pct_off": PROMO_PCT,
                              "start_date": promo_start.isoformat(), "end_date": promo_end.isoformat()})
 
-    def unit_cost(pid: str, week: int) -> int:
+    # The supplier cost rise lands on one invoice early in the final week; sales before it keep the old cost.
+    deliveries = random.Random(spec["seed"] * 3 + 1)
+    rise_day = day(7 * FINAL + deliveries.randint(0, 2))
+
+    def unit_cost(pid: str, on: date) -> int:
+        """The clean ledger's cost in force on a day: the latest invoice on or before it."""
         base = by_id[pid]["cost"]
-        if pid == COST_RISE_PRODUCT and week == FINAL and "supplier_cost_rise" in causes:
+        if pid == COST_RISE_PRODUCT and "supplier_cost_rise" in causes and on >= rise_day:
             return round(base * (1 + COST_RISE_PCT))
         return base
 
-    # Weekly supplier invoices and stock receipts, every Monday.
-    inv = 0
+    # Opening stock is invoiced on the first day; after that perishables come 2 to 3 times a week, fast
+    # movers 1 to 2 times, and slow movers once a fortnight, each on varying weekdays.
+    schedule: list[tuple[date, dict]] = [(START, p) for p in products]
     for week in range(WEEKS):
-        monday = day(7 * week)
         for p in products:
-            inv += 1
-            qty = 60 if p["weight"] >= 6 else 30
-            cost = unit_cost(p["product_id"], week)
-            sup = supplier_for(p["category"])
-            tables["supplier_invoices"].append({
-                "invoice_id": f"INV-{inv:04d}", "invoice_date": monday.isoformat(), "supplier_id": sup,
-                "supplier_name": SUPPLIERS[sup], "product_id": p["product_id"], "qty": qty,
-                "unit_cost_ngn": ngn(cost), "total_ngn": ngn(qty * cost)})
+            if p["perishable"]:
+                count = deliveries.randint(2, 3)
+            elif p["weight"] >= 6:
+                count = deliveries.randint(1, 2)
+            else:
+                count = week % 2
+            days = {day(7 * week + d) for d in deliveries.sample(range(7), count)} - {START}
+            if p["product_id"] == COST_RISE_PRODUCT and week == FINAL and "supplier_cost_rise" in causes:
+                days = {d for d in days if d > rise_day} | {rise_day}
+            schedule += [(d, p) for d in sorted(days)]
+    schedule.sort(key=lambda item: (item[0], item[1]["product_id"]))
+    for inv, (when, p) in enumerate(schedule, start=1):
+        qty = deliveries.choice((20, 24, 30)) if p["perishable"] else (60 if p["weight"] >= 6 else 30)
+        cost = unit_cost(p["product_id"], when)
+        sup = supplier_for(p["category"])
+        tables["supplier_invoices"].append({
+            "invoice_id": f"INV-{inv:05d}", "invoice_date": when.isoformat(), "supplier_id": sup,
+            "supplier_name": SUPPLIERS[sup], "product_id": p["product_id"], "qty": qty,
+            "unit_cost_ngn": ngn(cost), "total_ngn": ngn(qty * cost)})
 
     sale_no = line_no = txn = mov = 0
     weights = [p["weight"] for p in products]
@@ -191,7 +217,7 @@ def generate(scenario: str, out: Path) -> dict:
                 "discount_ngn": ngn(discount), "net_ngn": ngn(net)})
             if method == "transfer":
                 leak = (week == FINAL and "transfer_leakage" in causes and staff_id == LEAKY_STAFF
-                        and len(leak_refs) < LEAKED_TRANSFERS and rng.random() < 0.3)
+                        and len(leak_refs) < min(LEAKED_TRANSFERS, today.weekday() + 1) and rng.random() < 0.3)
                 if leak:
                     leak_refs.append((sale_id, net))
                 else:
@@ -236,24 +262,20 @@ def generate(scenario: str, out: Path) -> dict:
                 tables["stock_movements"].append({
                     "movement_id": f"MV-{mov:05d}", "product_id": p["product_id"],
                     "moved_at": f"{today.isoformat()} 21:00:00", "qty": qty,
-                    "type": rng.choice(["expired", "damaged"]), "unit_cost_ngn": ngn(unit_cost(p["product_id"], week)),
+                    "type": rng.choice(["expired", "damaged"]), "unit_cost_ngn": ngn(unit_cost(p["product_id"], today)),
                     "note": "closing count"})
 
         tables["fx_rates"].append({"date": today.isoformat(),
                                    "usd_ngn": ngn(1530 + d * 0.4 + (60 if week == FINAL else 0))})
+        tables["calendar"].append({"cal_date": today.isoformat()})
 
-    for week in range(WEEKS):
-        monday = day(7 * week)
-        for p in products:
-            mov += 1
-            tables["stock_movements"].append({
-                "movement_id": f"MV-{mov:05d}", "product_id": p["product_id"], "moved_at": f"{monday.isoformat()} 08:00:00",
-                "qty": 60 if p["weight"] >= 6 else 30, "type": "receive",
-                "unit_cost_ngn": ngn(unit_cost(p["product_id"], week)), "note": "weekly delivery"})
-        for i, (category, amount) in enumerate((("diesel", 42000), ("transport", 15000), ("salary", 70000),
-                                                ("rent", 30000), ("levy", 5000))):
-            tables["expenses"].append({"expense_id": f"EX-{week:02d}{i}", "expense_date": monday.isoformat(),
-                                       "category": category, "amount_ngn": ngn(amount), "note": "weekly"})
+    for invoice in tables["supplier_invoices"]:
+        mov += 1
+        tables["stock_movements"].append({
+            "movement_id": f"MV-{mov:05d}", "product_id": invoice["product_id"],
+            "moved_at": f"{invoice['invoice_date']} 08:00:00", "qty": invoice["qty"], "type": "receive",
+            "unit_cost_ngn": invoice["unit_cost_ngn"], "note": "delivery"})
+    tables["expenses"] = expenses(spec)
 
     out.mkdir(parents=True, exist_ok=True)
     for name, rows in tables.items():
@@ -262,12 +284,51 @@ def generate(scenario: str, out: Path) -> dict:
             writer.writeheader()
             writer.writerows(rows)
 
-    key = answer_key(scenario, tables, promo_end, leak_refs)
+    key = answer_key(scenario, tables, promo_end, leak_refs, unit_cost)
     (out / "answer_key.json").write_text(json.dumps(key, indent=2) + "\n", encoding="utf-8")
     return key
 
 
-def answer_key(scenario: str, tables: dict, promo_end: date, leak_refs: list) -> dict:
+def month_end(first: date) -> date:
+    return (first.replace(day=28) + timedelta(days=4)).replace(day=1) - timedelta(days=1)
+
+
+def expenses(spec: dict) -> list[dict]:
+    """The expense book. Monthly items carry a cover period; day-to-day spend leaves it empty.
+
+    Day-to-day spend repeats one weekly pattern of days and amounts, so it never hides or fakes a planted cause.
+    """
+    spend = random.Random(spec["seed"] * 7 + 5)
+    rows: list[tuple] = []  # (date, category, amount, cover_start, cover_end, note)
+    first = START
+    while first <= day(7 * WEEKS - 1):
+        last = month_end(first)
+        rows.append((first, "rent", RENT_NGN, first, last, f"shop rent {first:%b %Y}"))
+        for staff_id, name, _ in STAFF:  # paid in the first days of the month it covers
+            rows.append((first + timedelta(days=spend.randint(0, 2)), "salary", SALARIES_NGN[staff_id],
+                         first, last, f"{name} {first:%b} salary"))
+        rows.append((first + timedelta(days=spend.randint(2, 6)), "levy", LEVY_NGN, first, last, f"LAWMA {first:%b %Y}"))
+        first = last + timedelta(days=1)
+
+    def week_pattern(r: random.Random) -> list[tuple]:
+        pattern = [(d, "diesel", 20 * r.choice(range(1950, 2151, 50)), "diesel 20 litres")
+                   for d in r.sample(range(7), r.randint(2, 4))]
+        return pattern + [(d, "transport", r.choice(range(1500, 6001, 500)), "transport to market")
+                          for d in r.sample(range(7), r.randint(2, 5))]
+
+    pattern = week_pattern(random.Random(spec["seed"] * 7 + 6))
+    for week in range(WEEKS):
+        for d, category, amount, note in pattern:
+            rows.append((day(7 * week + d), category, amount, None, None, note))
+        rows.append((day(7 * week + 3), "electricity", 12000, None, None, "prepaid meter token"))
+    rows.sort(key=lambda r: (r[0], r[1], r[5]))
+    return [{"expense_id": f"EX-{i:04d}", "expense_date": when.isoformat(), "category": category,
+             "amount_ngn": ngn(amount), "cover_start": start.isoformat() if start else "",
+             "cover_end": end.isoformat() if end else "", "note": note}
+            for i, (when, category, amount, start, end, note) in enumerate(rows, start=1)]
+
+
+def answer_key(scenario: str, tables: dict, promo_end: date, leak_refs: list, unit_cost) -> dict:
     """Each impact is the profit effect in the final week, defined by the query the agent should run."""
     final = lambda iso: week_of(date.fromisoformat(iso[:10])) == FINAL  # noqa: E731
     base_weeks = lambda iso: week_of(date.fromisoformat(iso[:10])) in BASELINE  # noqa: E731
@@ -275,13 +336,14 @@ def answer_key(scenario: str, tables: dict, promo_end: date, leak_refs: list) ->
     impacts: dict[str, float] = {}
 
     if "supplier_cost_rise" in causes:
-        cost = {w: float(r["unit_cost_ngn"]) for r in tables["supplier_invoices"]
-                if r["product_id"] == COST_RISE_PRODUCT for w in [week_of(date.fromisoformat(r["invoice_date"]))]}
-        sold_on = {s["sale_id"]: s["sold_at"] for s in tables["sales"]}
-        qty = sum(l["qty"] for l in tables["sale_lines"]
-                  if l["product_id"] == COST_RISE_PRODUCT and final(sold_on[l["sale_id"]]))
-        base_cost = sum(cost[w] for w in BASELINE) / len(BASELINE)
-        impacts["supplier_cost_rise"] = -qty * (cost[FINAL] - base_cost)
+        # Units sold in the final week at the cost in force on their day, against the baseline's average
+        # cost in force per unit sold.
+        sold_on = {s["sale_id"]: s["sold_at"][:10] for s in tables["sales"]}
+        lines = [(sold_on[l["sale_id"]], l["qty"]) for l in tables["sale_lines"] if l["product_id"] == COST_RISE_PRODUCT]
+        cost = lambda keep: sum(q * unit_cost(COST_RISE_PRODUCT, date.fromisoformat(d))  # noqa: E731
+                                for d, q in lines if keep(d))
+        units = lambda keep: sum(q for d, q in lines if keep(d))  # noqa: E731
+        impacts["supplier_cost_rise"] = -(cost(final) - units(final) * cost(base_weeks) / units(base_weeks))
     if "promo_overrun" in causes:
         sold_on = {s["sale_id"]: s["sold_at"] for s in tables["sales"]}
         impacts["promo_overrun"] = -sum(float(l["discount_ngn"]) for l in tables["sale_lines"]
@@ -299,6 +361,9 @@ def answer_key(scenario: str, tables: dict, promo_end: date, leak_refs: list) ->
         "synthetic": True,
         "final_week": {"start": day(7 * FINAL).isoformat(), "end": day(7 * WEEKS - 1).isoformat()},
         "baseline_weeks": {"start": day(7 * BASELINE[0]).isoformat(), "end": day(7 * FINAL - 1).isoformat()},
+        "history": {"start": START.isoformat(), "end": day(7 * WEEKS - 1).isoformat()},
+        "accrual": "an expense with cover_start and cover_end is spread evenly per day over that period",
+        "cost_rule": "a sale line is costed at the latest supplier invoice for its product on or before the sale day",
         "causes": [{"cause_id": c, "impact_ngn": round(impacts[c], 2), "rank": i + 1} for i, c in enumerate(ranked)],
         "red_herrings": SCENARIOS[scenario]["red_herrings"],
         "leaked_sale_ids": [sale_id for sale_id, _ in leak_refs],
