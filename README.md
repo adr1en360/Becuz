@@ -154,7 +154,8 @@ from a real live run: one `model` line per call with the model that answered and
 
 ## 6. Setup
 
-You need Python 3.12 and [uv](https://docs.astral.sh/uv/).
+You need Python 3.12 and [uv](https://docs.astral.sh/uv/). The web interface in `web/` also needs
+Node.js 20 or later.
 
 ```powershell
 git clone https://github.com/adr1en360/Becuz.git
@@ -318,7 +319,18 @@ npm install
 npm run dev      # http://localhost:3000
 ```
 
-See `web/README.md` for building and regenerating its types from the schema.
+![Landing page](docs/screenshots/landing.png)
+
+| Ask a question | The report |
+|---|---|
+| ![Investigate](docs/screenshots/investigate.png) | ![Report](docs/screenshots/report.png) |
+
+A direct answer costs one query and no model call:
+
+![Direct answer](docs/screenshots/direct-answer.png)
+
+More are in [`docs/screenshots/`](docs/screenshots/README.md). See `web/README.md` for building and
+regenerating its types from the schema.
 
 ### Confirming a cause
 
