@@ -1,31 +1,117 @@
 # Becuz
 
-> **Track:** The Agent That Can Explain Why
-> **Sponsor technology:** Zetaris, Meterless (Nightshift and four engines), NVIDIA Nemotron
-> **Run:** `uv run python run.py --input input_examples/example_1.json`, or `uv run python server.py` and `POST /run` on port 8000
+**Becuz tells a Nigerian mini-mart owner why their profit moved, in naira, with a receipt for every claim.**
 
-Becuz tells a Nigerian mini-mart owner why profit moved over any 1 to 28 days, in naira, with a receipt for every
-claim. A receipt is the SQL that ran, the record IDs it found, and a second agent's independent re-run
-of that SQL.
+> **Track 2:** The Agent That Can Explain Why, Open Agent Hackathon 2026
+> **Sponsor technology:** Zetaris (data layer), Meterless Nightshift and four Meterless engines, NVIDIA Nemotron
+> **Try it in two minutes:** [sample mode](#quick-start) needs no accounts, keys or network
 
-## 1. Problem
+![The Becuz landing page](docs/screenshots/landing.png)
 
-The owner asks, "Why is my profit down?" The answer is spread across the POS till, the bank
-statement, supplier invoices and expenses, and nobody in the shop has time to join them by hand.
-Becuz joins those records through Zetaris and reports:
+The owner asks a question about any 1 to 28 days, such as "Why is my profit down?". Becuz reads the shop's till
+sales, bank statement, supplier invoices and expense book through Zetaris. It names each cause with its naira effect,
+shows what it ruled out, and keeps missing money apart from profit. Every finding comes with a **receipt**: the SQL that
+ran, the record IDs it found, and a second agent's independent re-run of that SQL.
 
-- the period's profit against the same days in the 4 periods before it, moved back by whole weeks so
-  busy and quiet weekdays line up
+SQL computes every naira figure. The model only rates the evidence and writes a note for the owner. It never
+computes or changes a number.
+
+## Contents
+
+1. [Quick start](#quick-start)
+2. [The problem](#the-problem)
+3. [What Becuz returns](#what-becuz-returns)
+4. [How it works](#how-it-works)
+5. [Sponsor technology](#sponsor-technology)
+6. [Web interface](#web-interface)
+7. [API](#api)
+8. [Live mode setup](#live-mode-setup)
+9. [Examples and results](#examples-and-results)
+10. [Reliability and failure handling](#reliability-and-failure-handling)
+11. [Logs and receipts](#logs-and-receipts)
+12. [Safety](#safety)
+13. [Data](#data)
+14. [Configuration](#configuration)
+15. [Tests](#tests)
+16. [Tech stack](#tech-stack)
+17. [AI and model usage](#ai-and-model-usage)
+18. [Limitations](#limitations)
+19. [Team and license](#team-and-license)
+
+## Quick start
+
+You need **Python 3.12** and [uv](https://docs.astral.sh/uv/). The web interface also needs **Node.js 20 or later**.
+
+**1. Install**
+
+```bash
+git clone https://github.com/adr1en360/Becuz.git
+cd Becuz
+uv sync
+cp .env.example .env          # Windows PowerShell: copy .env.example .env
+```
+
+**2. Run one investigation in sample mode** (offline, no accounts)
+
+```bash
+# macOS / Linux
+SAMPLE_MODE=1 uv run python run.py --input input_examples/example_1.json
+```
+
+```powershell
+# Windows PowerShell
+$env:SAMPLE_MODE = "1"
+uv run python run.py --input input_examples/example_1.json
+```
+
+This runs the whole investigation on the bundled synthetic shop and prints the report as JSON. See
+[Sample mode](#sample-mode) for what it does and does not use.
+
+**3. Open the web interface**
+
+```bash
+SAMPLE_MODE=1 uv run python server.py     # terminal 1: the agent on http://127.0.0.1:8000
+cd web && npm install && npm run dev      # terminal 2: the web app on http://localhost:3000
+```
+
+On Windows, set `$env:SAMPLE_MODE = "1"` first, then run `uv run python server.py`. Open
+<http://localhost:3000> and choose **Investigate**.
+
+**Or use Docker** (sample mode only):
+
+```bash
+docker build -t becuz .
+docker run --rm -p 8000:8000 becuz
+curl -X POST http://127.0.0.1:8000/run -H "Content-Type: application/json" -d @input_examples/example_1.json
+```
+
+The image never contains `.env`. Live mode needs Nightshift running on your machine, so run it outside Docker.
+
+## The problem
+
+A mini-mart owner asks, "Why is my profit down?" The answer is spread across the POS till, the bank statement,
+supplier invoices and the expense book, and nobody in the shop has time to join them by hand. Dashboards show that
+profit fell; they do not say why, and they cannot prove it.
+
+Becuz joins those records in place through Zetaris, tests each possible cause against them, and only names a cause
+that a second agent has checked.
+
+## What Becuz returns
+
+**For a why-question** ("Why is my profit down?"), a full investigation:
+
+- the period's profit against the same days in the 4 periods before it, moved back by whole weeks so busy and quiet
+  weekdays line up
 - ranked causes, each with its naira impact, its receipt and a confidence rating
 - causes it tested and ruled out, with the reason
 - how much of the change it explained, and how much is left unexplained
-- cash gaps, kept apart from profit: transfers recorded at the till that never reached the bank. The
-  sale happened, so it still counts as profit, but the money is missing
+- **cash gaps, kept apart from profit:** transfers recorded at the till that never reached the bank. The sale
+  happened, so it still counts as profit, but the money is missing
 - causes the owner confirmed in earlier runs, and whether each one happened again
 - one action per cause for the owner to take next
 
-Everyday questions get a direct answer in seconds, from one read-only query with its records and no
-model call:
+**For an everyday question**, a direct answer in seconds, from one read-only query with its records and no model
+call:
 
 | The owner asks | Becuz answers with |
 |---|---|
@@ -34,19 +120,14 @@ model call:
 | "What are my biggest expenses?" | spending by category, against usual |
 | "Is any money missing?" | the transfer sales that never reached the bank, with their sale IDs |
 
-Questions that ask why ("Why is my profit down?") start the full investigation. Anything not about the
-shop's money gets a short reply with example questions.
+Anything not about the shop's money gets a short reply with example questions.
 
-SQL computes every naira figure. The model rates the evidence and writes a note for the owner. It
-never computes or changes a number.
-
-## 2. Agents
+## How it works
 
 ![How Becuz answers a question](docs/diagrams/architecture-plain.svg)
 
-
-Four agents share one LangGraph state. The claims themselves live in a shared World Model, so every
-agent sees the same claims and every status change is kept.
+Four agents share one LangGraph state. The claims themselves live in a shared World Model, so every agent sees the
+same claims and every status change is kept.
 
 | Agent | Responsibility | Can block or retry? |
 |---|---|---|
@@ -64,55 +145,57 @@ Planner ─► Investigator ─► Checker ─► next cause? ──────
                                         Writer          └─► Investigator
 ```
 
-## 3. What makes this an agent system
+### What makes this an agent system
 
 - The Checker does not trust the Investigator. It re-runs the SQL and compares the result to ±₦1.
 - A mismatch goes back to the Investigator for a re-test, up to 2 times.
 - A claim is rejected when its loss is below ₦1,000, when no records back it, or when it is not a loss.
-- A cause the owner confirmed in an earlier run is tested first next time. If it fails, its memory
-  loses confidence and is flagged for review.
-- A Zetaris timeout, network error, server error or Zetaris internal fault retries only the query that
-  failed, up to 5 attempts with waits of 10, 20, 40 and 40 seconds (about two minutes, enough for the Zetaris
-  Spark session to restart), and each retry is written to the trace by the agent that hit it.
-- The Checker hands each model rating to a background worker and moves on to the next cause. One
-  worker keeps the Markovian chain in order, and the Writer waits for every rating before the report.
+- A cause the owner confirmed in an earlier run is tested first next time. If it fails, its memory loses confidence
+  and is flagged for review.
+- A Zetaris timeout, network error, server error or Zetaris internal fault retries only the query that failed, up to
+  5 attempts with waits of 10, 20, 40 and 40 seconds (about two minutes, enough for the Zetaris Spark session to
+  restart). Each retry is written to the trace by the agent that hit it.
+- The Checker hands each model rating to a background worker and moves on to the next cause. One worker keeps the
+  Markovian chain in order, and the Writer waits for every rating before the report.
 - A run stops after 60 steps.
 - Every decision goes to a per-run trace with the agent, target agent, confidence, retry count and status.
 
-## 4. Sponsor technology
+## Sponsor technology
 
-**Zetaris is where the shop's data is joined and checked.** The four sources (POS, bank, books and
-context) are CSV files in S3, registered as Lightning databases. A Unified Semantic Layer (USL) named
-`becuz` declares the shop's 12 tables and their keys. Two of them do work inside Zetaris:
+### Zetaris: where the shop's data is joined and checked
 
-- `daily_pnl` computes the profit tree for each day: sales minus cost of goods, wastage and expenses.
-  It also keeps the day's missing transfers in their own column, outside profit.
+The four sources (POS, bank, books and context) are CSV files in S3, registered as Lightning databases. A Unified
+Semantic Layer (USL) named `becuz` declares the shop's 12 tables and their keys. Two of them do work inside Zetaris:
+
+- `daily_pnl` computes the profit tree for each day: sales minus cost of goods, wastage and expenses. It also keeps
+  the day's missing transfers in their own column, outside profit.
 - `transfer_check` matches each transfer sale to a bank credit.
 
-The data-quality rule `transfer_reached_bank` runs on the same match. The agent connects as a
-non-admin user with `SELECT` on the USL only, so Zetaris itself refuses any write or raw-source read.
+The data-quality rule `transfer_reached_bank` runs on the same match. The agent connects as a non-admin user with
+`SELECT` on the USL only, so Zetaris itself refuses any write or raw-source read.
 
-**Meterless Nightshift runs every model call.** The Checker asks for `meterless/judge`, and Nightshift
-routes it to an NVIDIA Nemotron model. Each call is recorded with the model that answered it and its
-Nightshift receipt ID.
+### Meterless Nightshift and NVIDIA Nemotron: every model call
 
-**Which agent uses which Nemotron model:**
+The Checker asks for `meterless/judge`, and Nightshift routes it to an NVIDIA Nemotron model. Each call is recorded
+with the model that answered it and its Nightshift receipt ID.
 
 | Agent | Nemotron model | What it does | Calls per run |
 |---|---|---|---|
 | Checker | `nvidia/nemotron-3.5-lightning-30b-a3b` (asked for as `meterless/judge`; both Nightshift lanes run it) | Rates the evidence for each supported or rejected claim and writes a note for the owner | One per tested cause on why-questions (6 on `s01`), plus retries; none on direct answers |
 | Planner, Investigator, Writer | none | SQL only; they never call a model | 0 |
 
-Both Nightshift lanes (Race and Judge) run Nemotron 3.5 Lightning. **Receipts:**
-[`output_examples/live_s01_receipts.jsonl`](output_examples/live_s01_receipts.jsonl) is the receipt log
-from a real live run: one `model` line per call with the model that answered and its request ID, and one
-`model_receipt` line per call once Nightshift signed it. The report and trace from the same run are
-[`live_s01_output.json`](output_examples/live_s01_output.json) and
-[`live_s01_trace.jsonl`](output_examples/live_s01_trace.jsonl), and its 27 Zetaris queries against the
-`becuz` USL are in [`live_s01_queries.jsonl`](output_examples/live_s01_queries.jsonl). Your own runs write the same log to
-`logs/ledger.jsonl`; run `uv run python verify_receipts.py` to add the signed receipts.
+Both Nightshift lanes (Race and Judge) run Nemotron 3.5 Lightning. **Proof from a real live run:**
 
-**Four Meterless engines, implemented in `becuz/engines/`:**
+- [`output_examples/live_s01_receipts.jsonl`](output_examples/live_s01_receipts.jsonl): one `model` line per call with
+  the model that answered and its request ID, and one `model_receipt` line per call once Nightshift signed it
+- [`live_s01_output.json`](output_examples/live_s01_output.json) and
+  [`live_s01_trace.jsonl`](output_examples/live_s01_trace.jsonl): the report and trace from the same run
+- [`live_s01_queries.jsonl`](output_examples/live_s01_queries.jsonl): its 27 Zetaris queries against the `becuz` USL
+
+Your own runs write the same log to `logs/ledger.jsonl`; run `uv run python verify_receipts.py` to add the signed
+receipts.
+
+### Four Meterless engines, implemented in `becuz/engines/`
 
 | Engine | What it does in Becuz | Log |
 |---|---|---|
@@ -121,113 +204,34 @@ from a real live run: one `model` line per call with the model that answered and
 | H-MEM | Remembers causes the owner confirmed and how they were found. They are recalled and tested first in later runs | `logs/hmem.json`, `logs/hmem.jsonl` |
 | Markovian | Runs the Checker's model calls as a chain. Each call carries one short summary of earlier verdicts instead of the whole history, so every call stays the same size | `logs/markovian.jsonl` |
 
-## 5. Tech stack
+Each engine has its own tests in `tests/` (see [Tests](#tests)).
 
-| Component | Technology |
+## Web interface
+
+`web/` holds the owner-facing app: a Next.js site that renders the report JSON and computes nothing itself.
+
+| Page | What it is |
 |---|---|
-| Language | Python 3.12, managed with uv |
-| Orchestration | LangGraph |
-| Data access | Zetaris REST API and USL |
-| Model runtime | Meterless Nightshift |
-| Models | NVIDIA Nemotron, through Nightshift |
-| Report contract | Pydantic, exported to `docs/investigation.schema.json` |
-| Sample mode | DuckDB, with the same Spark SQL translated by sqlglot |
-| API | Standard-library HTTP server (`server.py`) |
-| Logging | JSONL in `logs/` and stdout |
-| Container | Docker, sample mode |
+| `/` | The landing page. Its figures come from a saved sample run (`web/src/data/example-s01.json`), labelled as demo data |
+| `/investigate` | Ask a question, choose a period (2, 7, 14 or 28 days, or a custom start date) and, in sample mode, a test shop. The receipt prints on the right |
 
-## 6. Setup
+What the report shows, step by step: the question and period; where the money went; each cause with its source chips,
+its records, the Checker's re-check and a **This was right** button that stores it in H-MEM; what was ruled out;
+missing money; how much is explained; then a summary with what to do, the measured outcome, an Export PDF button and
+the run facts. While a run is going, each agent step appears in plain words as it happens, and **Play investigation**
+replays the steps afterwards.
 
-You need Python 3.12 and [uv](https://docs.astral.sh/uv/).
+| | |
+|---|---|
+| ![The investigate page](docs/screenshots/investigate.png) | ![A finished report](docs/screenshots/report.png) |
+| ![A cause opened to its records](docs/screenshots/report-cause.png) | ![A direct answer](docs/screenshots/direct-answer.png) |
 
-```powershell
-git clone https://github.com/adr1en360/Becuz.git
-cd Becuz
-uv sync
-copy .env.example .env
-```
+All screenshots are from sample mode; see [`docs/screenshots/`](docs/screenshots/README.md). To run, build or
+regenerate the web types from the schema, see [`web/README.md`](web/README.md).
 
-### Sample mode (no accounts needed)
+## API
 
-```powershell
-$env:SAMPLE_MODE = "1"
-uv run python run.py --input input_examples/example_1.json
-```
-
-This runs the whole investigation offline. See [Sample mode](#8-sample-mode).
-
-### Docker (sample mode)
-
-```powershell
-docker build -t becuz .
-docker run --rm -p 8000:8000 becuz
-curl.exe -X POST http://127.0.0.1:8000/run -H "Content-Type: application/json" -d "@input_examples/example_1.json"
-```
-
-The image runs sample mode only and never contains `.env`. Live mode needs Nightshift running on your
-machine, so run it outside Docker.
-
-### Live mode
-
-Fill in `.env`, which is in `.gitignore`.
-
-1. **Nightshift.** Install and start Meterless Nightshift, then add your NVIDIA key in its Providers
-   tab. The NVIDIA key never goes in `.env`. Becuz reads the Nightshift token from
-   `%LOCALAPPDATA%\ai.meterless.runtime\proxy-token`. Then seat two cloud lanes in **Lanes**:
-   - a **Race** lane with `nvidia/nemotron-3.5-lightning-30b-a3b` (for example the job "Extract structured
-     data"). It answers the Checker's ratings. Without any lane, Nightshift falls back to its own routing
-     and ignores the model Becuz asks for.
-   - a **Judge** lane with the same `nvidia/nemotron-3.5-lightning-30b-a3b` ("Score different answers").
-     Nightshift keeps one non-racing judge in every setup; Becuz asks for `meterless/judge`, and on
-     27 Oct both lanes answered with Lightning, so we seat Lightning in both.
-2. **Shop data in S3.** Upload one scenario's CSVs to `s3://<bucket>/becuz/<scenario>/`, without
-   `answer_key.json`:
-
-   ```powershell
-   aws s3 cp data/scenarios/s01 s3://<bucket>/becuz/s01/ --recursive --exclude answer_key.json
-   ```
-
-3. **Zetaris, as admin.** Set `ZETARIS_REST_URL`, `ZETARIS_ORG_ID`, `ZETARIS_ADMIN_API_KEY`,
-   `S3_BUCKET`, `AWS_REGION`, `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`. Each script prints its
-   statements first and sends nothing until you add `--apply`:
-
-   ```powershell
-   uv run python -m scripts.zetaris_setup s01            # dry run
-   uv run python -m scripts.zetaris_setup s01 --apply    # register the 4 sources and 10 tables
-   uv run python -m scripts.zetaris_usl --apply          # build the becuz USL and its data-quality rule
-   ```
-
-   If a statement fails, fix the cause and resume with `--apply --start <n>`.
-4. **Zetaris, agent user.** Create a non-admin user, grant it `SELECT` on the `becuz` USL in Access
-   Control, and put its key in `ZETARIS_API_KEY`.
-
-Then check every connection:
-
-```powershell
-uv run python smoke.py
-```
-
-```text
-config   PASS  zetaris=ok nightshift=ok
-zetaris  PASS  daily_pnl up to 2026-10-18 via=zetaris
-model    PASS  via=nightshift model=nvidia/nemotron-3.5-lightning-30b-a3b
-agent    PASS  sample s01: 3 cause(s) supported
-```
-
-## 7. Usage
-
-From the command line:
-
-```powershell
-uv run python run.py --input input_examples/example_1.json
-```
-
-Or start the server on `127.0.0.1:8000`:
-
-```powershell
-uv run python server.py
-curl.exe -X POST http://127.0.0.1:8000/run -H "Content-Type: application/json" -d "@input_examples/example_1.json"
-```
+Start the server on `127.0.0.1:8000` with `uv run python server.py` (add `SAMPLE_MODE=1` for sample mode).
 
 | Route | Returns |
 |---|---|
@@ -247,9 +251,9 @@ curl.exe -X POST http://127.0.0.1:8000/run -H "Content-Type: application/json" -
 }
 ```
 
-`question` is required. `days` (1 to 28, default 7) sets the period's length, and `period_start` (like
-`2026-10-12`) its first day; without it Becuz takes the latest days in the data. A period without 4 earlier
-periods of records is refused with a plain message. `scenario` (`s01` to `s05`) applies to sample mode only.
+`question` is required. `days` (1 to 28, default 7) sets the period's length, and `period_start` (like `2026-10-12`)
+its first day; without it Becuz takes the latest days in the data. A period without 4 earlier periods of records is
+refused with a plain message. `scenario` (`s01` to `s05`) applies to sample mode only.
 
 **Response (abridged, from `output_examples/example_1_output.json`):**
 
@@ -289,35 +293,22 @@ periods of records is refused with a plain message. `scenario` (`s01` to `s05`) 
 }
 ```
 
-The full contract is in `docs/investigation.schema.json`.
-
-### Web UI
-
-`web/` holds the owner-facing report, a Next.js app that renders the Investigation JSON and computes
-nothing itself. With the server running (sample or live), start it in a second terminal:
-
-```powershell
-cd web
-npm install
-npm run dev      # http://localhost:3000
-```
-
-See `web/README.md` for building and regenerating its types from the schema.
+The full contract is in [`docs/investigation.schema.json`](docs/investigation.schema.json).
 
 ### Confirming a cause
 
-After a run, the owner can confirm a cause it found:
+After a run, the owner can confirm a cause it found, from the web interface (**This was right**) or the command line:
 
-```powershell
+```bash
 uv run python run.py --confirm <run_id> transfer_leakage
 ```
 
-Only a cause the Checker supported in that run can be confirmed. H-MEM stores it, and the next run
-tests it first and reports what happened in `memory`:
+Only a cause the Checker supported in that run can be confirmed. H-MEM stores it, and the next run tests it first and
+reports what happened in `memory`. To see it end to end in sample mode:
 
-```powershell
-$env:SAMPLE_MODE = "1"
-uv run python run.py --input input_examples/example_2.json      # note the run_id
+```bash
+export SAMPLE_MODE=1                                              # Windows: $env:SAMPLE_MODE = "1"
+uv run python run.py --input input_examples/example_2.json       # note the run_id
 uv run python run.py --confirm <run_id> transfer_leakage
 uv run python run.py --input input_examples/example_1.json
 ```
@@ -331,7 +322,68 @@ uv run python run.py --input input_examples/example_1.json
 
 If a remembered cause does not happen again, its memory loses confidence and is flagged for review.
 
-### Examples
+## Live mode setup
+
+Live mode queries Zetaris and rates evidence with Nemotron through Nightshift. Fill in `.env`, which is in
+`.gitignore`.
+
+1. **Nightshift.** Install and start Meterless Nightshift, then add your NVIDIA key in its Providers tab. The NVIDIA
+   key never goes in `.env`. On Windows, Becuz reads the Nightshift token from
+   `%LOCALAPPDATA%\ai.meterless.runtime\proxy-token`; elsewhere, set `METERLESS_RUNTIME_TOKEN`. Then seat two cloud
+   lanes in **Lanes**:
+   - a **Race** lane with `nvidia/nemotron-3.5-lightning-30b-a3b` (for example the job "Extract structured data"). It
+     answers the Checker's ratings. Without any lane, Nightshift falls back to its own routing and ignores the model
+     Becuz asks for.
+   - a **Judge** lane with the same `nvidia/nemotron-3.5-lightning-30b-a3b` ("Score different answers"). Nightshift
+     keeps one non-racing judge in every setup; Becuz asks for `meterless/judge`, and on 27 Oct both lanes answered
+     with Lightning, so we seat Lightning in both.
+2. **Shop data in S3.** Upload one scenario's CSVs to `s3://<bucket>/becuz/<scenario>/`, without `answer_key.json`:
+
+   ```bash
+   aws s3 cp data/scenarios/s01 s3://<bucket>/becuz/s01/ --recursive --exclude answer_key.json
+   ```
+
+3. **Zetaris, as admin.** Set `ZETARIS_REST_URL`, `ZETARIS_ORG_ID`, `ZETARIS_ADMIN_API_KEY`, `S3_BUCKET`,
+   `AWS_REGION`, `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`. Each script prints its statements first and sends
+   nothing until you add `--apply`:
+
+   ```bash
+   uv run python -m scripts.zetaris_setup s01            # dry run
+   uv run python -m scripts.zetaris_setup s01 --apply    # register the 4 sources and 10 tables
+   uv run python -m scripts.zetaris_usl --apply          # build the becuz USL and its data-quality rule
+   ```
+
+   If a statement fails, fix the cause and resume with `--apply --start <n>`.
+4. **Zetaris, agent user.** Create a non-admin user, grant it `SELECT` on the `becuz` USL in Access Control, and put
+   its key in `ZETARIS_API_KEY`.
+
+Then check every connection:
+
+```bash
+uv run python smoke.py
+```
+
+```text
+config   PASS  zetaris=ok nightshift=ok
+zetaris  PASS  daily_pnl up to 2026-10-18 via=zetaris
+model    PASS  via=nightshift model=nvidia/nemotron-3.5-lightning-30b-a3b
+agent    PASS  sample s01: 3 cause(s) supported
+```
+
+Then run `uv run python run.py --input input_examples/example_1.json`, or start the server and the web interface as
+in the [Quick start](#quick-start) without `SAMPLE_MODE`.
+
+### Sample mode
+
+**Judges can run all of Becuz in sample mode, with no accounts, keys or network.** Every sample-mode run does the real
+work again; nothing is replayed.
+
+`SAMPLE_MODE=1` runs the full investigation with an empty `.env` and no network. The same Spark SQL runs on DuckDB over
+the scenario's CSVs: the USL tables, including `daily_pnl` and `transfer_check`, are built locally from the same
+activation queries Zetaris runs. The Checker's rating comes from fixed rules instead of a model, and the report and
+trace label it `sample-rules`. Nothing is read from `output_examples/`.
+
+## Examples and results
 
 | Input | Scenario | What the agent finds |
 |---|---|---|
@@ -340,27 +392,33 @@ If a remembered cause does not happen again, its memory loses confidence and is 
 | `input_examples/example_3.json` | `s05`: nothing wrong | Nothing to fix; every cause ruled out |
 | `input_examples/example_4.json` | `s01`, a direct question: "What sold the most?" | Mama Gold Rice 5kg, ₦352,800 from 36 units; no investigation, no model call |
 | `input_examples/example_5.json` | `s01` over 14 days | Profit ₦78,611 below usual; the same 3 causes |
-| `input_examples/example_4.json` | `s01`, a direct question: "What sold the most?" | Mama Gold Rice 5kg, ₦352,800 from 36 units; no investigation, no model call |
-| `input_examples/example_5.json` | `s01` over 14 days | Profit ₦78,611 below usual; the same 3 causes |
 
-Each output and its trace are in `output_examples/`, saved from real sample-mode runs. The live run of
-`s01` through Zetaris and Nightshift is saved too (`live_s01_*`, 27 Oct): it returned the same findings and
-naira figures as sample mode. Nightshift's provider failed 10 of 13 rating calls that morning, so 3 causes
-carry a Nemotron 3.5 Lightning rating with a signed receipt, and the report says the other 3 could not be
-rated while their SQL checks still stand.
+Each output and its trace are in `output_examples/`, saved from real sample-mode runs. The live run of `s01` through
+Zetaris and Nightshift is saved too (`live_s01_*`, 27 Oct): it returned the same findings and naira figures as sample
+mode. Nightshift's provider failed 10 of 13 rating calls that morning, so 3 causes carry a Nemotron 3.5 Lightning
+rating with a signed receipt, and the report says the other 3 could not be rated while their SQL checks still stand.
 
-## 8. Sample mode
+### Scorecard
 
-**Judges can run all of Becuz in sample mode, with no accounts, keys or network.** Every sample-mode
-run does the real work again; nothing is replayed.
+The scorecard runs all five test scenarios in sample mode and checks the findings against each answer key:
 
-`SAMPLE_MODE=1` runs the full investigation with an empty `.env` and no network. The same Spark SQL runs
-on DuckDB over the scenario's CSVs: the USL tables, including `daily_pnl` and `transfer_check`, are
-built locally from the same activation queries Zetaris runs. The Checker's rating comes from fixed rules
-instead of a model, and the report and trace label it `sample-rules`. Nothing is read from
-`output_examples/`.
+```bash
+uv run python -m becuz.eval
+```
 
-## 9. Failure handling
+```text
+week       found  impact ok  herrings out  not planted
+s01       4 of 4       4 of 4         1 of 1   -
+s02       1 of 1       1 of 1         1 of 1   -
+s03       2 of 2       2 of 2         1 of 1   -
+s04       1 of 1       1 of 1         2 of 2   -
+s05       0 of 0       0 of 0         1 of 1   -
+total  8 of 8 planted causes found; 6 of 6 red herrings ruled out; 0 finding(s) not planted
+```
+
+"Impact ok" means within the key's 10% tolerance.
+
+## Reliability and failure handling
 
 | Failure | Behaviour |
 |---|---|
@@ -374,44 +432,41 @@ instead of a model, and the report and trace label it `sample-rules`. Nothing is
 | Query budget used up, or contract expired | The query is refused; an expired contract is re-issued and linked to the first |
 | A run that loops | Stopped after 60 steps |
 
-## 10. Logs
+## Logs and receipts
 
 The app creates `logs/` on first write.
 
-`logs/trace-<run_id>.jsonl` has one line per agent decision, also printed to stderr. Each line has
-`timestamp`, `run_id`, `agent_name`, `action`, `input_summary`, `output_summary`, `target_agent`,
-`confidence`, `retry_count` and `status`, plus the engine, model and route where they apply.
+- `logs/trace-<run_id>.jsonl` has one line per agent decision, also printed to stderr. Each line has `timestamp`,
+  `run_id`, `agent_name`, `action`, `input_summary`, `output_summary`, `target_agent`, `confidence`, `retry_count` and
+  `status`, plus the engine, model and route where they apply.
+- `logs/ledger.jsonl` has one line per Zetaris query, model call or error, with the model that answered and its
+  Nightshift request ID. Nightshift signs its receipt after the call returns. Once it settles, run
+  `uv run python verify_receipts.py`, which adds a `model_receipt` line for each signed request.
 
-`logs/ledger.jsonl` has one line per Zetaris query, model call or error, with the model that answered
-and its Nightshift request ID. Nightshift signs its receipt after the call returns. Once it settles, run:
+## Safety
 
-```powershell
-uv run python verify_receipts.py
-```
-
-It adds a `model_receipt` line for each signed request.
-
-## 11. Safety
-
-- Every SQL statement passes a read-only check first: `SELECT`, `WITH`, `SHOW`, `DESCRIBE` and
-  `EXPLAIN` only. Multiple statements, unreadable quoting, Spark functions that run Java and script
-  transforms are rejected.
+- Every SQL statement passes a read-only check first: `SELECT`, `WITH`, `SHOW`, `DESCRIBE` and `EXPLAIN` only.
+  Multiple statements, unreadable quoting, Spark functions that run Java and script transforms are rejected.
 - The agent's Zetaris user can read only the `becuz` USL. Only the setup scripts use the admin key.
-- The model is told to treat record text as data, never as instructions, and its reply is used only
-  as a rating and a note.
+- The model is told to treat record text as data, never as instructions, and its reply is used only as a rating and a
+  note.
 - Logs redact key patterns before writing. `.env` is never committed.
 - No model weights are downloaded and no local GPU is needed.
 
-## 12. Data
+## Data
 
-All shop data is synthetic, generated from a fixed seed by `data/generator.py`. No real shop, customer
-or bank data is used. See `data/README.md` for the five scenarios.
+All shop data is synthetic, generated from a fixed seed by `data/generator.py`. No real shop, customer or bank data is
+used. See [`data/README.md`](data/README.md) for the five scenarios. In the web interface they appear as five fictional
+test shops.
 
-**Uploads of any shape (offline preparation, not part of a live run yet).** `uv run python -m becuz.ingest <upload_dir> <out_dir>` maps a shop's own CSV exports, whatever their file and column names, onto the records Becuz uses. It blocks the mapping when the figures do not reconcile or a payment type is unknown, and says which records are missing. `data/uploads/s06` is a test upload; `tests/test_ingest.py` covers it.
+**Uploads of any shape (offline preparation, not part of a live run yet).**
+`uv run python -m becuz.ingest <upload_dir> <out_dir>` reads a shop's own CSV exports, whatever their file and column
+names, maps them onto the records Becuz uses, and writes them in the shape `data/scenarios` uses. It blocks the mapping
+when the figures do not reconcile (for example, sale lines that do not add up to the sale) or when a payment type is
+unknown, and says which records are missing. `data/uploads/s06` is a test upload with different names and no stock
+file; `tests/test_ingest.py` covers it.
 
-**Uploads of any shape (offline preparation, not part of a live run yet).** `uv run python -m becuz.ingest <upload_dir> <out_dir>` reads a shop's own CSV exports, whatever their file and column names, maps them onto the records Becuz uses, and writes them in the shape `data/scenarios` uses. It blocks the mapping when the figures do not reconcile (for example, sale lines that do not add up to the sale) or when a payment type is unknown, and says which records are missing. `data/uploads/s06` is a test upload with different names and no stock file; `tests/test_ingest.py` covers it.
-
-## 13. Configuration
+## Configuration
 
 `.env.example` lists every setting with placeholder values.
 
@@ -429,82 +484,85 @@ or bank data is used. See `data/README.md` for the five scenarios.
 | `SAMPLE_MODE` | `0` | `1` runs offline on the bundled shop data |
 | `SERVER_HOST`, `SERVER_PORT` | `127.0.0.1`, `8000` | Server address |
 
-## 14. Tests
+The web app reads one setting, `NEXT_PUBLIC_API_URL` (default `http://127.0.0.1:8000`).
+
+## Tests
 
 The tests run offline and need no credentials.
 
-```powershell
+```bash
 uv run python -m unittest discover -s tests -p "test_*.py"
 ```
 
-They cover the generator, the SQL templates against the answer keys, the read-only guard, the report
-schema, the server, and the four engines. The H-MEM, World Model and Markovian tests port the Meterless
-conformance cases by ID; the Scout Intent tests check the rules in its spec, which has no conformance suite.
-`BECUZ_LIVE=1` adds a test that compares the profit tree from live Zetaris with sample mode.
+They cover the generator, the SQL templates against the answer keys, the read-only guard, the report schema, the
+server, and the four engines. The H-MEM, World Model and Markovian tests port the Meterless conformance cases by ID;
+the Scout Intent tests check the rules in its spec, which has no conformance suite. `BECUZ_LIVE=1` adds a test that
+compares the profit tree from live Zetaris with sample mode. The [scorecard](#scorecard) checks the findings against
+the answer keys.
 
-The scorecard runs all five test scenarios in sample mode and checks the findings against each answer key:
+For the web app: `cd web && npm run lint && npm run build`.
 
-```powershell
-uv run python -m becuz.eval
-```
+## Tech stack
 
-```text
-week       found  impact ok  herrings out  not planted
-s01       4 of 4       4 of 4         1 of 1   -
-s02       1 of 1       1 of 1         1 of 1   -
-s03       2 of 2       2 of 2         1 of 1   -
-s04       1 of 1       1 of 1         2 of 2   -
-s05       0 of 0       0 of 0         1 of 1   -
-total  8 of 8 planted causes found; 6 of 6 red herrings ruled out; 0 finding(s) not planted
-```
+| Component | Technology |
+|---|---|
+| Language | Python 3.12, managed with uv |
+| Orchestration | LangGraph |
+| Data access | Zetaris REST API and USL |
+| Model runtime | Meterless Nightshift |
+| Models | NVIDIA Nemotron, through Nightshift |
+| Report contract | Pydantic, exported to `docs/investigation.schema.json` |
+| Sample mode | DuckDB, with the same Spark SQL translated by sqlglot |
+| API | Standard-library HTTP server (`server.py`) |
+| Web interface | Next.js, React, Tailwind CSS, Solar icons |
+| Logging | JSONL in `logs/` and stdout |
+| Container | Docker, sample mode |
 
-"Impact ok" means within the key's 10% tolerance.
+## AI and model usage
 
-## 15. AI and model usage
-
-Models (through Meterless Nightshift):
-- `nvidia/nemotron-3.5-lightning-30b-a3b`: the Checker's rating of each tested claim and its note for the
-  owner. Every call and its signed receipt is logged (`output_examples/live_s01_receipts.jsonl`).
+**Models (through Meterless Nightshift):**
+- `nvidia/nemotron-3.5-lightning-30b-a3b`: the Checker's rating of each tested claim and its note for the owner. Every
+  call and its signed receipt is logged (`output_examples/live_s01_receipts.jsonl`).
 - No model computes a number, chooses SQL or writes the summary. SQL computes every figure.
 
-Agent framework: LangGraph (four agents in one graph).
+**Agent framework:** LangGraph (four agents in one graph).
 
-Sponsor technology: see [section 4](#4-sponsor-technology) for Zetaris, the four Meterless engines (each
-with its tests in `tests/`), Nightshift and NVIDIA Nemotron.
+**Sponsor technology:** see [Sponsor technology](#sponsor-technology) for Zetaris, the four Meterless engines (each with
+its tests in `tests/`), Nightshift and NVIDIA Nemotron.
 
-Development tools:
-- Built with Claude Code and Antigravity. AI-assisted coding was used for scaffolding, debugging, tests and
-  documentation.
-- All generated code was reviewed and tested by the team.
+**Development tools:** built with Claude Code and Antigravity. AI-assisted coding was used for scaffolding, debugging,
+tests, the web interface and documentation. All generated code was reviewed and tested by the team.
 
-External libraries: LangGraph, Pydantic, DuckDB and sqlglot (sample mode), and Next.js for the web UI
+**External libraries:** LangGraph, Pydantic, DuckDB and sqlglot (sample mode), and Next.js for the web interface
 (`web/package.json`). No open-source code or templates were materially adapted beyond these libraries.
 
-Data: synthetic shop data from `data/generator.py`, labelled as synthetic in every report.
+**Data:** synthetic shop data from `data/generator.py`, labelled as synthetic in every report.
 
-Sample mode: `SAMPLE_MODE=1` runs the full investigation on the bundled data with no calls to Zetaris,
-Nightshift or other services. See [section 8](#8-sample-mode).
-
-## 16. Limitations
+## Limitations
 
 Each limit, and what Becuz does about it:
 
-- **Findings show correlation, not proven causation.** Every cause carries the test that could disprove it,
-  and the report says what is still unexplained. The owner confirms causes; confirmed ones are tested first
-  next time.
-- **The shop data is synthetic.** The generator plants known causes and red herrings, so the scorecard can
-  check the agent against an answer key (8 of 8 planted causes found, 6 of 6 red herrings ruled out). A real
-  shop's records need the same four sources in Zetaris.
-- **A live run takes 7 to 14 minutes** (the saved `s01` report records 819 seconds, most of it Nightshift
-  retries). The Zetaris work finishes in about 4 minutes; the Nemotron ratings take 5 to 75 seconds each through Nightshift and run one after
-  another because each carries the earlier verdicts (Markovian). Becuz rates claims in the background while
-  the next cause is tested, and the web UI uses `POST /runs` to show each step as it happens. Sample mode
-  takes about a second.
-- **The Zetaris cluster is small** (one Spark executor). Under memory pressure its session restarts for 15 to
-  60 seconds. Becuz keeps queries aggregated and one at a time, and retries through the restart.
-- **Markovian token savings are estimates** (4 characters per token), not measured counts, and they are
-  small at six calls. The log labels them as estimates.
+- **Findings show correlation, not proven causation.** Every cause carries the test that could disprove it, and the
+  report says what is still unexplained. The owner confirms causes; confirmed ones are tested first next time.
+- **The shop data is synthetic.** The generator plants known causes and red herrings, so the scorecard can check the
+  agent against an answer key (8 of 8 planted causes found, 6 of 6 red herrings ruled out). A real shop's records need
+  the same four sources in Zetaris.
+- **A live run takes 7 to 14 minutes** (the saved `s01` report records 819 seconds, most of it Nightshift retries). The
+  Zetaris work finishes in about 4 minutes; the Nemotron ratings take 5 to 75 seconds each through Nightshift and run
+  one after another because each carries the earlier verdicts (Markovian). Becuz rates claims in the background while
+  the next cause is tested, and the web interface uses `POST /runs` to show each step as it happens. Sample mode takes
+  about a second.
+- **The Zetaris cluster is small** (one Spark executor). Under memory pressure its session restarts for 15 to 60
+  seconds. Becuz keeps queries aggregated and one at a time, and retries through the restart.
+- **Markovian token savings are estimates** (4 characters per token), not measured counts, and they are small at six
+  calls. The log labels them as estimates.
 
-## 17. License
+## Team and license
 
-MIT. See `LICENSE`.
+- **Adrien:** agents, data layer, Zetaris and Nightshift integration, evaluation
+- **tmb:** web interface, design and documentation
+
+**Pre-existing code:** the base scaffold was first committed on 21 Oct 2026, shortly before the build window opened
+(about 23:26 to 23:39 UTC). It is declared as pre-existing code in our submission.
+
+MIT. See [`LICENSE`](LICENSE).
