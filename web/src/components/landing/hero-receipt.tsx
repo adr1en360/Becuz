@@ -113,7 +113,7 @@ export function HeroReceipt() {
       <button
         type="button"
         onClick={() => setCopy((n) => n + 1)}
-        className="inline-flex h-9 items-center gap-2 rounded-full border border-desk-line px-4 text-sm font-semibold text-desk-muted transition-[color,border-color,transform] duration-150 hover:border-paper hover:text-paper active:scale-[0.97]"
+        className="inline-flex h-9 items-center gap-2 rounded-full border border-ink/30 px-4 text-sm font-semibold text-muted transition-[color,border-color,transform] duration-150 hover:border-ink hover:text-ink active:scale-[0.97]"
       >
         <PrinterMinimalisticIcon size={16} aria-hidden />
         Print it again

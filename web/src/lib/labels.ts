@@ -53,7 +53,10 @@ export function tableChipName(table: string): string {
     case "promos":
       return "Promotions";
     case "expenses":
+    case "expense_book":
       return "Expense book";
+    case "daily_pnl":
+      return "Daily profit and loss";
     case "products":
       return "Product list";
     default:
