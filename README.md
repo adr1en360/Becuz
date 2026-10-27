@@ -2,6 +2,7 @@
 
 > **Track:** The Agent That Can Explain Why
 > **Sponsor technology:** Zetaris, Meterless (Nightshift and four engines), NVIDIA Nemotron
+> **Demo video:** [youtu.be/wWmvXNZ9Uis](https://youtu.be/wWmvXNZ9Uis) (2:52, includes a live run on Zetaris and Nightshift)
 > **Run:** `uv run python run.py --input input_examples/example_1.json`, or `uv run python server.py` and `POST /run` on port 8000
 
 Becuz tells a Nigerian mini-mart owner why profit moved over any 1 to 28 days, in naira, with a receipt for every
