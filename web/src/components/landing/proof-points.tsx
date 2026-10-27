@@ -1,21 +1,51 @@
 import { Reveal } from "./reveal";
+import { DatabaseIcon, LayersIcon, ShieldCheckIcon } from "@solar-icons/react/outline";
 
 const points = [
-  "Every naira figure is computed from records, not guessed by the model.",
-  <>A second check <span className="whitespace-nowrap">re-runs</span> the evidence before a cause is shown.</>,
-  "Causes you confirm are checked first next time.",
+  {
+    icon: DatabaseIcon,
+    title: "SQL computes, model rates",
+    text: "Every naira figure is computed from records by SQL, not generated or guessed by an LLM.",
+  },
+  {
+    icon: ShieldCheckIcon,
+    title: "Independent verification",
+    text: "A second check re-runs every query before a cause is supported. Weak claims are rejected.",
+  },
+  {
+    icon: LayersIcon,
+    title: "Confirmed memory",
+    text: "Causes you confirm are remembered in H-MEM and tested first in your next investigation.",
+  },
 ];
 
 export function ProofPoints() {
   return (
-    <section aria-label="What you can rely on" className="mx-auto w-full max-w-5xl px-4 pb-24 sm:px-8 lg:pb-32">
-      <ul className="grid gap-10 lg:grid-cols-3 lg:gap-12">
-        {points.map((text, i) => (
-          <Reveal key={i} as="li" delay={i * 70}>
-            <span aria-hidden className="block h-1 w-12 rounded-full bg-flare" />
-            <p className="mt-5 text-balance font-display text-2xl font-bold leading-tight [font-stretch:105%]">{text}</p>
-          </Reveal>
-        ))}
+    <section aria-label="What you can rely on" className="mx-auto w-full max-w-5xl px-4 pb-20 sm:px-8 lg:pb-28">
+      <ul className="grid gap-6 sm:grid-cols-3">
+        {points.map((pt, i) => {
+          const Icon = pt.icon;
+          return (
+            <Reveal
+              key={pt.title}
+              as="li"
+              delay={i * 90}
+              className="lift rounded-3xl border border-desk-line bg-desk-2/60 p-6 flex flex-col justify-between gap-4"
+            >
+              <div>
+                <div className="flex size-10 items-center justify-center rounded-full bg-desk border border-desk-line/70 text-flare">
+                  <Icon size={20} aria-hidden />
+                </div>
+                <h3 className="mt-4 font-display text-xl font-bold text-paper [font-stretch:115%]">
+                  {pt.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-desk-muted">
+                  {pt.text}
+                </p>
+              </div>
+            </Reveal>
+          );
+        })}
       </ul>
     </section>
   );

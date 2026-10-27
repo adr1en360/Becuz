@@ -13,9 +13,9 @@ export default function Home() {
       <main className="flex-1">
         <Hero />
         <ProofPoints />
-        <div className="receipt paper my-6 pb-24 pt-20 lg:pb-32 lg:pt-28">
+        <HowItWorks />
+        <div className="receipt paper my-12 pb-24 pt-20 lg:pb-32 lg:pt-28">
           <ExampleInvestigation />
-          <HowItWorks />
         </div>
         <Limits />
       </main>

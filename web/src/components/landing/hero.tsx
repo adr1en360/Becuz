@@ -11,7 +11,7 @@ const words = ["Know", "why", "your", "profit", "moved", "this", "week."];
 
 export function Hero() {
   return (
-    <section aria-labelledby="hero" className="mx-auto w-full max-w-5xl px-4 pb-20 pt-24 sm:px-8 lg:pb-28 lg:pt-32">
+    <section aria-labelledby="hero" className="hero-glow mx-auto w-full max-w-5xl px-4 pb-20 pt-24 sm:px-8 lg:pb-28 lg:pt-32">
       <div className="grid gap-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,28rem)] lg:gap-x-12 lg:gap-y-8">
         {/* Left Column: Heading, description, and CTAs */}
         <div className="flex flex-col gap-6 lg:col-start-1 lg:row-start-1">
