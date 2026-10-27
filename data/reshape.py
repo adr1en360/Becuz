@@ -55,7 +55,7 @@ def reshape(src: Path, dst: Path) -> None:
             "Ref": r["expense_id"], "Paid On": _day(r["expense_date"], "%d-%b-%Y"), "Type": r["category"],
             "Amount Paid": r["amount_ngn"], "Period Start": _day(r.get("cover_start", ""), "%d/%m/%Y"),
             "Period End": _day(r.get("cover_end", ""), "%d/%m/%Y"), "Memo": r["note"],
-        } for r in _rows(src, "expenses")],
+        } for r in _rows(src, "expense_book")],
         "bank.csv": [{
             "Tran ID": r["txn_id"], "Txn Date": _day(r["posted_at"], "%d/%m/%Y %H:%M"), "Description": r["narration"],
             "Reference": r["ref"], "Debit": r["amount_ngn"] if r["direction"] == "debit" else "",

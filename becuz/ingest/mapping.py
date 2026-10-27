@@ -58,7 +58,7 @@ ROLES: dict[str, dict] = {
         unit_cost_ngn=("money", ["unit cost", "cost price", "cost"]),
         total_ngn=("money", ["line total", "total cost", "total", "amount"]),
     )},
-    "expense": {"table": "expenses", "key": "expense_id", "required": ["expense_id", "expense_date", "amount_ngn"],
+    "expense": {"table": "expense_book", "key": "expense_id", "required": ["expense_id", "expense_date", "amount_ngn"],
                 "files": ["expenses", "spending", "costs", "overheads"], "fields": F(
         expense_id=("id", ["ref", "reference", "voucher no"]),
         expense_date=("date", ["paid on", "payment date", "date"]),

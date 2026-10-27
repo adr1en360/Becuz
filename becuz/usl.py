@@ -9,7 +9,7 @@ from __future__ import annotations
 SOURCES = {
     "pos_files": ["products", "staff", "sales", "sale_lines", "promos", "stock_movements"],
     "bank_files": ["bank_statement"],
-    "books_files": ["supplier_invoices", "expenses"],
+    "books_files": ["supplier_invoices", "expense_book"],
     "context_files": ["fx_rates", "calendar"],
 }
 NAMESPACE = "lightning.metastore.becuz"
@@ -91,8 +91,6 @@ CREATE TABLE expenses (
     expense_date date,
     category varchar(16),
     amount_ngn double,
-    cover_start date,
-    cover_end date,
     note varchar(64)
 );
 CREATE TABLE fx_rates (
@@ -128,7 +126,8 @@ COPIES = {
     "stock_movements": ("pos_files.stock_movements", "COALESCE(movement_id, '') AS movement_id, product_id, moved_at, qty, type, unit_cost_ngn, note"),
     "bank_statement": ("bank_files.bank_statement", "COALESCE(txn_id, '') AS txn_id, posted_at, direction, amount_ngn, channel, ref, counterparty, narration"),
     "supplier_invoices": ("books_files.supplier_invoices", "COALESCE(invoice_id, '') AS invoice_id, invoice_date, supplier_id, supplier_name, product_id, qty, unit_cost_ngn, total_ngn"),
-    "expenses": ("books_files.expenses", "COALESCE(expense_id, '') AS expense_id, expense_date, category, amount_ngn, cover_start, cover_end, note"),
+    # The expense book's cover columns feed daily_pnl straight from the source; the USL table keeps the plain book.
+    "expenses": ("books_files.expense_book", "COALESCE(expense_id, '') AS expense_id, expense_date, category, amount_ngn, note"),
     "fx_rates": ("context_files.fx_rates", "COALESCE(`date`, DATE '1970-01-01') AS rate_date, usd_ngn"),}
 
 # Cost in force: each product's invoice cost holds from its invoice date until the product's next
@@ -177,7 +176,7 @@ LEFT JOIN (SELECT CAST(k.cal_date AS DATE) AS day,
            FROM context_files.calendar k
            JOIN (SELECT amount_ngn, CAST(COALESCE(cover_start, expense_date) AS DATE) AS span_start,
                         CAST(COALESCE(cover_end, expense_date) AS DATE) AS span_end
-                 FROM books_files.expenses) e
+                 FROM books_files.expense_book) e
              ON CAST(k.cal_date AS DATE) >= e.span_start AND CAST(k.cal_date AS DATE) <= e.span_end
            GROUP BY CAST(k.cal_date AS DATE)) op ON op.day = d.day
 LEFT JOIN (SELECT CAST(s.sold_at AS DATE) AS day, SUM(s.net_ngn) AS v FROM {UNMATCHED_TRANSFERS} AND b.txn_id IS NULL

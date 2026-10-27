@@ -125,7 +125,7 @@ def generate(scenario: str, out: Path) -> dict:
     rng = random.Random(spec["seed"])
     tables: dict[str, list[dict]] = {name: [] for name in (
         "products", "staff", "sales", "sale_lines", "promos", "stock_movements",
-        "bank_statement", "supplier_invoices", "expenses", "fx_rates", "calendar")}
+        "bank_statement", "supplier_invoices", "expense_book", "fx_rates", "calendar")}
 
     products = []
     for i, (name, category, unit, price, perishable, weight) in enumerate(PRODUCTS, start=1):
@@ -275,7 +275,7 @@ def generate(scenario: str, out: Path) -> dict:
             "movement_id": f"MV-{mov:05d}", "product_id": invoice["product_id"],
             "moved_at": f"{invoice['invoice_date']} 08:00:00", "qty": invoice["qty"], "type": "receive",
             "unit_cost_ngn": invoice["unit_cost_ngn"], "note": "delivery"})
-    tables["expenses"] = expenses(spec)
+    tables["expense_book"] = expenses(spec)
 
     out.mkdir(parents=True, exist_ok=True)
     for name, rows in tables.items():

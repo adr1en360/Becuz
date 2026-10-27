@@ -31,7 +31,7 @@ The same seed always produces byte-identical files. Each scenario folder holds:
 
 - `pos`: `products`, `staff`, `sales`, `sale_lines`, `promos`, `stock_movements`
 - `bank`: `bank_statement`
-- `books`: `supplier_invoices`, `expenses`
+- `books`: `supplier_invoices`, `expense_book` (with `cover_start` and `cover_end`)
 - `context`: `fx_rates`, `calendar`
 - `answer_key.json`: what was planted and its naira impact, computed from the generator's own clean ledger. The eval reads this file; the agent never does.
 

@@ -72,17 +72,17 @@ class GeneratorTests(unittest.TestCase):
 
     def test_costs_are_not_all_booked_on_monday(self) -> None:
         # Day-to-day spend and deliveries land on several weekdays; monthly items carry a cover period.
-        for table, column in (("expenses", "expense_date"), ("supplier_invoices", "invoice_date")):
+        for table, column in (("expense_book", "expense_date"), ("supplier_invoices", "invoice_date")):
             weekdays = self.scalar(f"SELECT COUNT(DISTINCT dayofweek(CAST({column} AS DATE))) FROM {table}")
             self.assertGreaterEqual(weekdays, 6, table)
-        uncovered = self.db.execute("""SELECT DISTINCT category FROM expenses
+        uncovered = self.db.execute("""SELECT DISTINCT category FROM expense_book
             WHERE category IN ('rent', 'salary', 'levy') AND (cover_start IS NULL OR cover_end IS NULL)""").fetchall()
         self.assertEqual(uncovered, [])
-        covered = self.scalar("""SELECT COUNT(*) FROM expenses
+        covered = self.scalar("""SELECT COUNT(*) FROM expense_book
             WHERE category IN ('diesel', 'transport', 'electricity') AND cover_start IS NOT NULL""")
         self.assertEqual(covered, 0)
         diesel = self.db.execute("""SELECT MIN(n), MAX(n) FROM (SELECT date_trunc('week', CAST(expense_date AS DATE)) w, COUNT(*) n
-            FROM expenses WHERE category = 'diesel' GROUP BY w)""").fetchone()
+            FROM expense_book WHERE category = 'diesel' GROUP BY w)""").fetchone()
         self.assertTrue(2 <= diesel[0] <= diesel[1] <= 4, diesel)
 
     def test_every_product_has_a_cost_from_the_first_day(self) -> None:
