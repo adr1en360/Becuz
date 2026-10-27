@@ -27,7 +27,7 @@ computes or changes a number.
 7. [API](#api)
 8. [Live mode setup](#live-mode-setup)
 9. [Examples and results](#examples-and-results)
-10. [Reliability and failure handling](#reliability-and-failure-handling)
+10. [Source reliability and failure handling](#source-reliability-and-failure-handling)
 11. [Logs and receipts](#logs-and-receipts)
 12. [Safety](#safety)
 13. [Data](#data)
@@ -418,7 +418,34 @@ total  8 of 8 planted causes found; 6 of 6 red herrings ruled out; 0 finding(s) 
 
 "Impact ok" means within the key's 10% tolerance.
 
-## Reliability and failure handling
+## Source reliability and failure handling
+
+### Source reliability
+
+Measured on the live `s01` run of 27 Oct, from its query log
+([`live_s01_queries.jsonl`](output_examples/live_s01_queries.jsonl)):
+
+| Source in Zetaris | What Becuz reads | Live run, 27 Oct | Status |
+|---|---|---|---|
+| POS till (`pos_files`) | `sales`, `sale_lines`, `promos`, `products`, `stock_movements` | Every query answered; median 1.7 to 9.8 s per table; one product join took 45 s | Verified |
+| Bank (`bank_files`) | `bank_statement`, and `transfer_check` in the USL | Every query answered; `bank_statement` about 1.7 s; one `transfer_check` query took 44 s | Verified |
+| Books (`books_files`) | `supplier_invoices`, `expense_book` (through `daily_pnl`) | Every query answered; `supplier_invoices` median 10.1 s; the slowest query of the run took 51 s | Verified |
+| Context (`context_files`) | exchange rates and the calendar (through `daily_pnl`) | Read inside `daily_pnl`, median 8.6 s | Verified |
+| Meterless Nightshift | Nemotron ratings for the Checker | 3 of 13 rating calls answered; the rest failed at the provider (`provider_deadline`) | Flaky that morning |
+
+All 27 Zetaris queries succeeded with no retry: median 4.1 s, fastest 1.5 s, slowest 51.4 s, about 260 s in total. The
+Nightshift failures did not change any figure: the report kept the SQL verdicts and said in `limitations` that 3 of 6
+causes could not be rated.
+
+### Caching
+
+Becuz keeps no result cache of its own. Every run queries the records in place, so a figure is never older than the
+records it came from. Speed comes from the shape of the work instead: `daily_pnl` and `transfer_check` are computed
+inside Zetaris, queries are aggregated, and they run one at a time so the small cluster is not overloaded. Most queries
+took 1.5 to 10 s; the slow ones were the first heavy queries of the session and the larger joins (44 to 51 s). Sample
+mode builds the same tables in DuckDB in memory and finishes a run in about a second.
+
+### Failure handling
 
 | Failure | Behaviour |
 |---|---|
@@ -557,10 +584,17 @@ Each limit, and what Becuz does about it:
 - **Markovian token savings are estimates** (4 characters per token), not measured counts, and they are small at six
   calls. The log labels them as estimates.
 
+### What comes next
+
+- A pilot on a real shop's own till and bank exports, mapped onto the same records with `becuz.ingest`
+- Faster live runs
+- More causes in the catalogue
+- A weekly check that alerts the owner when profit moves
+
 ## Team and license
 
 - **Adrien:** agents, data layer, Zetaris and Nightshift integration, evaluation
-- **tmb:** web interface, design and documentation
+- **Toluwani:** web interface, design and documentation
 
 **Pre-existing code:** the base scaffold was first committed on 21 Oct 2026, shortly before the build window opened
 (about 23:26 to 23:39 UTC). It is declared as pre-existing code in our submission.

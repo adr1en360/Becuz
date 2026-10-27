@@ -3,7 +3,7 @@
 This plan builds `docs/PRD.md` in small slices. Each slice has a fixed scope and a "done when" check. When a slice hits a contradiction, the builder stops and reports it rather than building past it.
 
 **Deadline:** submissions close 27 Oct 2026, 23:45 UTC. Internal target: submit on 26 Oct.
-**Owners:** Adrien (agent and data), tmb (UI).
+**Owners:** Adrien (agent and data), Toluwani (UI).
 
 ---
 
@@ -82,8 +82,8 @@ run.py  server.py  smoke.py  pyproject.toml  uv.lock  .env.example  README.md
 | 5 | Graph golden path: `becuz/schemas.py`, `becuz/orchestration/`, `becuz/agents/`; per-run trace in `becuz/tracing.py`; sample-rules for model steps | Adrien | `becuz/`, `tests/` | s01 runs live and with an empty `.env`; the trace shows the Checker rejecting a claim and the Investigator retrying |
 | 6 | Entry points and engines: `run.py --input`, `POST /run` with CORS, `--confirm`, and the agreed Meterless engines wired in | Adrien | `run.py`, `server.py`, `becuz/` | 3 `input_examples` with real saved outputs; a confirmed cause is recalled on a re-run |
 | 7 | Eval: s02 to s05 and `python -m becuz.eval` | Adrien | `data/`, `becuz/eval.py` | The metrics table is produced and reported as measured |
-| 8 | UI: Next.js in `web/`, built on real saved outputs and then on live `POST /run` | tmb | `web/` | A screenshot of each screen; it works against the live server |
-| 9 | Submission pack: README, `metadata.json`, a Dockerfile that runs sample mode with one command, `.env.example`, clean-clone test, deck, demo video, sponsor explanation (engines with test results, Nightshift connection, the Nemotron models logged) | Adrien + tmb | repo root, `docs/` | The full validation flow passes from a fresh clone with an empty `.env` |
+| 8 | UI: Next.js in `web/`, built on real saved outputs and then on live `POST /run` | Toluwani | `web/` | A screenshot of each screen; it works against the live server |
+| 9 | Submission pack: README, `metadata.json`, a Dockerfile that runs sample mode with one command, `.env.example`, clean-clone test, deck, demo video, sponsor explanation (engines with test results, Nightshift connection, the Nemotron models logged) | Adrien + Toluwani | repo root, `docs/` | The full validation flow passes from a fresh clone with an empty `.env` |
 
 ### Dependencies between slices
 
@@ -96,7 +96,7 @@ run.py  server.py  smoke.py  pyproject.toml  uv.lock  .env.example  README.md
 
 ## Days
 
-| Day | Adrien | tmb |
+| Day | Adrien | Toluwani |
 |---|---|---|
 | 22 Oct | 0a, 0b, 0c, 1 | Next.js app shell, layout and design tokens |
 | 23 Oct | 2, 3, 4 | Screen components |

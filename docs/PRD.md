@@ -1,7 +1,7 @@
 # Becuz — Product Requirements
 
 **Track:** Open Agent Hackathon 2026, Track 2: *The Agent That Can Explain Why*
-**Team:** Adrien (agent and data), tmb (UI)
+**Team:** Adrien (agent and data), Toluwani (UI)
 
 ---
 
@@ -215,10 +215,10 @@ Results are reported as measured, including any misses.
 
 ---
 
-## 10. UI brief (tmb)
+## 10. UI brief (Toluwani)
 
 - A Next.js app in `web/`. It reads only the Investigation JSON from `POST /run`, or a **real saved output** from `output_examples/`. No mock data.
-- **UI library:** [OpenUI by Thesys](https://github.com/thesysdev/openui), a generative UI library. Its components render the Investigation JSON, so tmb doesn't need to hand-build each component.
+- **UI library:** [OpenUI by Thesys](https://github.com/thesysdev/openui), a generative UI library. Its components render the Investigation JSON, so Toluwani doesn't need to hand-build each component.
 - **Screens:**
   - the question
   - the decomposition tree
