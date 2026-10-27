@@ -16,8 +16,22 @@ export type Question = string;
 export type Metric = "profit";
 export type PeriodStart = string;
 export type PeriodEnd = string;
+/**
+ * The period's length in days, 1 to 28
+ */
+export type Days = number;
+/**
+ * First day of the earliest baseline window
+ */
 export type BaselineStart = string;
+/**
+ * Last day of the latest baseline window
+ */
 export type BaselineEnd = string;
+/**
+ * What the period is compared with, in the owner's words
+ */
+export type Baseline = string;
 export type CurrentNgn = number;
 export type BaselineNgn = number;
 /**
@@ -50,7 +64,7 @@ export type CauseId = string;
 export type Title = string;
 export type Status2 = "supported";
 /**
- * Naira this week; negative is a loss
+ * Naira in the period; negative is a loss
  */
 export type ImpactNgn = number;
 /**
@@ -91,7 +105,7 @@ export type Model = string | null;
 export type Via1 = string;
 export type Signed = boolean;
 /**
- * What would have disproved the cause, e.g. 'unit cost flat across the baseline weeks'
+ * What would have disproved the cause, e.g. 'unit cost flat across the baseline'
  */
 export type Test = string;
 export type EvidenceId1 = string;
@@ -125,7 +139,7 @@ export type CauseId1 = string;
 export type Title1 = string;
 export type Status3 = "supported";
 /**
- * Naira this week; negative is a loss
+ * Naira in the period; negative is a loss
  */
 export type ImpactNgn1 = number;
 /**
@@ -153,7 +167,7 @@ export type CauseId2 = string;
  */
 export type ConfirmedAt = string;
 /**
- * True if it was found again, False if not, None if this week could not test it
+ * True if it was found again, False if not, None if this period could not test it
  */
 export type HeldAgain = boolean | null;
 /**
@@ -197,6 +211,10 @@ export type Why = string[];
  * One line per cash gap, kept apart from profit
  */
 export type Cash = string[];
+/**
+ * What acting on the findings is worth, from the measured figures only; never a forecast
+ */
+export type Outcome = string;
 export type CauseId4 = string;
 export type Action1 = string;
 export type WhatToDo = Action[];
@@ -237,8 +255,10 @@ export interface Frame {
   metric?: Metric;
   period_start: PeriodStart;
   period_end: PeriodEnd;
+  days?: Days;
   baseline_start: BaselineStart;
   baseline_end: BaselineEnd;
+  baseline?: Baseline;
 }
 export interface Headline {
   current_ngn: CurrentNgn;
@@ -257,7 +277,7 @@ export interface TreeNode {
   status: Status1;
 }
 /**
- * A supported cause of the profit change; impact_ngn is its effect on this week's profit.
+ * A supported cause of the profit change; impact_ngn is its effect on the period's profit.
  */
 export interface Cause {
   cause_id: CauseId;
@@ -346,6 +366,7 @@ export interface Summary1 {
   what_happened: WhatHappened;
   why: Why;
   cash?: Cash;
+  outcome?: Outcome;
   what_to_do: WhatToDo;
 }
 export interface Action {
