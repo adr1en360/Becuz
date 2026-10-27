@@ -100,22 +100,22 @@ export function InvestigationApp() {
       : health === "unreachable"
         ? `The agent is not reachable at ${apiBase}. Start the server, then reload.`
         : sample
-          ? "The agent is in sample mode: it runs on generated test data, not a real shop."
+          ? "Sample mode: synthetic test shops, not a real one. Findings show correlation, not proven causation."
           : "Becuz reads your records and never changes them.";
 
   return (
     <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(0,27rem)_minmax(0,1fr)] xl:grid-cols-[minmax(0,30rem)_minmax(0,1fr)]">
       <aside
         aria-label="Investigation setup"
-        className="border-b border-desk-line px-4 py-8 sm:px-8 lg:overflow-y-auto lg:border-b-0 lg:border-r lg:py-10 print:hidden"
+        className="border-b border-desk-line px-4 py-6 sm:px-8 lg:overflow-y-auto lg:border-b-0 lg:border-r lg:py-8 lg:[@media(max-height:760px)]:py-4 print:hidden"
       >
-        <div className="mx-auto flex h-full max-w-xl flex-col gap-8 lg:max-w-none">
-          <div className="flex flex-col gap-4">
-            <h1 className="text-balance font-display text-[2.6rem] font-extrabold leading-[0.95] tracking-[-0.02em] [font-stretch:125%] sm:text-5xl">
+        <div className="mx-auto flex max-w-xl flex-col gap-6 lg:max-w-none lg:[@media(max-height:760px)]:gap-4">
+          <div className="flex flex-col gap-2">
+            <h1 className="text-balance font-display text-4xl font-extrabold leading-[0.95] tracking-[-0.02em] [font-stretch:125%] lg:[@media(max-height:760px)]:text-3xl">
               Ask why your profit <span className="text-flare">moved.</span>
             </h1>
-            <p className="text-lg leading-relaxed text-desk-muted">
-              Becuz checks your till, bank, supplier invoices and expenses, and prints the receipts behind every cause.
+            <p className="text-desk-muted [@media(max-height:700px)]:hidden">
+              Answers from your till, bank, invoices and expenses, with the records behind them.
             </p>
           </div>
           <Composer
@@ -126,9 +126,6 @@ export function InvestigationApp() {
             note={note}
             onSubmit={run}
           />
-          <p className="mt-auto border-t border-desk-line pt-5 text-sm text-desk-muted">
-            Synthetic data. Findings show correlation, not proven causation.
-          </p>
         </div>
       </aside>
 

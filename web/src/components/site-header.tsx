@@ -3,7 +3,7 @@ import { DatabaseIcon } from "@solar-icons/react/outline";
 
 export function SiteHeader() {
   return (
-    <header className="flex w-full shrink-0 items-center justify-between border-b border-desk-line px-4 py-4 sm:px-8 print:hidden">
+    <header className="flex w-full shrink-0 items-center justify-between border-b border-desk-line px-4 py-4 sm:px-8 lg:[@media(max-height:760px)]:py-3 print:hidden">
       <Link href="/" aria-label="Becuz home" className="font-display text-2xl font-extrabold tracking-tight [font-stretch:125%]">
         Becuz<span className="text-flare">.</span>
       </Link>
