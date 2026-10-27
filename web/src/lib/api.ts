@@ -3,7 +3,6 @@ import type { Investigation } from "./investigation";
 const base = (process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000").replace(/\/$/, "");
 
 export const apiBase = base;
-export const SAMPLE_SCENARIOS = ["s01", "s02", "s03", "s04", "s05"] as const;
 
 export type Health = { ok: boolean; sample: boolean };
 
@@ -37,6 +36,7 @@ export type TraceEvent = {
   engine?: string;
   model?: string;
   via?: string;
+  plain?: string;
 };
 
 // "finished" is a run started from the command line: it has a trace but no job on the server.
@@ -55,7 +55,10 @@ const json = (body: unknown, signal?: AbortSignal): RequestInit => ({
   signal,
 });
 
-export const startRun = (request: { question: string; scenario?: string }, signal?: AbortSignal) =>
+export const startRun = (
+  request: { question: string; scenario?: string; days?: number; period_start?: string },
+  signal?: AbortSignal,
+) =>
   call<{ run_id: string }>("/runs", json(request, signal));
 
 export const getRun = (runId: string, signal?: AbortSignal) => call<RunState>(`/runs/${runId}`, { signal });

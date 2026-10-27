@@ -1,10 +1,10 @@
-import { ExampleInvestigation } from "@/components/landing/example-investigation";
+import { Closing } from "@/components/landing/closing";
 import { Hero } from "@/components/landing/hero";
-import { HowItWorks } from "@/components/landing/how-it-works";
 import { LandingFooter } from "@/components/landing/landing-footer";
 import { LandingHeader } from "@/components/landing/landing-header";
-import { Limits } from "@/components/landing/limits";
-import { ProofPoints } from "@/components/landing/proof-points";
+import { Numbers } from "@/components/landing/numbers";
+import { Proof } from "@/components/landing/proof";
+import { Steps } from "@/components/landing/steps";
 
 export default function Home() {
   return (
@@ -12,12 +12,10 @@ export default function Home() {
       <LandingHeader />
       <main className="flex-1">
         <Hero />
-        <ProofPoints />
-        <div className="receipt paper my-6 pb-24 pt-20 lg:pb-32 lg:pt-28">
-          <ExampleInvestigation />
-          <HowItWorks />
-        </div>
-        <Limits />
+        <Numbers />
+        <Steps />
+        <Proof />
+        <Closing />
       </main>
       <LandingFooter />
     </div>

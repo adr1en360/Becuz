@@ -1,79 +1,211 @@
 "use client";
 
-import { useState } from "react";
-import { AltArrowDownIcon, ArrowRightIcon } from "@solar-icons/react/outline";
-import { SAMPLE_SCENARIOS } from "@/lib/api";
+import { useRef, useState } from "react";
+import { ArrowRightIcon } from "@solar-icons/react/outline";
+import { TEST_SHOPS } from "@/lib/shops";
+
+// Two why-questions start an investigation; the other two get a direct answer from the records.
+const SUGGESTIONS = [
+  "Why is my profit down?",
+  "What sold the most?",
+  "Is any money missing?",
+  "What are my biggest expenses?",
+] as const;
+
+const PERIODS = [2, 7, 14, 28] as const;
+
+export type Period = { days: number; period_start?: string };
 
 type Props = {
   running: boolean;
   showScenario: boolean;
-  note: string;
-  onSubmit: (question: string, scenario?: string) => void;
+  sampleMode?: boolean;
+  note?: string;
+  alert?: string | null;
+  onSubmit: (question: string, scenario: string | undefined, period: Period) => void;
 };
 
-const field = "rounded-2xl border border-desk-line bg-desk-2 text-paper";
+const label = "ask-label text-xs font-semibold uppercase tracking-[0.14em] text-desk-muted";
+const segment = (on: boolean) =>
+  `ask-seg h-9 rounded-full text-sm font-semibold transition-colors ${on ? "bg-paper text-ink" : "text-desk-muted hover:text-paper"}`;
 
-export function Composer({ running, showScenario, note, onSubmit }: Props) {
-  const [question, setQuestion] = useState("Why is my profit down this week?");
-  const [scenario, setScenario] = useState<string>(SAMPLE_SCENARIOS[0]);
+export function Composer({ running, showScenario, sampleMode = true, note, alert, onSubmit }: Props) {
+  const [question, setQuestion] = useState("Why is my profit down?");
+  const [scenario, setScenario] = useState<string>(TEST_SHOPS[0].id);
+  const shop = TEST_SHOPS.find((s) => s.id === scenario) ?? TEST_SHOPS[0];
+  const [days, setDays] = useState(7);
+  const [custom, setCustom] = useState(false);
+  const [start, setStart] = useState("");
+  const box = useRef<HTMLTextAreaElement>(null);
   const ready = question.trim().length > 0 && !running;
+
+  function submit() {
+    if (!ready) return;
+    onSubmit(question.trim(), showScenario ? scenario : undefined, { days, period_start: custom && start ? start : undefined });
+  }
 
   return (
     <form
-      className="flex flex-col gap-4"
+      className="ask-form flex flex-col gap-5"
       aria-describedby="composer-note"
       onSubmit={(event) => {
         event.preventDefault();
-        if (ready) onSubmit(question.trim(), showScenario ? scenario : undefined);
+        submit();
       }}
     >
-      <label htmlFor="question" className="text-sm font-semibold">
-        Your question
-      </label>
-      <textarea
-        id="question"
-        name="question"
-        rows={3}
-        maxLength={500}
-        value={question}
-        onChange={(event) => setQuestion(event.target.value)}
-        className={`${field} w-full resize-none px-4 py-3.5 text-lg leading-snug`}
-      />
-      <div className="flex flex-wrap items-end gap-2 sm:gap-3">
-        {showScenario && (
-          <div className="flex flex-col gap-2">
-            <label htmlFor="scenario" className="text-sm font-semibold">
-              Test week
-            </label>
-            <div className="relative w-fit">
-              <select
-                id="scenario"
-                value={scenario}
-                onChange={(event) => setScenario(event.target.value)}
-                className="h-12 appearance-none rounded-full border border-desk-line bg-desk-2 pl-4 pr-9 text-base text-paper"
-              >
-                {SAMPLE_SCENARIOS.map((id) => (
-                  <option key={id} value={id}>
-                    Scenario {id}
-                  </option>
-                ))}
-              </select>
-              <AltArrowDownIcon size={16} className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2" aria-hidden />
-            </div>
+      <div className="rounded-3xl border-2 border-desk-line bg-desk-2 p-2 transition-colors focus-within:border-flare">
+        <label htmlFor="question" className="sr-only">
+          Your question
+        </label>
+        <textarea
+          ref={box}
+          id="question"
+          name="question"
+          rows={2}
+          maxLength={500}
+          value={question}
+          onChange={(event) => setQuestion(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" && !event.shiftKey) {
+              event.preventDefault();
+              submit();
+            }
+          }}
+          placeholder="Ask about your shop's money..."
+          className="ask-input block w-full resize-none bg-transparent px-3 pt-2 text-lg leading-snug text-paper placeholder:text-desk-muted focus:outline-none"
+        />
+        <div className="flex items-center justify-between gap-2 pl-3">
+          <span className="font-mono text-xs text-desk-muted">
+            {custom && start ? `from ${start}, ` : ""}
+            {days} days{showScenario ? `, ${shop.name}` : ""}
+          </span>
+          <button
+            type="submit"
+            disabled={!ready}
+            className="ask-submit inline-flex h-11 items-center gap-2 rounded-full bg-flare px-5 font-bold text-desk transition-[background-color,transform] duration-150 hover:bg-paper active:scale-[0.97] disabled:cursor-not-allowed disabled:bg-desk disabled:text-desk-muted"
+          >
+            {running ? "Investigating..." : "Investigate"}
+            <ArrowRightIcon size={18} aria-hidden />
+          </button>
+        </div>
+      </div>
+
+      {alert && (
+        <div role="alert" className="rounded-2xl border border-flare bg-flare/10 px-4 py-3 text-sm text-paper">
+          {alert}
+        </div>
+      )}
+
+      <div>
+        <p className={label}>Try asking</p>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {SUGGESTIONS.map((s) => (
+            <button
+              key={s}
+              type="button"
+              aria-pressed={question === s}
+              onClick={() => {
+                setQuestion(s);
+                box.current?.focus();
+              }}
+              className={`ask-chip whitespace-nowrap rounded-full border px-3.5 py-1.5 text-sm transition-colors ${
+                question === s ? "border-flare text-paper" : "border-desk-line text-desk-muted hover:border-paper/60 hover:text-paper"
+              }`}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <p className={label}>Period</p>
+        <div className="mt-2 grid grid-cols-5 rounded-full border border-desk-line p-0.5" role="group" aria-label="Investigation period">
+          {PERIODS.map((n) => (
+            <button
+              key={n}
+              type="button"
+              aria-pressed={!custom && days === n}
+              onClick={() => {
+                setCustom(false);
+                setDays(n);
+              }}
+              className={segment(!custom && days === n)}
+            >
+              {n}d
+              <span className="sr-only"> days</span>
+            </button>
+          ))}
+          <button type="button" aria-pressed={custom} onClick={() => setCustom(true)} className={segment(custom)}>
+            Custom
+          </button>
+        </div>
+        {custom && (
+          <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-desk-muted">
+            <label htmlFor="period-start">From</label>
+            <input
+              id="period-start"
+              type="date"
+              value={start}
+              onChange={(event) => setStart(event.target.value)}
+              className="h-9 rounded-full border border-desk-line bg-desk-2 px-3 text-sm text-paper [color-scheme:dark] focus:border-flare"
+            />
+            <label htmlFor="period-days">for</label>
+            <input
+              id="period-days"
+              type="number"
+              min={1}
+              max={28}
+              value={days}
+              onChange={(event) => setDays(Math.min(28, Math.max(1, Number(event.target.value) || 1)))}
+              className="h-9 w-16 rounded-full border border-desk-line bg-desk-2 px-3 text-sm text-paper focus:border-flare"
+            />
+            <span>days</span>
           </div>
         )}
-        <button
-          type="submit"
-          disabled={!ready}
-          className="inline-flex h-12 items-center gap-2 rounded-full bg-flare px-5 text-base font-bold sm:px-6 text-desk transition-colors hover:bg-paper disabled:cursor-not-allowed disabled:bg-desk-2 disabled:text-desk-muted"
-        >
-          {running ? "Investigating" : "Investigate"}
-          <ArrowRightIcon size={18} aria-hidden />
-        </button>
       </div>
-      <p id="composer-note" role="status" className="max-w-sm text-sm text-desk-muted">
-        {note}
-      </p>
+
+      {showScenario && (
+        <div>
+          <p className={label} id="shop-label">
+            Test shop
+          </p>
+          <div className="mt-2 flex items-center gap-3">
+            <div className="flex gap-2" role="group" aria-labelledby="shop-label">
+              {TEST_SHOPS.map((s) => {
+                const on = s.id === scenario;
+                return (
+                  <button
+                    key={s.id}
+                    type="button"
+                    aria-pressed={on}
+                    aria-label={`${s.name}: ${s.hint}`}
+                    title={s.name}
+                    onClick={() => setScenario(s.id)}
+                    style={{ backgroundColor: s.colour }}
+                    className={`ask-logo flex size-10 shrink-0 items-center justify-center rounded-xl font-mono text-sm font-bold text-desk transition-[transform,opacity] duration-150 active:scale-95 ${
+                      on ? "ring-2 ring-paper ring-offset-2 ring-offset-desk" : "hover:-translate-y-0.5"
+                    }`}
+                  >
+                    {s.initials}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold text-paper">{shop.name}</p>
+              <p className="text-xs leading-snug text-desk-muted">{shop.hint}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {note && (
+        <p id="composer-note" role="status" className="ask-note flex items-start gap-2 text-xs leading-relaxed text-desk-muted">
+          <span aria-hidden className={`mt-1 size-2 shrink-0 rounded-full ${sampleMode ? "bg-flare" : "bg-paper"}`} />
+          {note}
+        </p>
+      )}
     </form>
   );
 }

@@ -2,12 +2,12 @@
 
 import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
 
-type Props = { children: ReactNode; delay?: number; as?: "div" | "li"; className?: string };
+type Props = { children: ReactNode; delay?: number; as?: "div" | "li"; className?: string; from?: "up" | "left" | "right" };
 
 // Fades and rises once when scrolled into view (a plain fade when the visitor prefers reduced motion).
 // Content is visible by default; only elements below the fold are hidden. The attribute is set on the node
 // directly so no render is needed.
-export function Reveal({ children, delay = 0, as: Tag = "div", className }: Props) {
+export function Reveal({ children, delay = 0, as: Tag = "div", className, from = "up" }: Props) {
   const ref = useRef<HTMLDivElement & HTMLLIElement>(null);
 
   useEffect(() => {
@@ -29,7 +29,7 @@ export function Reveal({ children, delay = 0, as: Tag = "div", className }: Prop
   }, []);
 
   return (
-    <Tag ref={ref} className={className} style={{ "--d": `${delay}ms` } as CSSProperties}>
+    <Tag ref={ref} data-from={from} className={className} style={{ "--d": `${delay}ms` } as CSSProperties}>
       {children}
     </Tag>
   );

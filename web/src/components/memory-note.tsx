@@ -5,9 +5,9 @@ import { formatPct } from "@/lib/format";
 type Entry = NonNullable<Investigation["memory"]>[number];
 
 function Held({ held }: { held: Entry["held_again"] }) {
-  if (held === true) return <><CheckCircleIcon size={18} aria-hidden /> Held again this week</>;
-  if (held === false) return <><CloseCircleIcon size={18} className="text-accent" aria-hidden /> Did not hold this week</>;
-  return <><QuestionCircleIcon size={18} aria-hidden /> Not tested this week</>;
+  if (held === true) return <><CheckCircleIcon size={18} aria-hidden /> Held again this time</>;
+  if (held === false) return <><CloseCircleIcon size={18} className="text-accent" aria-hidden /> Did not hold this time</>;
+  return <><QuestionCircleIcon size={18} aria-hidden /> Not tested this time</>;
 }
 
 export function MemoryNote({ entries }: { entries: NonNullable<Investigation["memory"]> }) {

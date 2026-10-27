@@ -1,12 +1,12 @@
 import { Leader, Receipt, SectionTitle } from "./receipt";
 
 const parts = [
-  ["The headline", "Profit this week against your 4-week average, in naira."],
+  ["The headline", "Profit for the period you choose against what is usual, in naira."],
   ["Where it went", "The change split into sales, stock cost, wastage, expenses and money that never reached the bank."],
   ["Each cause, with records", "Its naira effect, the record IDs behind it, what would prove it wrong, and the independent re-check."],
   ["What was ruled out", "Causes that were tested and rejected, and the reason."],
   ["What is not explained", "The part of the change that no cause accounts for, stated plainly."],
-  ["What to do this week", "Checks and actions, and the questions only you can answer."],
+  ["What to do", "Checks and actions, and the questions only you can answer."],
 ] as const;
 
 export function ReportOutline() {

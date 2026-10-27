@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { apiBase, getHealth, getRun, startRun, type Health, type TraceEvent } from "@/lib/api";
 import type { Investigation } from "@/lib/investigation";
-import { Composer } from "./composer";
+import { Composer, type Period } from "./composer";
 import { EmptyState } from "./empty-state";
 import { LiveTrace } from "./live-trace";
 import { Report } from "./report";
@@ -38,18 +38,27 @@ export function InvestigationApp() {
     return () => controller.abort();
   }, []);
 
+  const pane = useRef<HTMLElement>(null);
+
+  // The receipt pane scrolls on its own on wide screens; on phones it sits under the form, so bring it into view.
   useEffect(() => {
-    if (phase.kind === "done") document.getElementById("headline")?.focus();
+    const el = pane.current;
+    if (!el || phase.kind === "idle" || phase.kind === "error") return;
+    if (window.matchMedia("(min-width: 1024px)").matches) {
+      if (phase.kind === "done") el.scrollTo({ top: 0 });
+    } else {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   }, [phase.kind]);
 
-  async function run(question: string, scenario?: string) {
+  async function run(question: string, scenario: string | undefined, period: Period) {
     abort.current?.abort();
     const controller = new AbortController();
     abort.current = controller;
     setPhase({ kind: "running", events: [] });
     let missed = 0;
     try {
-      const { run_id } = await startRun({ question, scenario }, controller.signal);
+      const { run_id } = await startRun({ question, scenario, ...period }, controller.signal);
       while (!controller.signal.aborted) {
         await sleep(POLL_MS, controller.signal);
         if (controller.signal.aborted) return;
@@ -74,11 +83,12 @@ export function InvestigationApp() {
       }
     } catch (error) {
       if (controller.signal.aborted) return;
-      setPhase({ kind: "error", message: error instanceof Error ? error.message : "Something went wrong." });
+      setPhase({
+        kind: "error",
+        message: error instanceof Error ? error.message : "Something went wrong.",
+      });
     }
   }
-
-  if (phase.kind === "done") return <Report data={phase.data} events={phase.events} onReset={() => setPhase({ kind: "idle" })} />;
 
   const sample = typeof health === "object" && health !== null && health.sample;
   const live = typeof health === "object" && health !== null && !health.sample;
@@ -90,20 +100,42 @@ export function InvestigationApp() {
       : health === "unreachable"
         ? `The agent is not reachable at ${apiBase}. Start the server, then reload.`
         : sample
-          ? "The agent is in sample mode: it runs on generated test weeks, not a real shop."
+          ? "Sample mode: synthetic test shops, not a real one. Findings show correlation, not proven causation."
           : "Becuz reads your records and never changes them.";
 
   return (
-    <EmptyState
-      live={phase.kind === "running" ? <LiveTrace events={phase.events} /> : null}
-      alert={
-        phase.kind === "error" ? (
-          <p role="alert" className="rounded-2xl border border-flare px-4 py-3 text-sm">
-            {phase.message}
-          </p>
-        ) : null
-      }
-      composer={<Composer running={phase.kind === "running"} showScenario={sample} note={note} onSubmit={run} />}
-    />
+    <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(0,30rem)_minmax(0,1fr)] xl:grid-cols-[minmax(0,32rem)_minmax(0,1fr)] 2xl:grid-cols-[minmax(0,34rem)_minmax(0,1fr)]">
+      <aside
+        aria-label="Investigation setup"
+        className="ask-panel border-b border-desk-line px-4 py-6 sm:px-8 lg:overflow-y-auto lg:border-b-0 lg:border-r lg:py-8 print:hidden"
+      >
+        <div className="ask-stack mx-auto flex max-w-xl flex-col gap-6 lg:max-w-none">
+          <div className="flex flex-col gap-2">
+            <h1 className="text-balance font-display text-4xl font-extrabold leading-[0.95] tracking-[-0.02em] [font-stretch:125%]">
+              Ask why your profit <span className="text-flare">moved.</span>
+            </h1>
+            <p className="ask-desc text-desk-muted [@media(max-height:700px)]:hidden">
+              Answers from your till, bank, invoices and expenses, with the records behind them.
+            </p>
+          </div>
+          <Composer
+            running={phase.kind === "running"}
+            showScenario={sample}
+            sampleMode={sample}
+            alert={phase.kind === "error" ? phase.message : null}
+            note={note}
+            onSubmit={run}
+          />
+        </div>
+      </aside>
+
+      <main ref={pane} aria-label="Receipt" className="dot-bg scroll-mt-2 lg:overflow-y-auto">
+        <div className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-8 lg:py-10">
+          {(phase.kind === "idle" || phase.kind === "error") && <EmptyState />}
+          {phase.kind === "running" && <LiveTrace events={phase.events} busy />}
+          {phase.kind === "done" && <Report data={phase.data} events={phase.events} />}
+        </div>
+      </main>
+    </div>
   );
 }

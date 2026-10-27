@@ -2,15 +2,15 @@
 
 import { useEffect, useRef, useState } from "react";
 
-// True once the element has scrolled into view. Drives one-shot reveals (stamps, bars).
-export function useSeen<T extends HTMLElement>() {
+// True once the element has scrolled into view. Drives one-shot reveals (stamps, bars, count-ups).
+// It starts false on the server and in the browser alike, so the first paint matches and the reveal really plays.
+export function useSeen<T extends HTMLElement>(threshold = 0.3) {
   const ref = useRef<T>(null);
-  const [seen, setSeen] = useState(() => typeof IntersectionObserver === "undefined");
+  const [seen, setSeen] = useState(false);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    if (typeof IntersectionObserver === "undefined") return;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -18,11 +18,11 @@ export function useSeen<T extends HTMLElement>() {
           observer.disconnect();
         }
       },
-      { threshold: 0.3 },
+      { threshold },
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [threshold]);
 
   return [ref, seen] as const;
 }
