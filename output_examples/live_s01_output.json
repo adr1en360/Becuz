@@ -1,5 +1,5 @@
 {
-  "run_id": "inv-712468b8f0",
+  "run_id": "inv-a21540ef96",
   "status": "complete",
   "errors": [],
   "mode": "live",
@@ -115,7 +115,7 @@
       "status": "supported",
       "impact_ngn": -25152.0,
       "impact_evidence_id": "ev-wastage_spike",
-      "confidence": null,
+      "confidence": 0.9,
       "evidence": [
         {
           "evidence_id": "ev-wastage_spike",
@@ -150,8 +150,8 @@
           "check": {
             "match": true,
             "rerun_value_ngn": -25152.0,
-            "note": "The re-check matched: 25,152 naira from 21 records. The model judgement was unavailable.",
-            "model": null,
+            "note": "The re-check matched: 25,152 naira from 21 records. The SQL re-check supports the claim that expired and damaged stock was higher than usual, cutting profit by 25,152 naira across 21 records, and the no-higher-than-usual test did not hold.",
+            "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
             "via": "nightshift",
             "signed": false
           }
@@ -181,7 +181,7 @@
       "status": "supported",
       "impact_ngn": -14175.0,
       "impact_evidence_id": "ev-promo_overrun",
-      "confidence": null,
+      "confidence": 0.9,
       "evidence": [
         {
           "evidence_id": "ev-promo_overrun",
@@ -210,8 +210,8 @@
           "check": {
             "match": true,
             "rerun_value_ngn": -14175.0,
-            "note": "The re-check matched: 14,175 naira from 15 records. The model judgement was unavailable.",
-            "model": null,
+            "note": "The re-check matched: 14,175 naira from 15 records. The SQL re-check confirms a promo discount kept running after the promo ended, reducing profit by 14,175 naira across 15 records, and the disproving test did not hold.",
+            "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
             "via": "nightshift",
             "signed": false
           }
@@ -243,7 +243,7 @@
       "status": "supported",
       "impact_ngn": -18200.0,
       "impact_evidence_id": "ev-transfer_leakage",
-      "confidence": null,
+      "confidence": 0.9,
       "evidence": [
         {
           "evidence_id": "ev-transfer_leakage",
@@ -263,8 +263,8 @@
           "check": {
             "match": true,
             "rerun_value_ngn": -18200.0,
-            "note": "The re-check matched: 18,200 naira from 6 records. The model judgement was unavailable.",
-            "model": null,
+            "note": "The re-check matched: 18,200 naira from 6 records. The SQL re-check supports that till-recorded transfers never reached the bank, with -18200.0 naira across 6 records, and the matching-bank-credit test did not hold.",
+            "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
             "via": "nightshift",
             "signed": false
           }
@@ -289,7 +289,7 @@
       "cause_id": "supplier_cost_rise",
       "confirmed_at": "2026-10-26T17:31:37.936373+00:00",
       "held_again": true,
-      "confidence_before": 0.95,
+      "confidence_before": 1.0,
       "confidence_after": 1.0,
       "message": "You confirmed that a supplier raised the unit cost of a product after an earlier run, so Becuz checked it first this time. It happened again in these 7 days."
     },
@@ -297,11 +297,12 @@
       "cause_id": "transfer_leakage",
       "confirmed_at": "2026-10-26T18:36:53.584408+00:00",
       "held_again": true,
-      "confidence_before": 0.9,
-      "confidence_after": 0.95,
+      "confidence_before": 1.0,
+      "confidence_after": 1.0,
       "message": "You confirmed that transfers recorded at the till never reached the bank after an earlier run, so Becuz checked it first this time. It happened again in these 7 days."
     }
   ],
+  "answer": null,
   "ruled_out": [
     {
       "cause_id": "sales_volume_drop",
@@ -363,21 +364,20 @@
   "limitations": [
     "Findings show correlation, not proven causation.",
     "The shop data is synthetic.",
-    "Every number comes from SQL; the model only rates the evidence and words the notes.",
-    "The model could not rate 3 of 6 causes; their SQL checks still stand."
+    "Every number comes from SQL; the model only rates the evidence and words the notes."
   ],
   "stats": {
-    "duration_s": 818.62,
+    "duration_s": 428.89,
     "zetaris_queries": 27,
-    "model_calls": 13,
+    "model_calls": 8,
     "retries": 0,
     "models": {
-      "nvidia/nemotron-3.5-lightning-30b-a3b": 3
+      "nvidia/nemotron-3.5-lightning-30b-a3b": 6
     },
     "via": {
       "zetaris": 27,
-      "nightshift": 3
+      "nightshift": 6
     }
   },
-  "trace_file": "logs/trace-inv-712468b8f0.jsonl"
+  "trace_file": "logs/trace-inv-a21540ef96.jsonl"
 }

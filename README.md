@@ -345,9 +345,8 @@ If a remembered cause does not happen again, its memory loses confidence and is 
 
 Each output and its trace are in `output_examples/`, saved from real sample-mode runs. The live run of
 `s01` through Zetaris and Nightshift is saved too (`live_s01_*`, 27 Oct): it returned the same findings and
-naira figures as sample mode. Nightshift's provider failed 10 of 13 rating calls that morning, so 3 causes
-carry a Nemotron 3.5 Lightning rating with a signed receipt, and the report says the other 3 could not be
-rated while their SQL checks still stand.
+naira figures as sample mode, with all 6 ratings from Nemotron 3.5 Lightning, each with a signed receipt
+(27 Zetaris queries, 429 seconds; 2 Nightshift errors were retried).
 
 ## 8. Sample mode
 
@@ -495,8 +494,7 @@ Each limit, and what Becuz does about it:
 - **The shop data is synthetic.** The generator plants known causes and red herrings, so the scorecard can
   check the agent against an answer key (8 of 8 planted causes found, 6 of 6 red herrings ruled out). A real
   shop's records need the same four sources in Zetaris.
-- **A live run takes 7 to 14 minutes** (the saved `s01` report records 819 seconds, most of it Nightshift
-  retries). The Zetaris work finishes in about 4 minutes; the Nemotron ratings take 5 to 75 seconds each through Nightshift and run one after
+- **A live run takes about 7 minutes** (the saved `s01` report records 429 seconds). The Zetaris work finishes in about 4 minutes; the Nemotron ratings take 5 to 75 seconds each through Nightshift and run one after
   another because each carries the earlier verdicts (Markovian). Becuz rates claims in the background while
   the next cause is tested, and the web UI uses `POST /runs` to show each step as it happens. Sample mode
   takes about a second.
