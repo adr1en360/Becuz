@@ -1,34 +1,36 @@
 {
-  "run_id": "inv-579e2aa57b",
+  "run_id": "inv-ed7c0eeb95",
   "status": "complete",
   "errors": [],
   "mode": "sample",
   "synthetic": true,
   "scenario": "s05",
   "frame": {
-    "question": "Why is my profit down this week?",
+    "question": "Why is my profit down?",
     "metric": "profit",
     "period_start": "2026-10-12",
     "period_end": "2026-10-18",
+    "days": 7,
     "baseline_start": "2026-09-14",
-    "baseline_end": "2026-10-11"
+    "baseline_end": "2026-10-11",
+    "baseline": "the average of the 4 weeks before"
   },
   "headline": {
-    "current_ngn": 344484.0,
-    "baseline_ngn": 336871.5,
-    "change_ngn": 7612.5,
-    "change_pct": 2.3,
+    "current_ngn": 251725.94,
+    "baseline_ngn": 250263.56,
+    "change_ngn": 1462.38,
+    "change_pct": 0.6,
     "direction": "up"
   },
   "tree": [
     {
       "component": "net_sales",
       "current_ngn": 2537380.0,
-      "baseline_ngn": 2529767.5,
-      "change_ngn": 7612.5,
-      "profit_effect_ngn": 7612.5,
-      "share_of_change_pct": 100.0,
-      "status": "unexplained"
+      "baseline_ngn": 2537380.0,
+      "change_ngn": 0.0,
+      "profit_effect_ngn": 0.0,
+      "share_of_change_pct": 0.0,
+      "status": "no_change"
     },
     {
       "component": "cogs",
@@ -50,12 +52,12 @@
     },
     {
       "component": "opex",
-      "current_ngn": 162000.0,
-      "baseline_ngn": 162000.0,
-      "change_ngn": 0.0,
-      "profit_effect_ngn": -0.0,
-      "share_of_change_pct": -0.0,
-      "status": "no_change"
+      "current_ngn": 254758.06,
+      "baseline_ngn": 256220.44,
+      "change_ngn": -1462.38,
+      "profit_effect_ngn": 1462.38,
+      "share_of_change_pct": 100.0,
+      "status": "unexplained"
     }
   ],
   "causes": [],
@@ -65,42 +67,42 @@
     {
       "cause_id": "supplier_cost_rise",
       "hypothesis": "A supplier raised the unit cost of a product",
-      "reason": "The records show no loss from this cause this week.",
+      "reason": "The records show no loss from this cause in this period.",
+      "tested_value_ngn": 0.0,
+      "evidence_id": null
+    },
+    {
+      "cause_id": "promo_overrun",
+      "hypothesis": "A discount kept running after the promo ended",
+      "reason": "The records show no loss from this cause in this period.",
       "tested_value_ngn": 0.0,
       "evidence_id": null
     },
     {
       "cause_id": "wastage_spike",
       "hypothesis": "More stock expired or was damaged than usual",
-      "reason": "The records show no loss from this cause this week.",
+      "reason": "The records show no loss from this cause in this period.",
       "tested_value_ngn": 0.0,
       "evidence_id": null
     },
     {
       "cause_id": "transfer_leakage",
       "hypothesis": "Transfers recorded at the till never reached the bank",
-      "reason": "The records show no loss from this cause this week.",
+      "reason": "The records show no loss from this cause in this period.",
+      "tested_value_ngn": 0.0,
+      "evidence_id": null
+    },
+    {
+      "cause_id": "sales_volume_drop",
+      "hypothesis": "Fewer items sold than usual",
+      "reason": "The records show no loss from this cause in this period.",
       "tested_value_ngn": 0.0,
       "evidence_id": null
     },
     {
       "cause_id": "pos_charge_rise",
       "hypothesis": "The POS terminal charged a higher fee",
-      "reason": "Too small to matter: 0 naira.",
-      "tested_value_ngn": -0.01,
-      "evidence_id": null
-    },
-    {
-      "cause_id": "promo_overrun",
-      "hypothesis": "A discount kept running after the promo ended",
-      "reason": "The records show no loss from this cause this week.",
-      "tested_value_ngn": 0.0,
-      "evidence_id": null
-    },
-    {
-      "cause_id": "sales_volume_drop",
-      "hypothesis": "Fewer items sold than in a usual week",
-      "reason": "The records show no loss from this cause this week.",
+      "reason": "The records show no loss from this cause in this period.",
       "tested_value_ngn": 0.0,
       "evidence_id": null
     }
@@ -109,15 +111,15 @@
   "convergence": {
     "explained_ngn": 0.0,
     "explained_pct": 0.0,
-    "unexplained_ngn": 7612.5
+    "unexplained_ngn": 1462.38
   },
   "summary": {
-    "what_happened": "Profit this week was ₦344,484, which is ₦7,613 more than a usual week (₦336,872).",
+    "what_happened": "Profit in these 7 days was ₦251,726, which is ₦1,462 more than usual (₦250,264).",
     "why": [
-      "Profit went up, and none of the problems Becuz checks for showed up this week."
+      "Profit went up, and none of the problems Becuz checks for showed up in these 7 days."
     ],
     "cash": [],
-    "outcome": "Nothing to fix this week.",
+    "outcome": "Nothing to fix in these 7 days.",
     "what_to_do": []
   },
   "owner_questions": [],
@@ -127,7 +129,7 @@
     "Sample mode: evidence ratings come from fixed rules, not a model; every number comes from SQL."
   ],
   "stats": {
-    "duration_s": 1.83,
+    "duration_s": 0.47,
     "zetaris_queries": 27,
     "model_calls": 0,
     "retries": 0,
@@ -137,5 +139,5 @@
       "sample-rules": 6
     }
   },
-  "trace_file": "logs/trace-inv-579e2aa57b.jsonl"
+  "trace_file": "logs/trace-inv-ed7c0eeb95.jsonl"
 }
