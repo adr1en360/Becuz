@@ -186,6 +186,36 @@ export type Message = string;
  * Owner-confirmed causes recalled from H-MEM for this run
  */
 export type Memory = Recall[];
+export type Kind = "top_sellers" | "totals" | "expenses" | "missing_money";
+/**
+ * The answer in one plain sentence
+ */
+export type Sentence = string;
+export type Label = string;
+/**
+ * Naira in the period
+ */
+export type ValueNgn1 = number;
+/**
+ * The same measure averaged over the baseline windows; None when it has no baseline
+ */
+export type UsualNgn = number | null;
+/**
+ * Units, payments or a short note, e.g. '120 units'
+ */
+export type Detail = string;
+/**
+ * Up to 5 rows, largest first (smallest first for 'least')
+ */
+export type Rows = AnswerRow[];
+/**
+ * The query that produced the rows
+ */
+export type Sql1 = string;
+/**
+ * Records behind the rows
+ */
+export type RowIds1 = string[];
 export type CauseId3 = string;
 export type Hypothesis = string;
 export type Reason = string;
@@ -241,6 +271,10 @@ export interface Investigation {
   causes: Causes;
   cash_gaps?: CashGaps;
   memory?: Memory;
+  /**
+   * Set when the question asks what happened (top sellers, totals, expenses, missing money) rather than why; then no causes are tested
+   */
+  answer?: Answer | null;
   ruled_out: RuledOut;
   not_tested: NotTested;
   convergence: Convergence;
@@ -349,6 +383,22 @@ export interface Recall {
   confidence_before: ConfidenceBefore;
   confidence_after: ConfidenceAfter;
   message: Message;
+}
+/**
+ * A direct answer to an everyday question, from one read-only SQL query; the model is not involved.
+ */
+export interface Answer {
+  kind: Kind;
+  sentence: Sentence;
+  rows: Rows;
+  sql: Sql1;
+  row_ids: RowIds1;
+}
+export interface AnswerRow {
+  label: Label;
+  value_ngn: ValueNgn1;
+  usual_ngn: UsualNgn;
+  detail: Detail;
 }
 export interface RuledOut1 {
   cause_id: CauseId3;

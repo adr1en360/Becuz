@@ -34,7 +34,7 @@ def build_graph(wh: Warehouse, trace: Trace, run: dict, world: WorldModel, memor
     graph.add_node("checker", make_checker(retrying("Checker"), trace, world, memory, judge))
     graph.add_node("writer", make_writer(wh, trace, run, world, judge))
     graph.add_edge(START, "planner")
-    graph.add_edge("planner", "investigator")
+    graph.add_conditional_edges("planner", lambda state: "investigator" if state["queue"] else "writer", ["investigator", "writer"])
     graph.add_edge("investigator", "checker")
     graph.add_conditional_edges("checker", make_router(world), ["investigator", "writer"])
     graph.add_edge("writer", END)

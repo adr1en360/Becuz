@@ -126,11 +126,14 @@ def assemble(state: InvestigationState, run: dict, world: WorldModel, judge: Jud
 
     direction = "down" if change <= -MIN_EFFECT_NGN else "up" if change >= MIN_EFFECT_NGN else "flat"
     why = [f"{CATALOGUE[c['cause_id']].title}. This cost you {naira(c['effect_ngn'])}." for c in causes_found]
+    if not why and state.get("answer"):  # a direct question: no causes were tested, so say how to get them
+        why = ['Ask "Why is my profit down?" for the causes behind the change.']
     if not why:
         why = [{"flat": "Nothing changed enough to need an explanation.",
                 "up": f"Profit went up, and none of the problems Becuz checks for showed up {when}.",
                 "down": "None of the causes Becuz checked explains this drop."}[direction]]
     data = {
+        "answer": state.get("answer"),
         "run_id": run["run_id"], "status": "complete", "errors": [], "mode": run["mode"], "synthetic": True, "scenario": run["scenario"],
         "frame": {"question": state["question"], "period_start": start, "period_end": end,
                   "days": (end - start).days + 1, "baseline_start": baseline[0], "baseline_end": baseline[-1],
@@ -157,7 +160,7 @@ def assemble(state: InvestigationState, run: dict, world: WorldModel, judge: Jud
             "what_happened": what_happened(profit, direction, when),
             "why": why,
             "cash": [cash_line(c) for c in cash],
-            "outcome": outcome_line(profit, causes_found, cash, span_noun, when),
+            "outcome": "" if state.get("answer") else outcome_line(profit, causes_found, cash, span_noun, when),
             "what_to_do": [{"cause_id": c["cause_id"], "action": CATALOGUE[c["cause_id"]].action} for c in causes_found + cash],
         },
         "owner_questions": owner_questions,

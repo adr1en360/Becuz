@@ -4,6 +4,7 @@ from __future__ import annotations
 from datetime import date, timedelta
 
 from becuz.adapters import Warehouse
+from becuz.answers import answer
 from becuz.catalogue import CATALOGUE
 from becuz.engines.hmem import HMEM
 from becuz.engines.scout_intent import ContractRefused
@@ -56,6 +57,12 @@ def make_planner(wh: Warehouse, trace: Trace, memory: HMEM):
                    plain=f"Remembered {plural(len(recalled), 'cause')} you confirmed before; checking first." if recalled
                    else "Nothing confirmed before, so every cause gets a fresh look.")
         # A cash cause has no profit node, so it sorts as no profit effect.
+        if intent["primary"].startswith("answer."):  # a direct question: one read-only query, no investigation
+            found = answer(intent["primary"].removeprefix("answer."), wh, start, end, tree, state["question"])
+            trace.emit("Planner", "answer", state["question"], found["sentence"], target_agent="Writer",
+                       plain=f"Answering your question from {plural(len(found['rows']), 'line')} of records.")
+            return {"period_start": start, "period_end": end, "tree": tree, "queue": [], "current": None,
+                    "recalled": {}, "answer": found}
         queue = sorted(CATALOGUE, key=lambda cause: (cause not in recalled, effects.get(CATALOGUE[cause].component, 0.0)))
         trace.emit("Planner", "plan", state["question"],
                    f"profit change {tree['profit_ngn']['change']:+,.0f} for {start}..{end}; testing {', '.join(queue)}",

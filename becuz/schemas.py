@@ -166,6 +166,22 @@ class Action(Model):
     action: str
 
 
+class AnswerRow(Model):
+    label: str
+    value_ngn: float = Field(description="Naira in the period")
+    usual_ngn: float | None = Field(description="The same measure averaged over the baseline windows; None when it has no baseline")
+    detail: str = Field(description="Units, payments or a short note, e.g. '120 units'")
+
+
+class Answer(Model):
+    """A direct answer to an everyday question, from one read-only SQL query; the model is not involved."""
+    kind: Literal["top_sellers", "totals", "expenses", "missing_money"]
+    sentence: str = Field(description="The answer in one plain sentence")
+    rows: list[AnswerRow] = Field(description="Up to 5 rows, largest first (smallest first for 'least')")
+    sql: str = Field(description="The query that produced the rows")
+    row_ids: list[str] = Field(description="Records behind the rows")
+
+
 class Summary(Model):
     what_happened: str
     why: list[str]
@@ -201,6 +217,7 @@ class Investigation(Model):
     causes: list[Cause]
     cash_gaps: list[CashGap] = []
     memory: list[Recall] = Field(default=[], description="Owner-confirmed causes recalled from H-MEM for this run")
+    answer: Answer | None = Field(default=None, description="Set when the question asks what happened (top sellers, totals, expenses, missing money) rather than why; then no causes are tested")
     ruled_out: list[RuledOut]
     not_tested: list[str] = Field(description="Possible causes the run did not test, and why")
     convergence: Convergence
