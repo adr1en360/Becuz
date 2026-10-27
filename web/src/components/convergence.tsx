@@ -13,19 +13,23 @@ type Props = {
   notTested: string[];
 };
 
+function CauseNames({ causes }: { causes: Investigation["causes"] }) {
+  if (causes.length === 0) return <p className="mt-1 text-sm text-muted">None in this period</p>;
+  return (
+    <ul className="mt-1.5 flex flex-col gap-1 text-sm font-semibold text-ink">
+      {causes.map((c) => <li key={c.cause_id}>{c.title}</li>)}
+    </ul>
+  );
+}
+
 export function Convergence({ convergence, change, causes, notTested }: Props) {
   const { explained_ngn, explained_pct, unexplained_ngn } = convergence;
   const [ref, seen] = useSeen<HTMLDivElement>();
   const filled = Math.min(100, Math.max(0, explained_pct));
 
-  // Sum causes by actionable vs temporary
-  const actionableNgn = causes
-    .filter((c) => c.nature === "actionable")
-    .reduce((sum, c) => sum + c.impact_ngn, 0);
-
-  const temporaryNgn = causes
-    .filter((c) => c.nature === "temporary")
-    .reduce((sum, c) => sum + c.impact_ngn, 0);
+  // Grouped by tag, by name only: the UI never adds naira up, so the totals stay with the agent.
+  const actionable = causes.filter((c) => c.nature === "actionable");
+  const temporary = causes.filter((c) => c.nature === "temporary");
 
   const plainExplanation =
     explained_pct >= 95
@@ -54,18 +58,12 @@ export function Convergence({ convergence, change, causes, notTested }: Props) {
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <div className="rounded-xl border border-rule bg-paper-2/50 p-3.5">
                 <span className="font-mono text-xs uppercase tracking-wider text-muted">You can act on it</span>
-                <p className="num mt-1 font-mono text-xl font-bold text-ink">
-                  {formatSigned(actionableNgn)}
-                </p>
-                <p className="mt-1 text-xs text-muted">Controllable causes inside your control</p>
+                <CauseNames causes={actionable} />
               </div>
 
               <div className="rounded-xl border border-rule bg-paper-2/50 p-3.5">
                 <span className="font-mono text-xs uppercase tracking-wider text-muted">Likely to pass</span>
-                <p className="num mt-1 font-mono text-xl font-bold text-ink">
-                  {formatSigned(temporaryNgn)}
-                </p>
-                <p className="mt-1 text-xs text-muted">Market or transient variations</p>
+                <CauseNames causes={temporary} />
               </div>
             </div>
           )}

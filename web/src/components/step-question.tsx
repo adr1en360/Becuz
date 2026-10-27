@@ -31,8 +31,7 @@ export function StepQuestion({ data }: { data: Investigation }) {
             <span className="font-semibold text-ink">
               {formatRange(frame.period_start, frame.period_end)}
             </span>{" "}
-            and compared it with the 4 periods before (
-            {formatRange(frame.baseline_start, frame.baseline_end)}).
+            ({frame.days ?? 7} days) and compared it with {frame.baseline ?? "the periods before"}.
           </p>
 
           <details className="group mt-4 border-t border-rule/60 pt-3">

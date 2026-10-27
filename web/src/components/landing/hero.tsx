@@ -1,50 +1,51 @@
 import Link from "next/link";
 import { ArrowRightIcon, DatabaseIcon } from "@solar-icons/react/outline";
-import { Stamp } from "@/components/stamp";
 import { primaryButton, secondaryButton } from "./buttons";
-import { Figure } from "./figure";
-import { HeroBars } from "./hero-bars";
-import { Tilt } from "./tilt";
+import { HeroReceipt } from "./hero-receipt";
 
 const delay = (ms: number) => ({ "--d": `${ms}ms` }) as React.CSSProperties;
-const words = ["Know", "why", "your", "profit", "moved", "this", "week."];
+const lines = [
+  ["Know", "why", "your"],
+  ["profit", "moved."],
+];
 
 export function Hero() {
   return (
-    <section aria-labelledby="hero" className="hero-glow mx-auto w-full max-w-5xl px-4 pb-20 pt-24 sm:px-8 lg:pb-28 lg:pt-32">
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,28rem)] lg:gap-x-12 lg:gap-y-8">
-        {/* Left Column: Heading, description, and CTAs */}
-        <div className="flex flex-col gap-6 lg:col-start-1 lg:row-start-1">
-          <div style={delay(50)} className="rise flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-desk-line bg-desk-2/80 px-3 py-1 text-xs font-semibold text-flare">
-              <span className="size-2 rounded-full bg-flare animate-pulse" aria-hidden />
-              Track 2 · The Agent That Can Explain Why
-            </span>
-          </div>
+    <section aria-labelledby="hero" className="mx-auto w-full max-w-5xl px-4 pb-24 pt-24 sm:px-8 lg:pb-32 lg:pt-32">
+      <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,27rem)] lg:gap-x-14">
+        <div className="flex flex-col gap-7 lg:pt-6">
+          <p style={delay(0)} className="rise inline-flex w-fit items-center gap-2 rounded-full border border-desk-line px-3 py-1 text-xs font-semibold text-flare">
+            <span className="size-2 rounded-full bg-flare" aria-hidden />
+            Track 2, The Agent That Can Explain Why
+          </p>
 
           <div className="hero-title">
             <h1
               id="hero"
-              className="text-balance font-display text-[2.85rem] font-extrabold leading-[0.93] tracking-[-0.03em] [font-stretch:120%] sm:text-7xl lg:text-[4.25rem] lg:[font-stretch:112%]"
+              className="font-display text-[3.4rem] font-extrabold leading-[0.88] tracking-[-0.035em] [font-stretch:120%] sm:text-8xl lg:text-[6.5rem] lg:[font-stretch:105%]"
             >
-              {words.map((word, i) => (
-                <span key={word}>
-                  <span className="mask">
-                    <span className="word" style={delay(i * 55)}>
-                      {word}
+              {lines.map((line, l) => (
+                <span key={l} className="block">
+                  {line.map((word, w) => (
+                    <span key={word}>
+                      <span className="mask">
+                        <span className={`word ${word === "moved." ? "text-flare" : ""}`} style={delay(80 + (l * 3 + w) * 70)}>
+                          {word}
+                        </span>
+                      </span>{" "}
                     </span>
-                  </span>{" "}
+                  ))}
                 </span>
               ))}
             </h1>
           </div>
 
-          <p style={delay(160)} className="rise max-w-lg text-lg leading-relaxed text-desk-muted">
-            Becuz joins your POS till, bank statement, supplier invoices and expense records to explain profit drops
-            in naira, with the verified receipts behind every cause.
+          <p style={delay(420)} className="rise max-w-md text-lg leading-relaxed text-desk-muted">
+            Becuz checks your sales, bank, supplier and expense records and tells you why, with the records behind every
+            cause.
           </p>
 
-          <div style={delay(260)} className="rise flex flex-wrap items-center gap-3">
+          <div style={delay(520)} className="rise flex flex-wrap items-center gap-3">
             <Link href="/investigate" className={primaryButton}>
               Investigate
               <ArrowRightIcon size={18} aria-hidden />
@@ -54,65 +55,14 @@ export function Hero() {
             </a>
           </div>
 
-          {/* Sponsor attribution */}
-          <div style={delay(340)} className="rise flex flex-wrap items-center gap-2 border-t border-desk-line/50 pt-5 text-xs font-mono text-desk-muted">
+          <p style={delay(620)} className="rise flex flex-wrap items-center gap-2 border-t border-desk-line pt-5 font-mono text-xs text-desk-muted">
             <DatabaseIcon size={14} className="text-flare" aria-hidden />
-            <span>Zetaris data layer · Meterless Nightshift · NVIDIA Nemotron</span>
-          </div>
+            Zetaris data layer, Meterless Nightshift, NVIDIA Nemotron
+          </p>
         </div>
 
-        {/* Right Column: Clean receipt with s01 sample figures */}
-        <div className="hero-receipt mx-auto w-full max-w-[28rem] lg:col-start-2 lg:row-start-1 lg:mx-0 lg:self-start">
-          <Tilt className="relative">
-            <div aria-hidden className="relative z-10 h-4 rounded-full border border-desk-line bg-desk-2" />
-            <div style={delay(150)} className="receipt slot paper print-fast relative -mt-2 px-6 pb-8 pt-8 sm:px-7">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <Stamp label="Demo data" rotate={-2} />
-                <p className="font-mono text-xs text-muted">Synthetic shop · s01</p>
-              </div>
-
-              <div className="mt-6 text-xl leading-snug sm:text-2xl">
-                <span className="block text-ink">
-                  This week, profit was{" "}
-                  <span className="whitespace-nowrap font-bold">
-                    <Figure value={241717} kind="naira" />.
-                  </span>
-                </span>
-                <span className="mt-2 block text-sm text-muted">
-                  A usual week is{" "}
-                  <span className="whitespace-nowrap font-semibold text-ink">
-                    <Figure value={379412} kind="naira" />.
-                  </span>
-                </span>
-                <span className="cut-line mt-4 block pt-4 font-bold text-accent text-lg sm:text-xl">
-                  Down <Figure value={137695} kind="naira" /> (
-                  <Figure value={36.3} kind="percent" />)
-                </span>
-              </div>
-
-              <HeroBars />
-
-              {/* Concrete cause breakdown registered in s01 figures */}
-              <dl className="mt-5 flex flex-col gap-2 border-t border-dashed border-ink/30 pt-4 font-mono text-xs">
-                <div className="flex items-baseline justify-between gap-2">
-                  <dt className="text-muted">Supplier raised unit cost</dt>
-                  <dd className="num font-bold text-accent">−₦46,992</dd>
-                </div>
-                <div className="flex items-baseline justify-between gap-2">
-                  <dt className="text-muted">Transfers missing from bank</dt>
-                  <dd className="num font-bold text-accent">−₦28,360</dd>
-                </div>
-                <div className="flex items-baseline justify-between gap-2">
-                  <dt className="text-muted">POS card fee rise</dt>
-                  <dd className="font-semibold text-ink line-through decoration-accent">Ruled out</dd>
-                </div>
-              </dl>
-
-              <p className="mt-4 font-mono text-[11px] text-muted text-center border-t border-rule/50 pt-2.5">
-                Every claim backed by an independent SQL re-check.
-              </p>
-            </div>
-          </Tilt>
+        <div className="hero-receipt mx-auto w-full max-w-[27rem] lg:mx-0">
+          <HeroReceipt />
         </div>
       </div>
     </section>

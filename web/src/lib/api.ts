@@ -56,7 +56,10 @@ const json = (body: unknown, signal?: AbortSignal): RequestInit => ({
   signal,
 });
 
-export const startRun = (request: { question: string; scenario?: string }, signal?: AbortSignal) =>
+export const startRun = (
+  request: { question: string; scenario?: string; days?: number; period_start?: string },
+  signal?: AbortSignal,
+) =>
   call<{ run_id: string }>("/runs", json(request, signal));
 
 export const getRun = (runId: string, signal?: AbortSignal) => call<RunState>(`/runs/${runId}`, { signal });

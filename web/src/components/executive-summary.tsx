@@ -31,6 +31,8 @@ export function ExecutiveSummary({ data }: { data: Investigation }) {
   };
 
   const models = Object.entries(stats.models);
+  // A step can point at a cash gap as well as a profit cause, so look in both for its title.
+  const titles = new Map([...causes, ...(data.cash_gaps ?? [])].map((c) => [c.cause_id, c.title]));
 
   return (
     <section aria-labelledby="exec-summary" className="flex flex-col gap-8">
@@ -90,25 +92,23 @@ export function ExecutiveSummary({ data }: { data: Investigation }) {
             {summary.what_to_do.map((item, idx) => {
               const isChecked = !!checkedActions[idx];
               return (
-                <li
-                  key={item.action}
-                  onClick={() => toggleAction(idx)}
-                  className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3.5 transition-colors ${
-                    isChecked
-                      ? "border-rule bg-paper-2/60 text-muted line-through"
-                      : "border-rule bg-paper hover:border-ink/40 text-ink"
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={isChecked}
-                    onChange={() => toggleAction(idx)}
-                    className="mt-0.5 size-4 rounded accent-accent"
-                    aria-label={item.action}
-                  />
-                  <div className="flex-1 text-sm font-medium leading-relaxed">
-                    <span>{item.action}</span>
-                  </div>
+                <li key={item.action}>
+                  <label
+                    className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3.5 transition-colors ${
+                      isChecked ? "border-rule bg-paper-2/60 text-muted" : "border-rule bg-paper text-ink hover:border-ink/40"
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={() => toggleAction(idx)}
+                      className="mt-0.5 size-4 shrink-0 rounded accent-accent"
+                    />
+                    <span className="flex-1 text-sm leading-relaxed">
+                      <span className={`font-medium ${isChecked ? "line-through" : ""}`}>{item.action}</span>
+                      <span className="mt-1 block text-xs text-muted">Because: {titles.get(item.cause_id) ?? item.cause_id}</span>
+                    </span>
+                  </label>
                 </li>
               );
             })}
@@ -139,6 +139,17 @@ export function ExecutiveSummary({ data }: { data: Investigation }) {
           Export PDF / Print receipt
         </button>
       </div>
+
+      {data.limitations.length > 0 && (
+        <div className="rounded-2xl border-2 border-dashed border-ink/30 p-4">
+          <p className="font-mono text-xs font-bold uppercase tracking-[0.16em] text-muted">Keep in mind</p>
+          <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-ink">
+            {data.limitations.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* 6. Run facts footer */}
       <div className="rounded-2xl border border-rule bg-paper-2/50 p-4">
@@ -184,16 +195,7 @@ export function ExecutiveSummary({ data }: { data: Investigation }) {
                 }
               />
               <Leader label="Retries" value={stats.retries} />
-              {data.limitations.length > 0 && (
-                <div className="mt-2 border-t border-rule pt-2">
-                  <span className="font-semibold text-ink font-sans">Keep in mind:</span>
-                  <ul className="mt-1 list-disc space-y-1 pl-4 text-[11px]">
-                    {data.limitations.map((line) => (
-                      <li key={line}>{line}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+
               <div className="mt-2 flex flex-col items-center gap-1 pt-2">
                 <Barcode seed={run_id} />
                 <span className="text-[10px] tracking-widest">{run_id}</span>

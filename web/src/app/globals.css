@@ -104,6 +104,119 @@
   display: none;
 }
 
+.print-slow {
+  animation: print 1100ms var(--ease-out) both;
+  animation-delay: 150ms;
+}
+
+/* The hero receipt: rows print in, a scan line re-checks them, ticks land, ruled-out lines get struck through. */
+.row-in {
+  animation: row-in 320ms var(--ease-out) both;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes row-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+.tick {
+  animation: tick 360ms var(--ease-out) both;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes tick {
+  from {
+    opacity: 0;
+    transform: scale(0.6) rotate(-20deg);
+  }
+}
+
+.strike {
+  background: linear-gradient(var(--color-accent), var(--color-accent)) no-repeat 0 58% / 100% 2px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  animation: strike 420ms var(--ease-out) both;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes strike {
+  from {
+    background-size: 0% 2px;
+  }
+}
+
+.scan {
+  position: absolute;
+  inset: -0.5rem -0.75rem;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent, rgb(255 122 61 / 0.22) 45%, rgb(255 122 61 / 0.5) 50%, transparent 52%)
+    no-repeat;
+  background-size: 100% 5rem;
+  opacity: 0;
+  animation: scan 1100ms ease-in-out both;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes scan {
+  0% {
+    opacity: 1;
+    background-position: 0 -5rem;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    background-position: 0 calc(100% + 5rem);
+  }
+}
+
+[data-reveal] .leader {
+  transform-origin: left;
+  transition: transform 700ms var(--ease-out);
+  transition-delay: calc(var(--d, 0ms) + 200ms);
+}
+
+[data-reveal="hidden"] .leader {
+  transform: translateY(-0.28em) scaleX(0);
+}
+
+.strike-r {
+  background: linear-gradient(var(--color-accent), var(--color-accent)) no-repeat 0 58% / 100% 2px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  transition: background-size 500ms var(--ease-out);
+  transition-delay: calc(var(--d, 0ms) + 500ms);
+}
+
+[data-reveal="hidden"] .strike-r {
+  background-size: 0% 2px;
+}
+
+.split-word {
+  display: inline-block;
+  transition: transform 750ms var(--ease-out);
+  transition-delay: var(--d, 0ms);
+}
+
+[data-split="hidden"] .split-word {
+  transform: translateY(105%);
+}
+
+.swap {
+  animation: swap 380ms var(--ease-out) both;
+}
+
+@keyframes swap {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
 .print-fast {
   animation: print 700ms cubic-bezier(0.22, 0.8, 0.24, 1) both;
   animation-delay: var(--d, 0ms);
@@ -218,24 +331,19 @@
       animation-range: 0 90vh;
     }
 
+    .rail-fill {
+      animation: fill-y linear both;
+      animation-timeline: view();
+      animation-range: cover 20% cover 70%;
+    }
+
     .hero-receipt {
       animation: recede linear both;
       animation-timeline: scroll(root);
       animation-range: 0 100vh;
     }
 
-    .scrub {
-      transform: scaleX(0);
-      animation: grow linear both;
-      animation-timeline: view();
-      animation-range: entry 30% cover 55%;
-    }
 
-    .numeral {
-      animation: light linear both;
-      animation-timeline: view();
-      animation-range: entry 5% entry 95%;
-    }
   }
 }
 
@@ -268,6 +376,12 @@
   }
 }
 
+@keyframes fill-y {
+  from {
+    transform: scaleY(0);
+  }
+}
+
 @keyframes drift {
   to {
     transform: translateY(-36px);
@@ -285,12 +399,6 @@
   }
 }
 
-@keyframes light {
-  from {
-    opacity: 0.2;
-    transform: scale(0.82);
-  }
-}
 
 /* Landing page: a short load sequence, one-shot scroll reveals, and a lift on hover-capable devices. */
 .rise {
@@ -307,38 +415,19 @@
 
 [data-reveal="hidden"] {
   opacity: 0;
-  transform: translateY(22px);
+  transform: translateY(28px);
+  filter: blur(6px);
 }
 
 [data-reveal="shown"] {
-  opacity: 1;
-  transform: translateY(0);
   transition:
-    opacity 650ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 650ms cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 700ms var(--ease-out),
+    transform 700ms var(--ease-out),
+    filter 700ms var(--ease-out);
   transition-delay: var(--d, 0ms);
 }
 
-.hero-glow {
-  background:
-    radial-gradient(42rem 24rem at 82% -4rem, rgb(255 122 61 / 0.16), transparent 65%),
-    radial-gradient(32rem 20rem at 12% 0, rgb(247 245 239 / 0.06), transparent 60%);
-}
 
-.flow-line {
-  background: linear-gradient(90deg, var(--color-flare), var(--color-paper), var(--color-flare));
-  background-size: 200% 100%;
-  animation: flow-slide 4s linear infinite;
-}
-
-@keyframes flow-slide {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: 0% 0;
-  }
-}
 
 .lift {
   transition:
@@ -355,13 +444,38 @@
 
 @media (prefers-reduced-motion: reduce) {
   .rise,
-  .word {
+  .word,
+  .row-in,
+  .tick,
+  .swap {
     animation: fade 250ms ease both;
     animation-delay: var(--d, 0ms);
   }
 
+  .print-slow,
+  .scan {
+    animation: none;
+  }
+
+  .strike {
+    animation: none;
+  }
+
+  [data-split="hidden"] .split-word {
+    transform: none;
+  }
+
+  [data-reveal="hidden"] .leader {
+    transform: translateY(-0.28em);
+  }
+
+  [data-reveal="hidden"] .strike-r {
+    background-size: 100% 2px;
+  }
+
   [data-reveal="hidden"] {
     transform: none;
+    filter: none;
   }
 
   [data-reveal="shown"] {

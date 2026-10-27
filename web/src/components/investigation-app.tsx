@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { apiBase, getHealth, getRun, startRun, type Health, type TraceEvent } from "@/lib/api";
 import type { Investigation } from "@/lib/investigation";
-import { Composer } from "./composer";
+import { Composer, type Period } from "./composer";
 import { EmptyState } from "./empty-state";
 import { LiveTrace } from "./live-trace";
 import { Report } from "./report";
@@ -44,14 +44,14 @@ export function InvestigationApp() {
     }
   }, [phase.kind]);
 
-  async function run(question: string, scenario?: string) {
+  async function run(question: string, scenario: string | undefined, period: Period) {
     abort.current?.abort();
     const controller = new AbortController();
     abort.current = controller;
     setPhase({ kind: "running", events: [] });
     let missed = 0;
     try {
-      const { run_id } = await startRun({ question, scenario }, controller.signal);
+      const { run_id } = await startRun({ question, scenario, ...period }, controller.signal);
       while (!controller.signal.aborted) {
         await sleep(POLL_MS, controller.signal);
         if (controller.signal.aborted) return;
@@ -93,7 +93,7 @@ export function InvestigationApp() {
       : health === "unreachable"
         ? `The agent is not reachable at ${apiBase}. Start the server, then reload.`
         : sample
-          ? "The agent is in sample mode: it runs on generated test weeks, not a real shop."
+          ? "The agent is in sample mode: it runs on generated test data, not a real shop."
           : "Becuz reads your records and never changes them.";
 
   return (
@@ -101,7 +101,7 @@ export function InvestigationApp() {
       {/* A. The Ask (Stays fixed / sticky at top) */}
       <section
         aria-label="Investigation setup"
-        className="sticky top-0 z-30 border-b border-desk-line bg-desk/95 px-4 py-4 backdrop-blur-md sm:px-8 print:hidden"
+        className="sticky top-0 z-30 border-b border-desk-line bg-desk px-4 py-4 sm:px-8 print:hidden"
       >
         <div className="mx-auto w-full max-w-4xl">
           <Composer

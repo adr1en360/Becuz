@@ -54,7 +54,7 @@ export function Breakdown({ tree }: { tree: Investigation["tree"] }) {
           </h3>
 
           <p className="mt-2 text-sm leading-relaxed text-muted">
-            Profit = sales − cost of goods − wastage − running costs. Here is how each component moved this week.
+            Profit = sales − cost of goods − wastage − running costs. Here is how each part moved in this period.
           </p>
 
           <ul className="mt-5 flex flex-col gap-4">

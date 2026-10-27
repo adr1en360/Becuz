@@ -8,7 +8,7 @@ const mono = DM_Mono({ subsets: ["latin", "latin-ext"], weight: ["400", "500"], 
 
 export const metadata: Metadata = {
   title: "Becuz",
-  description: "Why profit moved this week, with a receipt for every claim.",
+  description: "Why your profit moved, with a receipt for every claim.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

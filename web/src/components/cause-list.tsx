@@ -23,7 +23,7 @@ export function CauseList({
 
       {causes.length === 0 ? (
         <div className="rounded-2xl border border-rule bg-paper p-5 text-muted">
-          No cause passed the checks this week, so Becuz does not name one.
+          No cause passed the checks in this period, so Becuz does not name one.
         </div>
       ) : (
         <div className="flex flex-col gap-4">

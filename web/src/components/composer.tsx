@@ -10,12 +10,9 @@ const EXAMPLE_CHIPS = [
   "Where did my money go?",
 ] as const;
 
-const PERIODS = [
-  { id: "2d", label: "2 days", enabled: false, tip: "Pending on server (requires flexible date window)" },
-  { id: "1w", label: "1 week", enabled: true, tip: "7 days vs previous 4 weeks" },
-  { id: "2w", label: "2 weeks", enabled: false, tip: "Pending on server" },
-  { id: "custom", label: "Custom", enabled: false, tip: "Pending on server" },
-] as const;
+const PERIODS = [2, 7, 14, 28] as const;
+
+export type Period = { days: number; period_start?: string };
 
 type Props = {
   running: boolean;
@@ -23,7 +20,7 @@ type Props = {
   sampleMode?: boolean;
   note?: string;
   alert?: string | null;
-  onSubmit: (question: string, scenario?: string) => void;
+  onSubmit: (question: string, scenario: string | undefined, period: Period) => void;
 };
 
 const field = "rounded-2xl border border-desk-line bg-desk-2 text-paper focus:border-flare transition-colors";
@@ -31,7 +28,9 @@ const field = "rounded-2xl border border-desk-line bg-desk-2 text-paper focus:bo
 export function Composer({ running, showScenario, sampleMode = true, note, alert, onSubmit }: Props) {
   const [question, setQuestion] = useState("Why is my profit down?");
   const [scenario, setScenario] = useState<string>(SAMPLE_SCENARIOS[0]);
-  const [period, setPeriod] = useState<string>("1w");
+  const [days, setDays] = useState(7);
+  const [custom, setCustom] = useState(false);
+  const [start, setStart] = useState("");
   const ready = question.trim().length > 0 && !running;
 
   return (
@@ -40,7 +39,12 @@ export function Composer({ running, showScenario, sampleMode = true, note, alert
       aria-describedby="composer-note"
       onSubmit={(event) => {
         event.preventDefault();
-        if (ready) onSubmit(question.trim(), showScenario ? scenario : undefined);
+        if (ready) {
+          onSubmit(question.trim(), showScenario ? scenario : undefined, {
+            days,
+            period_start: custom && start ? start : undefined,
+          });
+        }
       }}
     >
       <div className="flex flex-col gap-2">
@@ -101,32 +105,58 @@ export function Composer({ running, showScenario, sampleMode = true, note, alert
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-1.5">
             <span className="text-xs font-medium text-desk-muted">Period:</span>
-            <div className="inline-flex rounded-full border border-desk-line bg-desk-2 p-0.5" role="radiogroup" aria-label="Investigation period">
-              {PERIODS.map((p) => {
-                const active = period === p.id;
+            <div className="inline-flex flex-wrap rounded-full border border-desk-line bg-desk-2 p-0.5" role="group" aria-label="Investigation period">
+              {PERIODS.map((n) => {
+                const active = !custom && days === n;
                 return (
                   <button
-                    key={p.id}
+                    key={n}
                     type="button"
-                    role="radio"
-                    aria-checked={active}
-                    disabled={!p.enabled}
-                    title={p.tip}
-                    onClick={() => p.enabled && setPeriod(p.id)}
-                    className={`rounded-full px-3 py-1 text-xs font-semibold transition-all ${
-                      active
-                        ? "bg-paper text-ink shadow-sm"
-                        : p.enabled
-                          ? "text-desk-muted hover:text-paper"
-                          : "cursor-not-allowed text-desk-muted/40"
-                    }`}
+                    aria-pressed={active}
+                    onClick={() => {
+                      setCustom(false);
+                      setDays(n);
+                    }}
+                    className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${active ? "bg-paper text-ink" : "text-desk-muted hover:text-paper"}`}
                   >
-                    {p.label}
+                    {n} days
                   </button>
                 );
               })}
+              <button
+                type="button"
+                aria-pressed={custom}
+                onClick={() => setCustom(true)}
+                className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${custom ? "bg-paper text-ink" : "text-desk-muted hover:text-paper"}`}
+              >
+                Custom
+              </button>
             </div>
           </div>
+
+          {custom && (
+            <div className="flex flex-wrap items-center gap-2 text-xs text-desk-muted">
+              <label htmlFor="period-start">From</label>
+              <input
+                id="period-start"
+                type="date"
+                value={start}
+                onChange={(event) => setStart(event.target.value)}
+                className="h-8 rounded-full border border-desk-line bg-desk-2 px-3 text-xs text-paper [color-scheme:dark] focus:border-flare"
+              />
+              <label htmlFor="period-days">for</label>
+              <input
+                id="period-days"
+                type="number"
+                min={1}
+                max={28}
+                value={days}
+                onChange={(event) => setDays(Math.min(28, Math.max(1, Number(event.target.value) || 1)))}
+                className="h-8 w-16 rounded-full border border-desk-line bg-desk-2 px-3 text-xs text-paper focus:border-flare"
+              />
+              <span>days</span>
+            </div>
+          )}
 
           {showScenario && (
             <div className="flex items-center gap-1.5">
@@ -155,7 +185,7 @@ export function Composer({ running, showScenario, sampleMode = true, note, alert
         <button
           type="submit"
           disabled={!ready}
-          className="inline-flex h-10 items-center gap-2 rounded-full bg-flare px-5 text-sm font-bold text-desk transition-colors hover:bg-paper active:scale-95 disabled:cursor-not-allowed disabled:bg-desk-2 disabled:text-desk-muted"
+          className="inline-flex h-10 items-center gap-2 rounded-full bg-flare px-5 text-sm font-bold text-desk transition-[background-color,transform] duration-150 hover:bg-paper active:scale-[0.97] disabled:cursor-not-allowed disabled:bg-desk-2 disabled:text-desk-muted"
         >
           {running ? "Investigating..." : "Investigate"}
           <ArrowRightIcon size={16} aria-hidden />
