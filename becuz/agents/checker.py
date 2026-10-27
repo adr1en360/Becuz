@@ -29,9 +29,9 @@ def verdict(claim: dict, rerun_effect: float | None, rerun_rows: list[str]) -> t
             return "sent_back", "The re-check gave a different result, so it is being tested again."
         return "rejected", "The re-check never matched, so this cause is not reported."
     if rerun_effect is None:
-        return "not_tested", "The records for this week cannot measure this cause."
+        return "not_tested", "The records for this period cannot measure this cause."
     if rerun_effect >= 0:
-        return "rejected", "The records show no loss from this cause this week."
+        return "rejected", "The records show no loss from this cause in this period."
     if rerun_effect > -MIN_EFFECT_NGN:
         return "rejected", f"Too small to matter: {abs(rerun_effect):,.0f} naira."
     if not rerun_rows:
@@ -44,7 +44,7 @@ PLAIN = {
     "supported": lambda reason: "Double-checked: the second check matches, so it counts.",
     "rejected": lambda reason: f"Ruled out. {reason}",
     "sent_back": lambda reason: "The second check gave a different number, so it is being tested again.",
-    "not_tested": lambda reason: "This week's records cannot test this one.",
+    "not_tested": lambda reason: "The records for this period cannot test this one.",
 }
 
 
@@ -53,7 +53,7 @@ def make_checker(wh: Warehouse, trace: Trace, world: WorldModel, memory: HMEM, j
         cause = state["current"]
         claim_id = world.claim_id(cause, period(state))
         claim = world.claims_by_cause(period(state))[cause]
-        rerun = measure(wh, cause, state["week_start"], state["week_end"])
+        rerun = measure(wh, cause, state["period_start"], state["period_end"])
         status, reason = verdict(claim, rerun.effect_ngn, rerun.row_ids)
         retries = claim["retries"] + (status == "sent_back")
         world.update_claim(claim_id, "Checker", retries=retries, reason=reason,
@@ -77,10 +77,10 @@ def make_checker(wh: Warehouse, trace: Trace, world: WorldModel, memory: HMEM, j
     return checker
 
 
-def record_judgements(judge: Judge, world: WorldModel, trace: Trace, week: str) -> None:
+def record_judgements(judge: Judge, world: WorldModel, trace: Trace, period: str) -> None:
     """Waits for the background ratings and files each on its claim, in the order the Checker asked."""
     for cause, judgement in judge.collect():
-        world.update_claim(world.claim_id(cause, week), "Checker", judgement=judgement)
+        world.update_claim(world.claim_id(cause, period), "Checker", judgement=judgement)
         trace.emit("Checker", "judge", cause, judgement["note"], plain="Rated how strong the evidence is.",
                    confidence=judgement["confidence"], status="success" if "error" not in judgement else "failed",
                    engine="markovian", model=judgement["model"], via=judgement["via"])

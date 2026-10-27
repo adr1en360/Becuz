@@ -102,7 +102,7 @@ class Scout:
         issued = self.clock()
         contract = {
             "contractId": _contract_id(), "parentId": parent_id, "traceId": trace_id,
-            "intent": {"primary": intent, "parameters": {"metric": "profit", "period": "one week"},
+            "intent": {"primary": intent, "parameters": {"metric": "profit", "period": "the chosen days"},
                        "references": [], "confidence": confidence, "alternates": []},
             "risk": {"level": "low", "flags": ["read_only"], "redactions": [], "approvals": []},
             "toolPlan": ["sql.read"], "modelProfile": "becuz",

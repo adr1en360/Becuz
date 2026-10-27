@@ -11,7 +11,7 @@ from becuz.investigate import BadRequest, confirm, investigate
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Becuz: explain why a shop's weekly profit moved")
+    parser = argparse.ArgumentParser(description="Becuz: explain why a shop's profit moved over a period")
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--input", help="run an investigation from a JSON request file")
     group.add_argument("--confirm", nargs=2, metavar=("RUN_ID", "CAUSE_ID"), help="confirm a cause from a past run")

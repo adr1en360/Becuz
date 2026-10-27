@@ -38,7 +38,7 @@
           "type": "string"
         },
         "impact_ngn": {
-          "description": "Naira this week; negative is a loss",
+          "description": "Naira in the period; negative is a loss",
           "title": "Impact Ngn",
           "type": "number"
         },
@@ -111,7 +111,7 @@
     },
     "Cause": {
       "additionalProperties": false,
-      "description": "A supported cause of the profit change; impact_ngn is its effect on this week's profit.",
+      "description": "A supported cause of the profit change; impact_ngn is its effect on the period's profit.",
       "properties": {
         "cause_id": {
           "title": "Cause Id",
@@ -128,7 +128,7 @@
           "type": "string"
         },
         "impact_ngn": {
-          "description": "Naira this week; negative is a loss",
+          "description": "Naira in the period; negative is a loss",
           "title": "Impact Ngn",
           "type": "number"
         },
@@ -404,7 +404,7 @@
       "additionalProperties": false,
       "properties": {
         "test": {
-          "description": "What would have disproved the cause, e.g. 'unit cost flat across the baseline weeks'",
+          "description": "What would have disproved the cause, e.g. 'unit cost flat across the baseline'",
           "title": "Test",
           "type": "string"
         },
@@ -449,14 +449,28 @@
           "title": "Period End",
           "type": "string"
         },
+        "days": {
+          "default": 7,
+          "description": "The period's length in days, 1 to 28",
+          "title": "Days",
+          "type": "integer"
+        },
         "baseline_start": {
+          "description": "First day of the earliest baseline window",
           "format": "date",
           "title": "Baseline Start",
           "type": "string"
         },
         "baseline_end": {
+          "description": "Last day of the latest baseline window",
           "format": "date",
           "title": "Baseline End",
+          "type": "string"
+        },
+        "baseline": {
+          "default": "",
+          "description": "What the period is compared with, in the owner's words",
+          "title": "Baseline",
           "type": "string"
         }
       },
@@ -559,7 +573,7 @@
               "type": "null"
             }
           ],
-          "description": "True if it was found again, False if not, None if this week could not test it",
+          "description": "True if it was found again, False if not, None if this period could not test it",
           "title": "Held Again"
         },
         "confidence_before": {

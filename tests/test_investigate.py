@@ -12,7 +12,7 @@ from data.generator import ROOT, SCENARIOS
 TRACE_FIELDS = {"timestamp", "run_id", "agent_name", "action", "input_summary", "output_summary",
                 "target_agent", "confidence", "retry_count", "status"}
 # s01 keeps natural day-to-day variation, so its real dip in units sold is a true, unplanted cause.
-UNPLANTED_BUT_REAL = {"s01": {"sales_volume_drop"}}
+UNPLANTED_BUT_REAL: dict[str, set] = {}  # every scenario is steady, so nothing unplanted should show
 
 
 class InvestigateTests(unittest.TestCase):
@@ -52,21 +52,21 @@ class InvestigateTests(unittest.TestCase):
                     self.assertTrue(line["plain"].endswith("."))
                     self.assertNotIn("_", line["plain"])  # never a code name like supplier_cost_rise
         plain = [l["plain"] for l in lines if "plain" in l]
-        self.assertIn("Checking: a supplier raised the unit cost of a product. The records show ₦46,992 lost.", plain)
-        self.assertIn("Checking: transfers recorded at the till never reached the bank. The records show ₦28,360 missing.", plain)
+        self.assertIn("Checking: a supplier raised the unit cost of a product. The records show ₦45,408 lost.", plain)
+        self.assertIn("Checking: transfers recorded at the till never reached the bank. The records show ₦18,200 missing.", plain)
 
     def test_the_outcome_line_uses_only_measured_figures(self) -> None:
         s01, s04, s05 = (self.reports[s]["summary"]["outcome"] for s in ("s01", "s04", "s05"))
-        self.assertIn("would have made about ₦383,743, against ₦379,412", s01)  # 241,717 + 142,026 explained
-        self.assertIn("₦28,360 back into your account", s01)
-        self.assertEqual(s04, "Profit is on track; chasing the 6 missing transfers brings ₦33,100 back into your account.")
-        self.assertEqual(s05, "Nothing to fix this week.")
+        self.assertIn("would have made about ₦308,186, against ₦306,724", s01)  # 223,451 + 84,735 explained
+        self.assertIn("₦18,200 back into your account", s01)
+        self.assertEqual(s04, "Profit is on track; chasing the 6 missing transfers brings ₦25,670 back into your account.")
+        self.assertEqual(s05, "Nothing to fix in these 7 days.")
 
     def test_naira_rounds_halves_up_like_the_web_ui(self) -> None:
         from becuz.words import naira
 
         self.assertEqual((naira(6562.5), naira(-137694.75), naira(0.4)), ("₦6,563", "₦137,695", "₦0"))
-        self.assertIn("₦6,563 more", self.reports["s04"]["summary"]["what_happened"])
+        self.assertIn("₦1,462 more", self.reports["s04"]["summary"]["what_happened"])
 
     def test_missing_transfers_are_cash_not_profit(self) -> None:
         for scenario, report in self.reports.items():
@@ -105,9 +105,19 @@ class InvestigateTests(unittest.TestCase):
                 with self.assertRaises(BadRequest):
                     investigate(bad, self.config)
 
-    def test_a_week_that_is_not_monday_to_sunday_is_refused(self) -> None:
-        with self.assertRaises(ValueError):
-            investigate({"question": "why?", "week_start": "2027-01-04"}, self.config)
+    def test_a_period_with_no_records_is_refused_with_a_plain_reason(self) -> None:
+        with self.assertRaisesRegex(BadRequest, "Not enough records for that period"):
+            investigate({"question": "Why is my profit down?", "period_start": "2027-01-04"}, self.config)
+
+    def test_any_length_from_1_to_28_days_is_accepted_and_others_refused(self) -> None:
+        for bad in (0, 29, "3", 2.5, True):
+            with self.subTest(days=bad), self.assertRaisesRegex(BadRequest, "days must be"):
+                investigate({"question": "Why is my profit down?", "days": bad}, self.config)
+        report = investigate({"question": "Why is my profit down?", "days": 3, "scenario": "s01"}, self.config)
+        frame = report["frame"]
+        self.assertEqual((frame["days"], report["headline"]["direction"]), (3, "down"))
+        self.assertEqual(frame["baseline"], "the average of the same 3 days of the week in the 4 weeks before")
+        self.assertTrue(report["summary"]["what_happened"].startswith("Profit in these 3 days was"))
 
 
 if __name__ == "__main__":

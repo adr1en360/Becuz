@@ -79,7 +79,7 @@ class ConfirmThenRecallTests(unittest.TestCase):
         (recall,) = second["memory"]
         self.assertEqual((recall["cause_id"], recall["held_again"]), ("transfer_leakage", True))
         self.assertEqual((recall["confidence_before"], recall["confidence_after"]), (0.7, 0.75))
-        self.assertIn("checked it first this time. It happened again this week.", recall["message"])
+        self.assertIn("checked it first this time. It happened again in these 7 days.", recall["message"])
         record = next(r for r in stored if r["id"] == memory_id)
         self.assertEqual((record["confidence"], record["source"], record["agentId"]), (0.75, "owner_confirm", "owner"))
 

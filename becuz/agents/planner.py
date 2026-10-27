@@ -1,4 +1,4 @@
-"""Planner: picks the week, splits the profit change, and orders the causes to test."""
+"""Planner: picks the period, splits the profit change, and orders the causes to test."""
 from __future__ import annotations
 
 from datetime import date, timedelta
@@ -10,13 +10,13 @@ from becuz.engines.scout_intent import ContractRefused
 from becuz.metrics import profit_tree
 from becuz.orchestration.state import InvestigationState
 from becuz.tracing import Trace
-from becuz.words import naira, plural
+from becuz.words import naira, plural, span
 
 
-def latest_week(wh: Warehouse) -> tuple[date, date]:
+def latest_period(wh: Warehouse, days: int) -> tuple[date, date]:
     last = wh.query(f"SELECT MAX(day) AS last_day FROM {wh.usl}.daily_pnl")[0]["last_day"]
     end = date.fromisoformat(str(last)[:10])
-    return end - timedelta(days=6), end
+    return end - timedelta(days=days - 1), end
 
 
 def profit_effects(tree: dict) -> dict[str, float]:
@@ -45,8 +45,8 @@ def make_planner(wh: Warehouse, trace: Trace, memory: HMEM):
                    confidence=intent["confidence"], engine="scout_intent", plain="Reading your question.")
         if intent["confidence"] == 0:
             raise ContractRefused("out-of-scope")
-        start = state.get("week_start")
-        start, end = latest_week(wh) if start is None else (start, start + timedelta(days=6))
+        start, days = state.get("period_start"), state.get("days", 7)
+        start, end = latest_period(wh, days) if start is None else (start, start + timedelta(days=days - 1))
         tree = profit_tree(wh, start, end)
         effects = profit_effects(tree)
         # H-MEM: causes the owner confirmed before are tested first; then the components that lost most.
@@ -60,9 +60,9 @@ def make_planner(wh: Warehouse, trace: Trace, memory: HMEM):
         trace.emit("Planner", "plan", state["question"],
                    f"profit change {tree['profit_ngn']['change']:+,.0f} for {start}..{end}; testing {', '.join(queue)}",
                    target_agent="Investigator",
-                   plain=f"Profit this week is {naira(tree['profit_ngn']['change'])} "
-                         f"{'below' if tree['profit_ngn']['change'] < 0 else 'above'} a usual week. "
+                   plain=f"Profit {span(start, end)[1]} is {naira(tree['profit_ngn']['change'])} "
+                         f"{'below' if tree['profit_ngn']['change'] < 0 else 'above'} usual. "
                          f"Checking {plural(len(queue), 'possible cause')}.")
-        return {"week_start": start, "week_end": end, "tree": tree, "queue": queue, "current": None, "recalled": recalled}
+        return {"period_start": start, "period_end": end, "tree": tree, "queue": queue, "current": None, "recalled": recalled}
 
     return planner
