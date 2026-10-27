@@ -24,7 +24,7 @@ from becuz.words import baseline_words, naira, plural, span
 
 
 def pct(part: float, whole: float) -> float:
-    return round(part / whole * 100, 1) if whole else 0.0
+    return round(part / whole * 100, 1) + 0.0 if whole else 0.0  # + 0.0 turns -0.0 into 0.0
 
 
 def node_status(effect: float, explained: float) -> str:

@@ -1,0 +1,144 @@
+{
+  "run_id": "inv-5bac3c0b52",
+  "status": "complete",
+  "errors": [],
+  "mode": "sample",
+  "synthetic": true,
+  "scenario": "s01",
+  "frame": {
+    "question": "What sold the most?",
+    "metric": "profit",
+    "period_start": "2026-10-12",
+    "period_end": "2026-10-18",
+    "days": 7,
+    "baseline_start": "2026-09-14",
+    "baseline_end": "2026-10-11",
+    "baseline": "the average of the 4 weeks before"
+  },
+  "headline": {
+    "current_ngn": 223450.94,
+    "baseline_ngn": 306723.56,
+    "change_ngn": -83272.62,
+    "change_pct": -27.1,
+    "direction": "down"
+  },
+  "tree": [
+    {
+      "component": "net_sales",
+      "current_ngn": 2576025.0,
+      "baseline_ngn": 2590200.0,
+      "change_ngn": -14175.0,
+      "profit_effect_ngn": -14175.0,
+      "share_of_change_pct": 17.0,
+      "status": "unexplained"
+    },
+    {
+      "component": "cogs",
+      "current_ngn": 2094388.0,
+      "baseline_ngn": 2048980.0,
+      "change_ngn": 45408.0,
+      "profit_effect_ngn": -45408.0,
+      "share_of_change_pct": 54.5,
+      "status": "unexplained"
+    },
+    {
+      "component": "wastage",
+      "current_ngn": 37928.0,
+      "baseline_ngn": 12776.0,
+      "change_ngn": 25152.0,
+      "profit_effect_ngn": -25152.0,
+      "share_of_change_pct": 30.2,
+      "status": "unexplained"
+    },
+    {
+      "component": "opex",
+      "current_ngn": 220258.06,
+      "baseline_ngn": 221720.44,
+      "change_ngn": -1462.38,
+      "profit_effect_ngn": 1462.38,
+      "share_of_change_pct": -1.8,
+      "status": "unexplained"
+    }
+  ],
+  "causes": [],
+  "cash_gaps": [],
+  "memory": [],
+  "answer": {
+    "kind": "top_sellers",
+    "sentence": "Mama Gold Rice 5kg sold most in these 7 days: ₦352,800 from 36 units, the same as usual.",
+    "rows": [
+      {
+        "label": "Mama Gold Rice 5kg",
+        "value_ngn": 352800.0,
+        "usual_ngn": 352800.0,
+        "detail": "36 units"
+      },
+      {
+        "label": "Eggs (crate of 30)",
+        "value_ngn": 208000.0,
+        "usual_ngn": 208000.0,
+        "detail": "40 units"
+      },
+      {
+        "label": "Bournvita 500g",
+        "value_ngn": 179400.0,
+        "usual_ngn": 179400.0,
+        "detail": "46 units"
+      },
+      {
+        "label": "Peak Milk 400g",
+        "value_ngn": 141900.0,
+        "usual_ngn": 141900.0,
+        "detail": "86 units"
+      },
+      {
+        "label": "Kings Vegetable Oil 1L",
+        "value_ngn": 124700.0,
+        "usual_ngn": 124700.0,
+        "detail": "43 units"
+      }
+    ],
+    "sql": "SELECT p.name AS label,\n       ROUND(SUM(CASE WHEN CAST(s.sold_at AS DATE) BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN l.qty * l.unit_price_ngn - l.discount_ngn ELSE 0 END), 2) AS value_ngn,\n       ROUND(SUM(CASE WHEN CAST(s.sold_at AS DATE) IN (DATE '2026-09-14', DATE '2026-09-15', DATE '2026-09-16', DATE '2026-09-17', DATE '2026-09-18', DATE '2026-09-19', DATE '2026-09-20', DATE '2026-09-21', DATE '2026-09-22', DATE '2026-09-23', DATE '2026-09-24', DATE '2026-09-25', DATE '2026-09-26', DATE '2026-09-27', DATE '2026-09-28', DATE '2026-09-29', DATE '2026-09-30', DATE '2026-10-01', DATE '2026-10-02', DATE '2026-10-03', DATE '2026-10-04', DATE '2026-10-05', DATE '2026-10-06', DATE '2026-10-07', DATE '2026-10-08', DATE '2026-10-09', DATE '2026-10-10', DATE '2026-10-11') THEN l.qty * l.unit_price_ngn - l.discount_ngn ELSE 0 END) / 4, 2) AS usual_ngn,\n       SUM(CASE WHEN CAST(s.sold_at AS DATE) BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' THEN l.qty ELSE 0 END) AS units,\n       MIN(p.product_id) AS record_id\nFROM becuz.sale_lines l JOIN becuz.sales s ON s.sale_id = l.sale_id JOIN becuz.products p ON p.product_id = l.product_id\nWHERE CAST(s.sold_at AS DATE) BETWEEN DATE '2026-10-12' AND DATE '2026-10-18' OR CAST(s.sold_at AS DATE) IN (DATE '2026-09-14', DATE '2026-09-15', DATE '2026-09-16', DATE '2026-09-17', DATE '2026-09-18', DATE '2026-09-19', DATE '2026-09-20', DATE '2026-09-21', DATE '2026-09-22', DATE '2026-09-23', DATE '2026-09-24', DATE '2026-09-25', DATE '2026-09-26', DATE '2026-09-27', DATE '2026-09-28', DATE '2026-09-29', DATE '2026-09-30', DATE '2026-10-01', DATE '2026-10-02', DATE '2026-10-03', DATE '2026-10-04', DATE '2026-10-05', DATE '2026-10-06', DATE '2026-10-07', DATE '2026-10-08', DATE '2026-10-09', DATE '2026-10-10', DATE '2026-10-11')\nGROUP BY p.name ORDER BY value_ngn DESC, p.name LIMIT 5",
+    "row_ids": [
+      "P011",
+      "P030",
+      "P020",
+      "P001",
+      "P013"
+    ]
+  },
+  "ruled_out": [],
+  "not_tested": [],
+  "convergence": {
+    "explained_ngn": 0.0,
+    "explained_pct": 0.0,
+    "unexplained_ngn": -83272.62
+  },
+  "summary": {
+    "what_happened": "Profit in these 7 days was ₦223,451, which is ₦83,273 less than usual (₦306,724).",
+    "why": [
+      "Ask \"Why is my profit down?\" for the causes behind the change."
+    ],
+    "cash": [],
+    "outcome": "",
+    "what_to_do": []
+  },
+  "owner_questions": [],
+  "limitations": [
+    "Findings show correlation, not proven causation.",
+    "The shop data is synthetic.",
+    "Sample mode: evidence ratings come from fixed rules, not a model; every number comes from SQL."
+  ],
+  "stats": {
+    "duration_s": 0.5,
+    "zetaris_queries": 4,
+    "model_calls": 0,
+    "retries": 0,
+    "models": {},
+    "via": {
+      "local": 4,
+      "sample-rules": 0
+    }
+  },
+  "trace_file": "logs/trace-inv-5bac3c0b52.jsonl"
+}

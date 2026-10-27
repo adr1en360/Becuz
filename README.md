@@ -338,6 +338,10 @@ If a remembered cause does not happen again, its memory loses confidence and is 
 | `input_examples/example_1.json` | `s01`: three planted profit causes and missing transfers | 3 profit causes and an ₦18,200 cash gap; fewer items sold and POS charges ruled out |
 | `input_examples/example_2.json` | `s04`: missing transfers only | Profit did not fall, but ₦25,670 in transfers never reached the bank; every profit cause ruled out |
 | `input_examples/example_3.json` | `s05`: nothing wrong | Nothing to fix; every cause ruled out |
+| `input_examples/example_4.json` | `s01`, a direct question: "What sold the most?" | Mama Gold Rice 5kg, ₦352,800 from 36 units; no investigation, no model call |
+| `input_examples/example_5.json` | `s01` over 14 days | Profit ₦78,611 below usual; the same 3 causes |
+| `input_examples/example_4.json` | `s01`, a direct question: "What sold the most?" | Mama Gold Rice 5kg, ₦352,800 from 36 units; no investigation, no model call |
+| `input_examples/example_5.json` | `s01` over 14 days | Profit ₦78,611 below usual; the same 3 causes |
 
 Each output and its trace are in `output_examples/`, saved from real sample-mode runs. The live run of
 `s01` through Zetaris and Nightshift is saved too (`live_s01_*`, 27 Oct): it returned the same findings and
@@ -402,6 +406,10 @@ It adds a `model_receipt` line for each signed request.
 
 All shop data is synthetic, generated from a fixed seed by `data/generator.py`. No real shop, customer
 or bank data is used. See `data/README.md` for the five scenarios.
+
+**Uploads of any shape (offline preparation, not part of a live run yet).** `uv run python -m becuz.ingest <upload_dir> <out_dir>` maps a shop's own CSV exports, whatever their file and column names, onto the records Becuz uses. It blocks the mapping when the figures do not reconcile or a payment type is unknown, and says which records are missing. `data/uploads/s06` is a test upload; `tests/test_ingest.py` covers it.
+
+**Uploads of any shape (offline preparation, not part of a live run yet).** `uv run python -m becuz.ingest <upload_dir> <out_dir>` reads a shop's own CSV exports, whatever their file and column names, maps them onto the records Becuz uses, and writes them in the shape `data/scenarios` uses. It blocks the mapping when the figures do not reconcile (for example, sale lines that do not add up to the sale) or when a payment type is unknown, and says which records are missing. `data/uploads/s06` is a test upload with different names and no stock file; `tests/test_ingest.py` covers it.
 
 ## 13. Configuration
 
