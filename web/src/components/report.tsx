@@ -5,6 +5,7 @@ import type { TraceEvent } from "@/lib/api";
 import { ArrowLeftIcon, PlayIcon, StopIcon } from "@solar-icons/react/outline";
 import type { Investigation } from "@/lib/investigation";
 import { formatNaira, formatPct, formatRange } from "@/lib/format";
+import { AnswerCard } from "./answer-card";
 import { Breakdown } from "./breakdown";
 import { CashSection } from "./cash-section";
 import { CauseList } from "./cause-list";
@@ -175,32 +176,38 @@ export function Report({
             {/* Step 1: The question */}
             <StepQuestion data={data} />
 
-            {/* Step 2: Where the money went */}
-            <Breakdown tree={data.tree} />
+            {data.answer ? (
+              <AnswerCard answer={data.answer} step={2} />
+            ) : (
+              <>
+                {/* Step 2: Where the money went */}
+                <Breakdown tree={data.tree} />
 
-            {/* Steps 3..n: Supported causes (largest first) */}
-            <CauseList causes={data.causes} runId={data.run_id} startStep={3} />
+                {/* Steps 3..n: Supported causes (largest first) */}
+                <CauseList causes={data.causes} runId={data.run_id} startStep={3} />
 
-            {/* Struck-through Ruled Out items */}
-            {data.ruled_out.length > 0 && <RuledOut items={data.ruled_out} />}
+                {/* Struck-through Ruled Out items */}
+                {data.ruled_out.length > 0 && <RuledOut items={data.ruled_out} />}
 
-            {/* Money missing (cash gap kept separate from profit) */}
-            {gaps.length > 0 && (
-              <CashSection
-                runId={data.run_id}
-                gaps={gaps}
-                lines={data.summary.cash ?? []}
-                questions={cashQuestions}
-              />
+                {/* Money missing (cash gap kept separate from profit) */}
+                {gaps.length > 0 && (
+                  <CashSection
+                    runId={data.run_id}
+                    gaps={gaps}
+                    lines={data.summary.cash ?? []}
+                    questions={cashQuestions}
+                  />
+                )}
+
+                {/* Convergence */}
+                <Convergence
+                  convergence={data.convergence}
+                  change={data.headline.change_ngn}
+                  causes={data.causes}
+                  notTested={data.not_tested}
+                />
+              </>
             )}
-
-            {/* Convergence */}
-            <Convergence
-              convergence={data.convergence}
-              change={data.headline.change_ngn}
-              causes={data.causes}
-              notTested={data.not_tested}
-            />
           </div>
 
           <Divider />
