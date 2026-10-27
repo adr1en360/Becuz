@@ -5,6 +5,7 @@ The owner-facing UI for Becuz. It renders the Investigation JSON returned by the
 ```bash
 npm install
 npm run dev      # http://localhost:3000
+# / is the landing page, /investigate is the investigation flow
 npm run build
 npm run lint
 npm run types    # regenerate src/lib/investigation.ts from ../docs/investigation.schema.json

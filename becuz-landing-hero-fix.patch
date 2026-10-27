@@ -1,0 +1,403 @@
+diff --git a/web/src/app/globals.css b/web/src/app/globals.css
+index 8edad86..8586d2d 100644
+--- a/web/src/app/globals.css
++++ b/web/src/app/globals.css
+@@ -163,13 +163,93 @@
+   font-variant-numeric: tabular-nums;
+ }
+ 
++/* Landing page: smooth, one-shot entrances. No loops, no layout shift. */
++.hero-glow {
++  background:
++    radial-gradient(42rem 22rem at 85% -4rem, rgb(255 122 61 / 0.22), transparent 60%),
++    radial-gradient(30rem 18rem at 8% 0, rgb(247 245 239 / 0.07), transparent 60%);
++}
++
++.hero-in {
++  animation: hero-rise 800ms cubic-bezier(0.22, 1, 0.36, 1) both;
++}
++
++@keyframes hero-rise {
++  /* Transform only, on purpose: the hero must stay fully legible even if
++     an animation is interrupted or a screenshot freezes it mid-sequence. */
++  from {
++    transform: translateY(18px);
++  }
++  to {
++    transform: translateY(0);
++  }
++}
++
++.pulse-dot {
++  animation: pulse-dot 2.2s ease-in-out infinite;
++}
++
++@keyframes pulse-dot {
++  0%,
++  100% {
++    box-shadow: 0 0 0 0 rgb(255 122 61 / 0.55);
++  }
++  60% {
++    box-shadow: 0 0 0 7px rgb(255 122 61 / 0);
++  }
++}
++
++.flow-line {
++  background: linear-gradient(90deg, var(--color-flare), rgb(247 245 239 / 0.25));
++  background-size: 200% 100%;
++  animation: flow-slide 2.4s cubic-bezier(0.22, 1, 0.36, 1) both;
++}
++
++@keyframes flow-slide {
++  from {
++    background-position: 100% 0;
++  }
++  to {
++    background-position: 0 0;
++  }
++}
++
++.reveal {
++  opacity: 0;
++  transform: translateY(16px);
++  transition:
++    opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
++    transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
++  transition-delay: var(--reveal-delay, 0ms);
++}
++
++.reveal[data-seen="true"] {
++  opacity: 1;
++  transform: translateY(0);
++}
++
++.metric-card {
++  box-shadow:
++    0 24px 60px rgb(0 0 0 / 0.35),
++    inset 0 1px 0 rgb(247 245 239 / 0.12);
++}
++
+ @media (prefers-reduced-motion: reduce) {
+   .print,
+   .line-busy,
+-  .stamp[data-seen="true"] {
++  .stamp[data-seen="true"],
++  .hero-in,
++  .pulse-dot,
++  .flow-line {
+     animation: none;
+   }
+ 
++  .reveal {
++    opacity: 1;
++    transform: none;
++    transition: none;
++  }
++
+   .stamp {
+     opacity: 0.9;
+   }
+diff --git a/web/src/components/composer.tsx b/web/src/components/composer.tsx
+index 0bea72f..10ee638 100644
+--- a/web/src/components/composer.tsx
++++ b/web/src/components/composer.tsx
+@@ -9,12 +9,19 @@ type Props = {
+   showScenario: boolean;
+   note: string;
+   onSubmit: (question: string, scenario?: string) => void;
++  value?: string;
++  onQuestionChange?: (question: string) => void;
+ };
+ 
+ const field = "rounded-2xl border border-desk-line bg-desk-2 text-paper";
+ 
+-export function Composer({ running, showScenario, note, onSubmit }: Props) {
+-  const [question, setQuestion] = useState("Why is my profit down this week?");
++export function Composer({ running, showScenario, note, onSubmit, value, onQuestionChange }: Props) {
++  const [internalQuestion, setInternalQuestion] = useState("Why is my profit down this week?");
++  const question = value ?? internalQuestion;
++  const setQuestion = (next: string) => {
++    if (onQuestionChange) onQuestionChange(next);
++    else setInternalQuestion(next);
++  };
+   const [scenario, setScenario] = useState<string>(SAMPLE_SCENARIOS[0]);
+   const ready = question.trim().length > 0 && !running;
+ 
+diff --git a/web/src/components/empty-state.tsx b/web/src/components/empty-state.tsx
+index 34d7728..c9cc874 100644
+--- a/web/src/components/empty-state.tsx
++++ b/web/src/components/empty-state.tsx
+@@ -1,24 +1,187 @@
++"use client";
++
+ import type { ReactNode } from "react";
++import { CountUp } from "./count-up";
+ import { ReportOutline } from "./report-outline";
++import { useSeen } from "@/lib/use-seen";
++
++const EXAMPLES = [
++  "Why is my profit down this week?",
++  "Did supplier costs go up?",
++  "Is money missing from the bank?",
++] as const;
++
++const STEPS = [
++  {
++    title: "Detect",
++    body: "Profit this week is compared with your usual week, so a dip is caught instead of guessed at.",
++  },
++  {
++    title: "Investigate",
++    body: "Becuz checks sales, bank, supplier and expense records through Zetaris, in one joined view.",
++  },
++  {
++    title: "Evidence",
++    body: "A second check re-runs every cause. Only supported causes reach the report, with record IDs.",
++  },
++  {
++    title: "Act",
++    body: "You get one action per cause, plus the causes ruled out, so you do not chase the wrong fix.",
++  },
++] as const;
++
++function formatNaira(n: number) {
++  return `₦${Math.round(n).toLocaleString("en-NG")}`;
++}
++
++export function EmptyState({
++  composer,
++  alert,
++  live,
++  onExample,
++}: {
++  composer: ReactNode;
++  alert?: ReactNode;
++  live?: ReactNode;
++  onExample?: (question: string) => void;
++}) {
++  const [stepsRef, stepsSeen] = useSeen<HTMLElement>();
++  const [reportRef, reportSeen] = useSeen<HTMLElement>();
+ 
+-export function EmptyState({ composer, alert, live }: { composer: ReactNode; alert?: ReactNode; live?: ReactNode }) {
+   return (
+-    <main className="mx-auto grid w-full max-w-5xl flex-1 gap-14 px-4 pb-20 pt-8 sm:px-8 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:gap-16 lg:pt-14">
+-      <div className="flex flex-col gap-9">
+-        <div className="flex flex-col gap-5">
+-          <h1 className="text-balance font-display text-[2.75rem] font-extrabold leading-[0.95] tracking-[-0.02em] [font-stretch:125%] sm:text-6xl">
+-            Ask why your profit moved.
+-          </h1>
+-          <p className="max-w-md text-lg leading-relaxed text-desk-muted">
+-            Becuz checks your till, bank, supplier invoices and expenses, and prints the receipts behind every cause.
++    <main id="top" className="hero-glow mx-auto w-full max-w-5xl flex-1 scroll-mt-24 px-4 pb-20 sm:px-8">
++      <section className="grid gap-10 pt-10 sm:pt-14 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-14">
++        <div className="flex flex-col gap-7">
++          <p
++            className="hero-in inline-flex w-fit items-center gap-2 rounded-full border border-desk-line px-3.5 py-1.5 text-sm font-semibold text-desk-muted"
++            style={{ animationDelay: "0ms" }}
++          >
++            <span className="pulse-dot inline-block h-2 w-2 rounded-full bg-flare" aria-hidden />
++            Demo shop · Scenario s01
+           </p>
++          <div className="flex flex-col gap-5">
++            <h1
++              className="hero-in text-balance font-display text-[2.9rem] font-extrabold leading-[0.95] tracking-[-0.02em] [font-stretch:125%] sm:text-6xl"
++              style={{ animationDelay: "90ms" }}
++            >
++              Profit fell.
++              <br />
++              Becuz shows you <span className="text-flare">why.</span>
++            </h1>
++            <p className="hero-in max-w-md text-lg leading-relaxed text-desk-muted" style={{ animationDelay: "180ms" }}>
++              Not a dashboard, and not a guess. Becuz checks your till, bank, supplier invoices and expenses, and
++              prints the receipts behind every cause.
++            </p>
++          </div>
++          <div id="investigate" className="hero-in scroll-mt-28" style={{ animationDelay: "270ms" }}>
++            {alert}
++            {composer}
++            {onExample && (
++              <div className="mt-4 flex flex-wrap gap-2">
++                {EXAMPLES.map((example) => (
++                  <button
++                    key={example}
++                    type="button"
++                    onClick={() => {
++                      onExample(example);
++                      document.getElementById("question")?.focus();
++                    }}
++                    className="rounded-full border border-desk-line px-3.5 py-2 text-sm text-desk-muted transition-colors hover:border-flare hover:text-paper"
++                  >
++                    {example}
++                  </button>
++                ))}
++              </div>
++            )}
++          </div>
++        </div>
++
++        <div className="hero-in lg:pt-2" style={{ animationDelay: "360ms" }}>
++          {live ?? (
++            <section aria-label="Demo profit alert" className="metric-card rounded-3xl border border-desk-line bg-desk-2 p-6 sm:p-7">
++              <p className="font-mono text-xs uppercase tracking-[0.16em] text-desk-muted">This week · Profit alert</p>
++              <p className="num mt-4 font-display text-5xl font-extrabold tracking-tight [font-stretch:125%]">
++                <CountUp value={241717} format={formatNaira} duration={1200} />
++              </p>
++              <p className="mt-2 text-desk-muted">
++                A usual week is <span className="num font-semibold text-paper">₦379,412</span>
++              </p>
++              <p className="mt-4 inline-flex rounded-full bg-flare px-3 py-1.5 text-sm font-bold text-desk">
++                Down ₦137,695 · 36.3%
++              </p>
++              <dl className="mt-7 flex flex-col gap-4 border-t border-desk-line pt-6 text-sm">
++                <div className="flex items-baseline justify-between gap-4">
++                  <dt className="text-desk-muted">Supplier raised a unit cost</dt>
++                  <dd className="num font-bold">₦46,992</dd>
++                </div>
++                <div className="flex items-baseline justify-between gap-4">
++                  <dt className="text-desk-muted">Transfers that never reached the bank</dt>
++                  <dd className="num font-bold">₦28,360</dd>
++                </div>
++                <div className="flex items-baseline justify-between gap-4">
++                  <dt className="text-desk-muted">Causes tested and ruled out</dt>
++                  <dd className="font-bold">Shown, not hidden</dd>
++                </div>
++              </dl>
++              <p className="mt-6 text-sm text-desk-muted">
++                Demo data from scenario s01. The full report shows the record behind each figure.
++              </p>
++            </section>
++          )}
++        </div>
++      </section>
++
++      <section
++        id="how-it-works"
++        ref={stepsRef}
++        data-seen={stepsSeen}
++        className="reveal mt-20 scroll-mt-28 sm:mt-24"
++        aria-labelledby="how-heading"
++      >
++        <h2 id="how-heading" className="font-display text-3xl font-extrabold tracking-tight [font-stretch:125%]">
++          From a dip to an answer
++        </h2>
++        <p className="mt-3 max-w-xl leading-relaxed text-desk-muted">
++          Four steps, in plain English. No model guessing, and no figure without a record behind it.
++        </p>
++        <div className="flow-line mt-8 h-1 w-full rounded-full" aria-hidden />
++        <ol className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
++          {STEPS.map((step, index) => (
++            <li
++              key={step.title}
++              className="reveal rounded-3xl border border-desk-line bg-desk-2 p-5"
++              data-seen={stepsSeen}
++              style={{ ["--reveal-delay" as string]: `${120 + index * 110}ms` }}
++            >
++              <p className="font-mono text-sm font-bold text-flare">0{index + 1}</p>
++              <h3 className="mt-3 font-display text-xl font-extrabold [font-stretch:125%]">{step.title}</h3>
++              <p className="mt-2 text-sm leading-relaxed text-desk-muted">{step.body}</p>
++            </li>
++          ))}
++        </ol>
++      </section>
++
++      <section ref={reportRef} data-seen={reportSeen} className="reveal mt-20 sm:mt-24">
++        <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.85fr)] lg:items-start">
++          <ReportOutline />
++          <aside className="flex flex-col gap-5 rounded-3xl border border-desk-line bg-desk-2 p-6">
++            <h2 className="font-display text-2xl font-extrabold tracking-tight [font-stretch:125%]">Why this is not a chatbot</h2>
++            <p className="leading-relaxed text-desk-muted">
++              A chatbot can sound confident with no records at all. Becuz has to show its working first, and it has
++              to say what it could not explain.
++            </p>
++            <ul className="flex flex-col gap-3 text-sm leading-relaxed">
++              <li>SQL computes every naira figure. The model rates evidence, it never invents a number.</li>
++              <li>Confirmed causes are remembered and checked first next time, with confidence that can fall.</li>
++              <li>Cash missing from the bank is kept apart from profit, because a sale and a bank credit are not the same thing.</li>
++            </ul>
++            <p className="text-sm text-desk-muted">
++              Built with Zetaris for the shop records, Meterless Nightshift for the model calls, and NVIDIA Nemotron
++              for rating the evidence.
++            </p>
++          </aside>
+         </div>
+-        {alert}
+-        {composer}
+-      </div>
+-      <div className="lg:pt-3">
+-        {live ?? <ReportOutline />}
+-      </div>
++      </section>
+     </main>
+   );
+ }
+diff --git a/web/src/components/investigation-app.tsx b/web/src/components/investigation-app.tsx
+index dd9a5c8..2d95046 100644
+--- a/web/src/components/investigation-app.tsx
++++ b/web/src/components/investigation-app.tsx
+@@ -26,6 +26,7 @@ const sleep = (ms: number, signal: AbortSignal) =>
+ export function InvestigationApp() {
+   const [health, setHealth] = useState<Health | null | "unreachable">(null);
+   const [phase, setPhase] = useState<Phase>({ kind: "idle" });
++  const [draftQuestion, setDraftQuestion] = useState("Why is my profit down this week?");
+   const abort = useRef<AbortController | null>(null);
+ 
+   useEffect(() => {
+@@ -103,7 +104,17 @@ export function InvestigationApp() {
+           </p>
+         ) : null
+       }
+-      composer={<Composer running={phase.kind === "running"} showScenario={sample} note={note} onSubmit={run} />}
++      onExample={setDraftQuestion}
++      composer={
++        <Composer
++          running={phase.kind === "running"}
++          showScenario={sample}
++          note={note}
++          onSubmit={run}
++          value={draftQuestion}
++          onQuestionChange={setDraftQuestion}
++        />
++      }
+     />
+   );
+ }
+diff --git a/web/src/components/site-header.tsx b/web/src/components/site-header.tsx
+index 69fa2ce..f7c1f2e 100644
+--- a/web/src/components/site-header.tsx
++++ b/web/src/components/site-header.tsx
+@@ -2,14 +2,27 @@ import { DatabaseIcon } from "@solar-icons/react/outline";
+ 
+ export function SiteHeader() {
+   return (
+-    <header className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-5 sm:px-8">
+-      <span className="font-display text-2xl font-extrabold tracking-tight [font-stretch:125%]">
+-        Becuz<span className="text-flare">.</span>
+-      </span>
+-      <span className="inline-flex items-center gap-2 rounded-full border border-desk-line px-3.5 py-1.5 text-sm text-desk-muted">
+-        <DatabaseIcon size={16} aria-hidden />
+-        Synthetic data
+-      </span>
++    <header className="sticky top-0 z-20 border-b border-desk-line bg-desk/85 backdrop-blur">
++      <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-4 px-4 py-4 sm:px-8">
++        <a href="#top" className="font-display text-2xl font-extrabold tracking-tight [font-stretch:125%]">
++          Becuz<span className="text-flare">.</span>
++        </a>
++        <nav aria-label="Landing page" className="flex items-center gap-2 sm:gap-5">
++          <a href="#how-it-works" className="hidden text-sm font-semibold text-desk-muted transition-colors hover:text-paper sm:inline">
++            How it works
++          </a>
++          <a
++            href="#investigate"
++            className="rounded-full bg-flare px-4 py-2 text-sm font-bold text-desk transition-colors hover:bg-paper"
++          >
++            Investigate
++          </a>
++          <span className="hidden items-center gap-2 rounded-full border border-desk-line px-3.5 py-1.5 text-sm text-desk-muted md:inline-flex">
++            <DatabaseIcon size={16} aria-hidden />
++            Synthetic data
++          </span>
++        </nav>
++      </div>
+     </header>
+   );
+ }
