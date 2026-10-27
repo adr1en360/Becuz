@@ -300,6 +300,9 @@ After a run, the owner can confirm a cause it found, from the web interface (**T
 uv run python run.py --confirm <run_id> transfer_leakage
 ```
 
+<details>
+<summary><b>How memory works, from the command line</b></summary>
+
 Only a cause the Checker supported in that run can be confirmed. H-MEM stores it, and the next run tests it first and
 reports what happened in `memory`. To see it end to end in sample mode:
 
@@ -318,6 +321,8 @@ uv run python run.py --input input_examples/example_1.json
 ```
 
 If a remembered cause does not happen again, its memory loses confidence and is flagged for review.
+
+</details>
 
 ## Live mode setup
 
@@ -473,12 +478,17 @@ mode builds the same tables in DuckDB in memory and finishes a run in about a se
 
 The app creates `logs/` on first write.
 
+<details>
+<summary><b>What each log file holds</b></summary>
+
 - `logs/trace-<run_id>.jsonl` has one line per agent decision, also printed to stderr. Each line has `timestamp`,
   `run_id`, `agent_name`, `action`, `input_summary`, `output_summary`, `target_agent`, `confidence`, `retry_count` and
   `status`, plus the engine, model and route where they apply.
 - `logs/ledger.jsonl` has one line per Zetaris query, model call or error, with the model that answered and its
   Nightshift request ID. Nightshift signs its receipt after the call returns. Once it settles, run
   `uv run python verify_receipts.py`, which adds a `model_receipt` line for each signed request.
+
+</details>
 
 ## Safety
 
@@ -496,12 +506,17 @@ All shop data is synthetic, generated from a fixed seed by `data/generator.py`. 
 used. See [`data/README.md`](data/README.md) for the five scenarios. In the web interface they appear as five fictional
 test shops.
 
+<details>
+<summary><b>Mapping a shop’s own CSV exports (offline preparation)</b></summary>
+
 **Uploads of any shape (offline preparation, not part of a live run yet).**
 `uv run python -m becuz.ingest <upload_dir> <out_dir>` reads a shop's own CSV exports, whatever their file and column
 names, maps them onto the records Becuz uses, and writes them in the shape `data/scenarios` uses. It blocks the mapping
 when the figures do not reconcile (for example, sale lines that do not add up to the sale) or when a payment type is
 unknown, and says which records are missing. `data/uploads/s06` is a test upload with different names and no stock
 file; `tests/test_ingest.py` covers it.
+
+</details>
 
 ## Configuration
 
@@ -536,6 +551,9 @@ The tests run offline and need no credentials.
 uv run python -m unittest discover -s tests -p "test_*.py"
 ```
 
+<details>
+<summary><b>What the tests cover</b></summary>
+
 They cover the generator, the SQL templates against the answer keys, the read-only guard, the report schema, the
 server, and the four engines. The H-MEM, World Model and Markovian tests port the Meterless conformance cases by ID;
 the Scout Intent tests check the rules in its spec, which has no conformance suite. `BECUZ_LIVE=1` adds a test that
@@ -543,6 +561,8 @@ compares the profit tree from live Zetaris with sample mode. The [scorecard](#sc
 the answer keys.
 
 For the web app: `cd web && npm run lint && npm run build`.
+
+</details>
 
 ## Tech stack
 
