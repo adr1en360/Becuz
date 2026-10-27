@@ -24,6 +24,19 @@ Becuz joins those records through Zetaris and reports:
 - causes the owner confirmed in earlier runs, and whether each one happened again
 - one action per cause for the owner to take next
 
+Everyday questions get a direct answer in seconds, from one read-only query with its records and no
+model call:
+
+| The owner asks | Becuz answers with |
+|---|---|
+| "What sold the most?" or "...the least?" | the top 5 products by naira, with units sold and the usual figure |
+| "How much did I sell, make or spend?" | sales, cost of stock sold, wasted stock, running costs and profit, against usual |
+| "What are my biggest expenses?" | spending by category, against usual |
+| "Is any money missing?" | the transfer sales that never reached the bank, with their sale IDs |
+
+Questions that ask why ("Why is my profit down?") start the full investigation. Anything not about the
+shop's money gets a short reply with example questions.
+
 SQL computes every naira figure. The model rates the evidence and writes a note for the owner. It
 never computes or changes a number.
 
@@ -100,7 +113,7 @@ from a real live run: one `model` line per call with the model that answered and
 
 | Engine | What it does in Becuz | Log |
 |---|---|---|
-| Scout Intent | Turns the question into a signed contract: the intent, the 10 tables the agent may read, a budget of 80 queries, and a 5-minute expiry. Every query passes through the contract | `logs/scout.jsonl` |
+| Scout Intent | Turns the question into a signed contract: one of 5 intents (the investigation, or a direct answer for top sellers, totals, expenses or missing money), the 10 tables the agent may read, a budget of 80 queries, and a 5-minute expiry. Every query passes through the contract | `logs/scout.jsonl` |
 | World Model | The shared list of claims. Each verdict is a new status edge, so a claim's full history is kept | `logs/world.jsonl` |
 | H-MEM | Remembers causes the owner confirmed and how they were found. They are recalled and tested first in later runs | `logs/hmem.json`, `logs/hmem.jsonl` |
 | Markovian | Runs the Checker's model calls as a chain. Each call carries one short summary of earlier verdicts instead of the whole history, so every call stays the same size | `logs/markovian.jsonl` |
