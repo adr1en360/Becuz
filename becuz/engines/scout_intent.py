@@ -30,8 +30,30 @@ POLICY_PACK_VERSION = "becuz-policy-1"
 TTL = timedelta(minutes=5)  # spec default; never extended, re-issued instead
 QUERIES_MAX = 80  # planner + 6 causes x (investigate + check) x up to 3 attempts, with room to spare
 
-# The intent registry: every intent carries examples (spec: "every intent needs examples").
+# The intent registry: every intent carries examples (spec: "every intent needs examples"). The direct answers come
+# first and are narrow, so a tie goes to the specific question; anything else about money is a profit investigation.
 INTENTS = {
+    "answer.missing_money": {
+        "examples": ["Is any money missing?", "Did every transfer reach the bank?", "How much money is missing?"],
+        "domain": ("missing", "stolen", "unpaid", "disappeared", "reach", "reached", "lodged"),
+        "keywords": ("money", "transfer", "transfers", "bank", "cash", "any", "is", "every", "did"),
+    },
+    "answer.top_sellers": {
+        "examples": ["What sold the most?", "What sold the highest?", "Which product sold least?", "What are my best sellers?"],
+        "domain": ("sold", "selling", "seller", "sellers", "bestseller", "bestsellers", "popular"),
+        "keywords": ("most", "best", "top", "highest", "least", "lowest", "worst", "slowest", "item", "items",
+                     "product", "products", "what", "which"),
+    },
+    "answer.totals": {
+        "examples": ["How much did I sell?", "How much did I make?", "How much did I spend?", "What were my totals?"],
+        "domain": ("much", "totals", "total"),
+        "keywords": ("how", "sell", "sold", "sales", "make", "made", "earn", "spend", "spent", "profit", "money"),
+    },
+    "answer.expenses": {
+        "examples": ["What are my biggest expenses?", "What did I spend money on?", "Where are my costs going?"],
+        "domain": ("expense", "expenses", "spending", "spend", "spent", "costs"),
+        "keywords": ("biggest", "largest", "most", "top", "what", "my", "on", "which", "where", "category"),
+    },
     "profit.explain_change": {
         "examples": ["Why is my profit down this week?", "What made my profit drop?",
                      "Why did I make less money this week?", "Explain my profit change",

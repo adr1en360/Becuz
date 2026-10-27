@@ -14,6 +14,7 @@ class InvestigationState(TypedDict, total=False):
     queue: list[str]  # causes still to test, most promising first
     current: str | None  # the cause being tested or re-tested
     recalled: dict[str, str]  # cause_id -> H-MEM memory id, for causes the owner confirmed before
+    answer: dict  # a direct answer (answers.answer) when the question is not a why-question
     report: dict  # the Writer's Investigation JSON
 
 

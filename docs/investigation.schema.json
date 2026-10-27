@@ -19,6 +19,96 @@
       "title": "Action",
       "type": "object"
     },
+    "Answer": {
+      "additionalProperties": false,
+      "description": "A direct answer to an everyday question, from one read-only SQL query; the model is not involved.",
+      "properties": {
+        "kind": {
+          "enum": [
+            "top_sellers",
+            "totals",
+            "expenses",
+            "missing_money"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "sentence": {
+          "description": "The answer in one plain sentence",
+          "title": "Sentence",
+          "type": "string"
+        },
+        "rows": {
+          "description": "Up to 5 rows, largest first (smallest first for 'least')",
+          "items": {
+            "$ref": "#/$defs/AnswerRow"
+          },
+          "title": "Rows",
+          "type": "array"
+        },
+        "sql": {
+          "description": "The query that produced the rows",
+          "title": "Sql",
+          "type": "string"
+        },
+        "row_ids": {
+          "description": "Records behind the rows",
+          "items": {
+            "type": "string"
+          },
+          "title": "Row Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "kind",
+        "sentence",
+        "rows",
+        "sql",
+        "row_ids"
+      ],
+      "title": "Answer",
+      "type": "object"
+    },
+    "AnswerRow": {
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "value_ngn": {
+          "description": "Naira in the period",
+          "title": "Value Ngn",
+          "type": "number"
+        },
+        "usual_ngn": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "The same measure averaged over the baseline windows; None when it has no baseline",
+          "title": "Usual Ngn"
+        },
+        "detail": {
+          "description": "Units, payments or a short note, e.g. '120 units'",
+          "title": "Detail",
+          "type": "string"
+        }
+      },
+      "required": [
+        "label",
+        "value_ngn",
+        "usual_ngn",
+        "detail"
+      ],
+      "title": "AnswerRow",
+      "type": "object"
+    },
     "CashGap": {
       "additionalProperties": false,
       "description": "Money the till recorded but the bank never received; impact_ngn is the missing amount (negative).\nIt is cash the shop is owed, so it is not part of the profit change.",
@@ -892,6 +982,18 @@
       },
       "title": "Memory",
       "type": "array"
+    },
+    "answer": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Answer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Set when the question asks what happened (top sellers, totals, expenses, missing money) rather than why; then no causes are tested"
     },
     "ruled_out": {
       "items": {

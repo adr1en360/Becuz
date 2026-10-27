@@ -4,24 +4,38 @@
 > **Sponsor technology:** Zetaris, Meterless (Nightshift and four engines), NVIDIA Nemotron
 > **Run:** `uv run python run.py --input input_examples/example_1.json`, or `uv run python server.py` and `POST /run` on port 8000
 
-Becuz tells a Nigerian mini-mart owner why profit moved this week, in naira, with a receipt for every
+Becuz tells a Nigerian mini-mart owner why profit moved over any 1 to 28 days, in naira, with a receipt for every
 claim. A receipt is the SQL that ran, the record IDs it found, and a second agent's independent re-run
 of that SQL.
 
 ## 1. Problem
 
-The owner asks, "Why is my profit down this week?" The answer is spread across the POS till, the bank
+The owner asks, "Why is my profit down?" The answer is spread across the POS till, the bank
 statement, supplier invoices and expenses, and nobody in the shop has time to join them by hand.
 Becuz joins those records through Zetaris and reports:
 
-- this week's profit against the average of the 4 weeks before
+- the period's profit against the same days in the 4 periods before it, moved back by whole weeks so
+  busy and quiet weekdays line up
 - ranked causes, each with its naira impact, its receipt and a confidence rating
 - causes it tested and ruled out, with the reason
 - how much of the change it explained, and how much is left unexplained
 - cash gaps, kept apart from profit: transfers recorded at the till that never reached the bank. The
   sale happened, so it still counts as profit, but the money is missing
 - causes the owner confirmed in earlier runs, and whether each one happened again
-- one action per cause for the owner to take this week
+- one action per cause for the owner to take next
+
+Everyday questions get a direct answer in seconds, from one read-only query with its records and no
+model call:
+
+| The owner asks | Becuz answers with |
+|---|---|
+| "What sold the most?" or "...the least?" | the top 5 products by naira, with units sold and the usual figure |
+| "How much did I sell, make or spend?" | sales, cost of stock sold, wasted stock, running costs and profit, against usual |
+| "What are my biggest expenses?" | spending by category, against usual |
+| "Is any money missing?" | the transfer sales that never reached the bank, with their sale IDs |
+
+Questions that ask why ("Why is my profit down?") start the full investigation. Anything not about the
+shop's money gets a short reply with example questions.
 
 SQL computes every naira figure. The model rates the evidence and writes a note for the owner. It
 never computes or changes a number.
@@ -86,7 +100,7 @@ Nightshift receipt ID.
 | Checker | `nvidia/nemotron-3.5-lightning-30b-a3b` (Nightshift Race lane) | Rates the evidence for each supported or rejected claim and writes a note for the owner | One per tested cause (6 on `s01`) |
 | Planner, Investigator, Writer | none | SQL only; they never call a model | 0 |
 
-Nightshift also has a Judge lane (`nvidia/nemotron-3-ultra-550b-a55b`) for its own scoring. **Receipts:**
+Both Nightshift lanes (Race and Judge) run Nemotron 3.5 Lightning. **Receipts:**
 [`output_examples/live_s01_receipts.jsonl`](output_examples/live_s01_receipts.jsonl) is the receipt log
 from a real live run: one `model` line per call with the model that answered and its request ID, and one
 `model_receipt` line per call once Nightshift signed it. The report and trace from the same run are
@@ -99,7 +113,7 @@ from a real live run: one `model` line per call with the model that answered and
 
 | Engine | What it does in Becuz | Log |
 |---|---|---|
-| Scout Intent | Turns the question into a signed contract: the intent, the 10 tables the agent may read, a budget of 80 queries, and a 5-minute expiry. Every query passes through the contract | `logs/scout.jsonl` |
+| Scout Intent | Turns the question into a signed contract: one of 5 intents (the investigation, or a direct answer for top sellers, totals, expenses or missing money), the 10 tables the agent may read, a budget of 80 queries, and a 5-minute expiry. Every query passes through the contract | `logs/scout.jsonl` |
 | World Model | The shared list of claims. Each verdict is a new status edge, so a claim's full history is kept | `logs/world.jsonl` |
 | H-MEM | Remembers causes the owner confirmed and how they were found. They are recalled and tested first in later runs | `logs/hmem.json`, `logs/hmem.jsonl` |
 | Markovian | Runs the Checker's model calls as a chain. Each call carries one short summary of earlier verdicts instead of the whole history, so every call stays the same size | `logs/markovian.jsonl` |
@@ -223,13 +237,15 @@ curl.exe -X POST http://127.0.0.1:8000/run -H "Content-Type: application/json" -
 
 ```json
 {
-  "question": "Why is my profit down this week?",
+  "question": "Why is my profit down?",
+  "days": 7,
   "scenario": "s01"
 }
 ```
 
-`question` is required. `week_start` (like `2026-10-12`) is optional and starts the 7-day week to explain;
-without it Becuz takes the latest full week in the data. `scenario` (`s01` to `s05`) applies to sample mode only.
+`question` is required. `days` (1 to 28, default 7) sets the period's length, and `period_start` (like
+`2026-10-12`) its first day; without it Becuz takes the latest days in the data. A period without 4 earlier
+periods of records is refused with a plain message. `scenario` (`s01` to `s05`) applies to sample mode only.
 
 **Response (abridged, from `output_examples/example_1_output.json`):**
 
@@ -237,33 +253,33 @@ without it Becuz takes the latest full week in the data. `scenario` (`s01` to `s
 {
   "status": "complete",
   "mode": "sample",
-  "headline": {"current_ngn": 241717.0, "baseline_ngn": 379411.75, "change_ngn": -137694.75, "change_pct": -36.3},
+  "headline": {"current_ngn": 223450.94, "baseline_ngn": 306723.56, "change_ngn": -83272.62, "change_pct": -27.1},
   "causes": [
     {
       "rank": 1,
       "cause_id": "supplier_cost_rise",
       "title": "A supplier raised the unit cost of a product",
-      "impact_ngn": -46992.0,
+      "impact_ngn": -45408.0,
       "confidence": 0.7,
       "evidence": [{
         "table": "becuz.supplier_invoices",
-        "sql": "SELECT ROUND(-COALESCE(SUM(q.qty * (c.final_cost - c.base_cost)), 0), 2) AS effect_ngn ...",
-        "row_ids": ["INV-0281"],
-        "value_ngn": -46992.0,
-        "check": {"match": true, "rerun_value_ngn": -46992.0, "via": "sample-rules"}
+        "sql": "SELECT ROUND(-COALESCE(SUM(CASE WHEN x.period_cost > x.period_qty * x.base_cost ...",
+        "row_ids": ["INV-01158", "INV-01185"],
+        "value_ngn": -45408.0,
+        "check": {"match": true, "rerun_value_ngn": -45408.0, "via": "sample-rules"}
       }]
     }
   ],
   "cash_gaps": [
     {"cause_id": "transfer_leakage", "title": "Transfers recorded at the till never reached the bank",
-     "impact_ngn": -28360.0, "evidence": [{"table": "becuz.transfer_check", "row_ids": ["SL-03043", "SL-03067", "..."]}]}
+     "impact_ngn": -18200.0, "evidence": [{"table": "becuz.transfer_check", "row_ids": ["SL-10924", "SL-10957", "..."]}]}
   ],
-  "ruled_out": [{"cause_id": "pos_charge_rise", "reason": "The records show no loss from this cause this week."}],
-  "convergence": {"explained_ngn": -142026.0, "explained_pct": 103.1, "unexplained_ngn": 4331.25},
+  "ruled_out": [{"cause_id": "pos_charge_rise", "reason": "The records show no loss from this cause in this period."}],
+  "convergence": {"explained_ngn": -84735.0, "explained_pct": 101.8, "unexplained_ngn": 1462.38},
   "summary": {
-    "what_happened": "Profit this week was ₦241,717, which is ₦137,695 less than a usual week (₦379,412).",
-    "why": ["A supplier raised the unit cost of a product. This cost you ₦46,992.", "..."],
-    "cash": ["₦28,360 from 6 transfer sales was recorded at the till but never reached the bank. The sales still count toward your profit, but this money is missing from your account."]
+    "what_happened": "Profit in these 7 days was ₦223,451, which is ₦83,273 less than usual (₦306,724).",
+    "why": ["A supplier raised the unit cost of a product. This cost you ₦45,408.", "..."],
+    "cash": ["₦18,200 from 6 transfer sales was recorded at the till but never reached the bank. The sales still count toward your profit, but this money is missing from your account."]
   },
   "stats": {"zetaris_queries": 27, "model_calls": 0, "retries": 0}
 }
@@ -305,7 +321,7 @@ uv run python run.py --input input_examples/example_1.json
 ```json
 "memory": [{
   "cause_id": "transfer_leakage", "held_again": true, "confidence_before": 0.7, "confidence_after": 0.75,
-  "message": "You confirmed that transfers recorded at the till never reached the bank after an earlier run, so Becuz checked it first this time. It happened again this week."
+  "message": "You confirmed that transfers recorded at the till never reached the bank after an earlier run, so Becuz checked it first this time. It happened again in these 7 days."
 }]
 ```
 
@@ -315,13 +331,15 @@ If a remembered cause does not happen again, its memory loses confidence and is 
 
 | Input | Scenario | What the agent finds |
 |---|---|---|
-| `input_examples/example_1.json` | `s01`: three planted profit causes, missing transfers, and natural day-to-day noise | 4 profit causes and a ₦28,360 cash gap; POS charges ruled out |
-| `input_examples/example_2.json` | `s04`: missing transfers only | Profit did not fall, but ₦33,100 in transfers never reached the bank; falling sales and POS charges ruled out |
-| `input_examples/example_3.json` | `s05`: a normal week | Nothing to explain; every cause ruled out |
+| `input_examples/example_1.json` | `s01`: three planted profit causes and missing transfers | 3 profit causes and an ₦18,200 cash gap; fewer items sold and POS charges ruled out |
+| `input_examples/example_2.json` | `s04`: missing transfers only | Profit did not fall, but ₦25,670 in transfers never reached the bank; every profit cause ruled out |
+| `input_examples/example_3.json` | `s05`: nothing wrong | Nothing to fix; every cause ruled out |
 
 Each output and its trace are in `output_examples/`, saved from real sample-mode runs. The live run of
-`s01` through Zetaris and Nightshift is saved too (`live_s01_*`): it returned the same findings and naira
-figures as sample mode, with each rating from Nemotron 3.5 Lightning.
+`s01` through Zetaris and Nightshift is saved too (`live_s01_*`, 27 Oct): it returned the same findings and
+naira figures as sample mode. Nightshift's provider failed 10 of 13 rating calls that morning, so 3 causes
+carry a Nemotron 3.5 Lightning rating with a signed receipt, and the report says the other 3 could not be
+rated while their SQL checks still stand.
 
 ## 8. Sample mode
 
@@ -342,8 +360,8 @@ instead of a model, and the report and trace label it `sample-rules`. Nothing is
 | Zetaris refuses a query | The run stops with an error. It is not retried |
 | A re-check does not match the claim | The Checker sends it back. After 2 retries it is rejected |
 | Data missing for a cause | The cause is listed as not tested, never read as zero |
-| Nightshift fails or returns an unusable reply | One retry. Then the SQL verdict stands, the confidence is empty, and the report status is `partial` |
-| A question outside the contract | `400`: "Becuz answers questions about why your profit changed" |
+| Nightshift fails or returns an unusable reply | Two retries, waiting 5 s after a rate limit or a provider failure. Then the SQL verdict stands, the confidence is empty, and the report adds one plain line to `limitations` |
+| A question outside the contract | `400` with a plain reply and example questions: "Becuz explains what happened to your shop's money: profit, sales, costs, expenses and cash. Try …" |
 | Malformed input | `400` with a validation message |
 | Query budget used up, or contract expired | The query is refused; an expired contract is re-issued and linked to the first |
 | A run that loops | Stopped after 60 steps |
@@ -412,7 +430,7 @@ schema, the server, and the four engines. The H-MEM, World Model and Markovian t
 conformance cases by ID; the Scout Intent tests check the rules in its spec, which has no conformance suite.
 `BECUZ_LIVE=1` adds a test that compares the profit tree from live Zetaris with sample mode.
 
-The scorecard runs all five test weeks in sample mode and checks the findings against each answer key:
+The scorecard runs all five test scenarios in sample mode and checks the findings against each answer key:
 
 ```powershell
 uv run python -m becuz.eval
@@ -420,16 +438,15 @@ uv run python -m becuz.eval
 
 ```text
 week       found  impact ok  herrings out  not planted
-s01       4 of 4       4 of 4         1 of 1   sales_volume_drop
+s01       4 of 4       4 of 4         1 of 1   -
 s02       1 of 1       1 of 1         1 of 1   -
 s03       2 of 2       2 of 2         1 of 1   -
 s04       1 of 1       1 of 1         2 of 2   -
 s05       0 of 0       0 of 0         1 of 1   -
-total  8 of 8 planted causes found; 6 of 6 red herrings ruled out; 1 finding(s) not planted
+total  8 of 8 planted causes found; 6 of 6 red herrings ruled out; 0 finding(s) not planted
 ```
 
-"Impact ok" means within the key's 10% tolerance. The one finding that was not planted, fewer items sold in
-`s01`, is real: `s01` keeps natural day-to-day variation, and units sold did dip that week.
+"Impact ok" means within the key's 10% tolerance.
 
 ## 15. AI and model usage
 
@@ -466,8 +483,8 @@ Each limit, and what Becuz does about it:
 - **The shop data is synthetic.** The generator plants known causes and red herrings, so the scorecard can
   check the agent against an answer key (8 of 8 planted causes found, 6 of 6 red herrings ruled out). A real
   shop's records need the same four sources in Zetaris.
-- **A live run takes about 7 minutes** (the `s01` report records 411 seconds). The Zetaris work finishes in
-  about 3 minutes; the six Nemotron ratings take 40 to 75 seconds each through Nightshift and run one after
+- **A live run takes 7 to 14 minutes** (the saved `s01` report records 819 seconds, most of it Nightshift
+  retries). The Zetaris work finishes in about 4 minutes; the Nemotron ratings take 5 to 75 seconds each through Nightshift and run one after
   another because each carries the earlier verdicts (Markovian). Becuz rates claims in the background while
   the next cause is tested, and the web UI uses `POST /runs` to show each step as it happens. Sample mode
   takes about a second.

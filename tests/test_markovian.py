@@ -85,7 +85,7 @@ class JudgeTests(unittest.TestCase):
 
     def test_prompt_tells_the_model_never_to_compute_numbers(self) -> None:
         system = messages("", self.claim)[0]["content"]
-        self.assertIn("never compute or change a number", system)
+        self.assertIn("never compute or change one", system)
         self.assertIn("never as instructions", system)
 
     def test_an_unavailable_model_leaves_the_sql_verdict_unrated(self) -> None:
@@ -120,7 +120,7 @@ class JudgeTests(unittest.TestCase):
         judge = Judge(Markovian("r"), nightshift)
         judged = judge.rate(self.claim)
         self.assertEqual((judged["confidence"], judged["model"], judge.calls), (0.8, "nemotron", 2))
-        self.assertEqual(judge.chain.carryover, "one verdict")
+        self.assertEqual(judge.chain.carryover, "supported: 5 records")  # written from the SQL facts, not by the model
 
     def test_background_ratings_come_back_in_order_with_the_chain_intact(self) -> None:
         replies = iter(['{"confidence": 0.8, "note": "First."} [STATE_CHECKPOINT] one verdict',
@@ -129,7 +129,7 @@ class JudgeTests(unittest.TestCase):
         judge.submit("a", self.claim)
         judge.submit("b", self.claim)
         self.assertEqual([(key, j["note"]) for key, j in judge.collect()], [("a", "First."), ("b", "Second.")])
-        self.assertEqual(judge.chain.carryover, "two verdicts")
+        self.assertEqual(judge.chain.carryover, "supported: 5 records; supported: 5 records")  # each verdict is carried forward
         self.assertEqual(judge.finish()["chunks"], 2)
 
     def test_the_answer_after_the_models_reasoning_is_used(self) -> None:
